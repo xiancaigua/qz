@@ -1,0 +1,8 @@
+prefix=/home/cquer/2023_qingzhou/install
+
+Name: qingzhou_locate
+Description: Description of qingzhou_locate
+Version: 0.0.0
+Cflags: -I${prefix}/include
+Libs: -L${prefix}/lib 
+Requires: 

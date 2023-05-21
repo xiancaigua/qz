@@ -1,0 +1,8 @@
+prefix=/home/cquer/2023_qingzhou/devel
+
+Name: dynamic_parameters
+Description: Description of dynamic_parameters
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

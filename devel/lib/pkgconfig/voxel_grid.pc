@@ -1,0 +1,8 @@
+prefix=/home/cquer/2023_qingzhou/devel
+
+Name: voxel_grid
+Description: Description of voxel_grid
+Version: 1.16.6
+Cflags: -I/home/cquer/2023_qingzhou/src/authority_code/voxel_grid/include
+Libs: -L${prefix}/lib -lvoxel_grid
+Requires: roscpp

@@ -1,0 +1,8 @@
+prefix=/home/cquer/2023_qingzhou/install
+
+Name: dynamicParamService
+Description: Description of dynamicParamService
+Version: 0.0.0
+Cflags: -I${prefix}/include
+Libs: -L${prefix}/lib 
+Requires: 

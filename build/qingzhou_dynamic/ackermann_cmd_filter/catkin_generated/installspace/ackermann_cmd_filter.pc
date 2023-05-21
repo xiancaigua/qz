@@ -1,0 +1,8 @@
+prefix=/home/cquer/2023_qingzhou/install
+
+Name: ackermann_cmd_filter
+Description: Description of ackermann_cmd_filter
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

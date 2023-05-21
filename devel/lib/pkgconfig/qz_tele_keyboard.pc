@@ -1,0 +1,8 @@
+prefix=/home/cquer/2023_qingzhou/devel
+
+Name: qz_tele_keyboard
+Description: Description of qz_tele_keyboard
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

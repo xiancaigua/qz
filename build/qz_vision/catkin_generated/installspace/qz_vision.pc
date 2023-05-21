@@ -1,0 +1,8 @@
+prefix=/home/cquer/2023_qingzhou/install
+
+Name: qz_vision
+Description: Description of qz_vision
+Version: 0.0.0
+Cflags: -I${prefix}/include
+Libs: -L${prefix}/lib 
+Requires: 
