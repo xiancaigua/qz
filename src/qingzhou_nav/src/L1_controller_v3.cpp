@@ -216,12 +216,15 @@ class L1Controller
         double getL1Distance(const double& _Vcmd);
         double getSteeringAngle(double eta);
         double getGasInput(const float& current_v);
-        geometry_msgs::Point get_odom_car2WayPtVec(const geometry_msgs::Pose& carPose);
+        double getParkingEta(const geometry_msgs::Pose &carPose, int minimunId);
+        geometry_msgs::Point get_odom_car2WayPtVec(const geometry_msgs::Pose &carPose);
+        int devide_path(nav_msgs::Path path);
 
     private:
         ros::NodeHandle n_;
         ros::Subscriber odom_sub, path_sub, goal_sub;
-        ros::Publisher pub_, marker_pub;
+        ros::Publisher pub_, marker_pub, planner_pub;
+        ros::Subscriber teb_plan_sub;
         ros::Timer timer1, timer2;
         tf::TransformListener tf_listener;
 
@@ -229,7 +232,7 @@ class L1Controller
         geometry_msgs::Twist twist_cmd;
         geometry_msgs::Point odom_goal_pos, nav_goal_pos;
         nav_msgs::Odometry odom;
-        nav_msgs::Path map_path, odom_path;
+        nav_msgs::Path map_path, odom_path, teb_path;
         dynamic_reconfigure::Server<qingzhou_nav::L1_dynamicConfig> *dsrv_;
 
         double L, Lfw, Lrv, Vcmd, lfw, lrv, steering, u, v;
@@ -243,9 +246,8 @@ class L1Controller
         void goalReachingCB(const ros::TimerEvent&);
         void controlLoopCB(const ros::TimerEvent&);
         void dynamicCB(qingzhou_nav::L1_dynamicConfig &config, uint32_t level);
-
+        void teb_pathCB(const nav_msgs::Path::ConstPtr &teb_pathMsg);
 }; // end of class
-
 
 L1Controller::L1Controller()
 {
@@ -254,13 +256,15 @@ L1Controller::L1Controller()
 
     //Publishers and Subscribers
     odom_sub = n_.subscribe("/odom_ekf", 1, &L1Controller::odomCB, this);
-    path_sub = n_.subscribe("/move_base/NavfnROS/plan", 1, &L1Controller::pathCB, this);
+    path_sub = n_.subscribe("/move_base/NavfnROS/plan", 1, &L1Controller::pathCB, this); // nav_msgs::Path
     goal_sub = n_.subscribe("/move_base_simple/goal", 1, &L1Controller::goalCB, this);
     marker_pub = n_.advertise<visualization_msgs::Marker>("car_path", 10);
+    planner_pub = n_.advertise<nav_msgs::Path>("l1_global_path", 10);
     pub_ = n_.advertise<geometry_msgs::Twist>("/qz_cmd_vel_l1", 1);
+    teb_plan_sub = n_.subscribe("/teb/TebLocalPlannerROS/local_plan", 1, &L1Controller::teb_pathCB, this);
 
-    //Timer
-    timer1 = n_.createTimer(ros::Duration((1.0)/controller_freq), &L1Controller::controlLoopCB, this); // Duration(0.05) -> 20Hz
+    // Timer
+    timer1 = n_.createTimer(ros::Duration((1.0) / controller_freq), &L1Controller::controlLoopCB, this); // Duration(0.05) -> 20Hz
     timer2 = n_.createTimer(ros::Duration((0.5)/controller_freq), &L1Controller::goalReachingCB, this); // Duration(0.05) -> 20Hz
 
     dsrv_ = new dynamic_reconfigure::Server<qingzhou_nav::L1_dynamicConfig>(pn);
@@ -351,6 +355,7 @@ void L1Controller::pathCB(const nav_msgs::Path::ConstPtr& pathMsg)
 }
 
 
+
 void L1Controller::goalCB(const geometry_msgs::PoseStamped::ConstPtr& goalMsg)
 {
     try
@@ -429,7 +434,46 @@ bool L1Controller::isWayPtAwayFromLfwDist(const geometry_msgs::Point& wayPt, con
         return true;
 }
 
-geometry_msgs::Point L1Controller::get_odom_car2WayPtVec(const geometry_msgs::Pose& carPose)
+void L1Controller::teb_pathCB(const nav_msgs::Path::ConstPtr &teb_pathMsg)
+{
+    teb_path = *teb_pathMsg;
+}
+
+
+
+
+
+/*
+找到倒车路径的转折点在导航路径系列里面的index
+*/
+int L1Controller::devide_path(nav_msgs::Path path)
+{
+    geometry_msgs ::PoseStamped teb_pt_;
+    double minimunm_y;
+    int minimunId=0;
+    for (int i = 0; i <= path.poses.size(); i++)
+    {
+        teb_pt_ = path.poses[i];
+        if (i==0){
+            minimunm_y = teb_pt_.pose.position.y;
+        }
+        if (teb_pt_.pose.position.y<minimunm_y)
+        {
+            minimunm_y = teb_pt_.pose.position.y;
+            minimunId = i;
+        }
+    }
+    return minimunId;
+}
+
+double L1Controller::getParkingEta(const geometry_msgs::Pose &carPose, int minimunId)
+{
+    geometry_msgs::PoseStamped back_path[teb_path.poses.size() - minimunId];
+    for (int i = minimunId; i <= teb_path.poses.size();i++)
+        back_path[i - minimunId] = teb_path.poses[i];
+    
+}
+geometry_msgs::Point L1Controller::get_odom_car2WayPtVec(const geometry_msgs::Pose &carPose)
 {
     geometry_msgs::Point carPose_pos = carPose.position;
     double carPose_yaw = getYawFromPose(carPose);
@@ -442,10 +486,25 @@ geometry_msgs::Point L1Controller::get_odom_car2WayPtVec(const geometry_msgs::Po
     bool _isWayPtAwayFromLfwDist;
 
     if(!goal_reached){
-        for(int i =0; i< map_path.poses.size(); i++)
-        {
-            geometry_msgs::PoseStamped map_path_pose = map_path.poses[i];
-            geometry_msgs::PoseStamped odom_path_pose;
+        double y_limit = -7.585;//负得越多越靠近左边，远离坡道
+            for (int j = 0; j < map_path.poses.size(); j++)
+            {
+            if (map_path.poses[j].pose.position.y < y_limit)
+            {
+                map_path.poses[j].pose.position.y = y_limit;
+            }
+            map_path.poses[j].header.frame_id = "map";
+            }  // planner_pub
+            planner_pub.publish(map_path);//可视化操作
+            for (int i = 0; i < map_path.poses.size(); i++)
+            {
+                geometry_msgs::PoseStamped map_path_pose = map_path.poses[i];
+                // 下面这个判断是为了上坡道加的，限制全局路径的y值
+                if (map_path_pose.pose.position.y < y_limit)
+                {
+                map_path_pose.pose.position.y = y_limit;
+                }
+                geometry_msgs::PoseStamped odom_path_pose;
 
             try
             {
@@ -551,7 +610,7 @@ double L1Controller::getSteeringAngle(double eta)
 {
     // double steering_angle = -atan2((L*sin(eta)),(Lfw/2+lfw*cos(eta)))*(180.0/PI);
     // ROS_INFO("ETA = %.2f", -eta*180.0/PI);
-    double steering_angle = atan2((L*sin(eta)),(Lrv/2 + lfw*cos(eta)));
+    double steering_angle = atan2((L * sin(eta)), (Lfw / 2 + lfw * cos(eta)));
     // ROS_INFO("Steering Angle = %.2f", steering_angle);
     return steering_angle;
 }
@@ -629,6 +688,21 @@ void L1Controller::dynamicCB(qingzhou_nav::L1_dynamicConfig &config, uint32_t le
     ROS_INFO("-----params have been changed----");
     ROS_INFO("base_speed:%f", base_speed);
 }
+
+
+/**
+ * 下面一段是为倒车设计的程序 
+ * 获取导航信息
+ * 解析导航信息
+ * 导航信息分段
+ * 第一段：采用知性跟踪即可
+ * 第二段：速度改为负值，计算角度关系
+ */
+
+// controlloop中加入新的状态发布不同速度值
+// controlloop中计算新的角度
+
+
 /*****************/
 /* MAIN FUNCTION */
 /*****************/

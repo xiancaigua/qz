@@ -56,8 +56,10 @@ actuator::actuator(ros::NodeHandle nh)
     }
     // debug 串口完成
 
-    // 读取ROS中的运动控制话题，用于解析并且组织到下位机
+    // 读取ROS中的运动控制话题，用于解析并且组织到下位机,这是具有经过filter分滤过的
     sub_move_base = nh.subscribe("/qz_cmd_vel", 1, &actuator::callback_move_base, this);
+    //这一行是调试用，记得删掉
+    // sub_move_base = nh.subscribe("/cmd_vel", 1, &actuator::callback_move_base, this);
 
     //发布下位机IMU  ODOM  电池数据到ROS 话题中
     pub_imu = nh.advertise<sensor_msgs::Imu>("raw", 2);

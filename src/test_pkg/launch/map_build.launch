@@ -1,0 +1,7 @@
+<?xml version="1.0" ?>
+<launch>
+
+    <include file="$(find test_pkg)/launch/qingzhou_bringup.launch" /> 
+    <include file="$(find test_pkg)/launch/gmapping.launch" /> 
+
+</launch>

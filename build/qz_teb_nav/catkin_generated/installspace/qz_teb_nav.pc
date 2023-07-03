@@ -1,0 +1,8 @@
+prefix=/home/cquer/2023_qingzhou/install
+
+Name: qz_teb_nav
+Description: Description of qz_teb_nav
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

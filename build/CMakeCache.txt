@@ -123,6 +123,9 @@ CATKIN_SKIP_TESTING:BOOL=OFF
 // using symlinks instead of copying resources
 CATKIN_SYMLINK_INSTALL:BOOL=OFF
 
+//No help, variable specified on the command line.
+CATKIN_WHITELIST_PACKAGE:UNINITIALIZED=qingzhou_locate
+
 //List of ';' separated packages to build
 CATKIN_WHITELIST_PACKAGES:STRING=dynamic_parameters
 
@@ -521,6 +524,9 @@ costmap_2d_LIB_DEPENDS:STATIC=general;/usr/lib/aarch64-linux-gnu/libboost_system
 //Value Computed by CMake
 costmap_2d_SOURCE_DIR:STATIC=/home/cquer/2023_qingzhou/src/authority_code/costmap_2d
 
+//The directory containing a CMake configuration file for costmap_converter.
+costmap_converter_DIR:PATH=/opt/ros/melodic/share/costmap_converter/cmake
+
 //The directory containing a CMake configuration file for cpp_common.
 cpp_common_DIR:PATH=/opt/ros/melodic/share/cpp_common/cmake
 
@@ -823,6 +829,12 @@ qingzhou_nav_BINARY_DIR:STATIC=/home/cquer/2023_qingzhou/build/qingzhou_nav
 qingzhou_nav_SOURCE_DIR:STATIC=/home/cquer/2023_qingzhou/src/qingzhou_nav
 
 //Value Computed by CMake
+qz_teb_nav_BINARY_DIR:STATIC=/home/cquer/2023_qingzhou/build/qz_teb_nav
+
+//Value Computed by CMake
+qz_teb_nav_SOURCE_DIR:STATIC=/home/cquer/2023_qingzhou/src/qz_teb_nav
+
+//Value Computed by CMake
 qz_tele_keyboard_BINARY_DIR:STATIC=/home/cquer/2023_qingzhou/build/qz_tele_keyboard
 
 //Value Computed by CMake
@@ -947,6 +959,9 @@ std_msgs_DIR:PATH=/opt/ros/melodic/share/std_msgs/cmake
 
 //The directory containing a CMake configuration file for std_srvs.
 std_srvs_DIR:PATH=/opt/ros/melodic/share/std_srvs/cmake
+
+//The directory containing a CMake configuration file for teb_local_planner.
+teb_local_planner_DIR:PATH=/opt/ros/melodic/share/teb_local_planner/cmake
 
 //Value Computed by CMake
 test_pkg_BINARY_DIR:STATIC=/home/cquer/2023_qingzhou/build/test_pkg

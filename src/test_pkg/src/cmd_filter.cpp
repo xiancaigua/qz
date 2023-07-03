@@ -15,12 +15,28 @@ void vision_CB(const geometry_msgs::Twist::ConstPtr &msg)
     cmd_from_vision = *msg;
 }
 
+void dwa_cmd_CB(const geometry_msgs::Twist::ConstPtr &msg)
+{
+    cmd_from_dwa = *msg;
+}
+
+void dwaCB(const std_msgs::Int32::ConstPtr &msg)
+{
+    dwa_flag = *msg;
+}
+
 void pub_CB(const ros::TimerEvent&)
 {
-    if (robotlocation.data == int(RoadLine))
+    // &&cmd_from_vision.linear.x != 0
+        if (robotlocation.data == int(RoadLine) && dwa_flag.data == 0 && cmd_from_vision.linear.x != 0)
     {
         ROS_INFO("-----------------------cmd_from_vision-----------------------------");
         final_cmd = cmd_from_vision;
+    }
+    else if (robotlocation.data == int(RoadLine) && dwa_flag.data == 1)
+    {
+        final_cmd = cmd_from_dwa;
+        ROS_INFO("-----------------------cmd_from_dwa-----------------------------");
     }
     else
     {
@@ -28,7 +44,6 @@ void pub_CB(const ros::TimerEvent&)
     }
 
     qz_cmd_vel_pub.publish(final_cmd);
-
 }
 
 int main(int argc, char **argv)
@@ -39,7 +54,9 @@ int main(int argc, char **argv)
     ros::NodeHandle nh;
     // ROS_INFO("ackermann_cmd_filter Finish");
     location_sub = nh.subscribe<std_msgs::Int32>("/qingzhou_locate", 1, locateCB);
+    filter_dwa_flag_sub = nh.subscribe<std_msgs::Int32>("/filter_dwa_flag", 1, dwaCB);
     cmd_vel_l1_sub = nh.subscribe<geometry_msgs::Twist>("/qz_cmd_vel_l1", 1, l1_CB);
+    cmd_vel_dwa_sub = nh.subscribe<geometry_msgs::Twist>("/dwa_cmd_vel", 1, dwa_cmd_CB);
     cmd_vel_vision_sub = nh.subscribe<geometry_msgs::Twist>("/qz_cmd_vel_vision", 1, vision_CB);
 
     qz_cmd_vel_pub = nh.advertise<geometry_msgs::Twist>("/qz_cmd_vel", 1);

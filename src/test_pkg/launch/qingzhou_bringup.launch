@@ -7,13 +7,13 @@
     <param name="mcubaudrate" value="115200" type="int" />
     <param name="calibrate_lineSpeed" value="0" type="int"  />
     <param name="calibrate_angularSpeed" value="0" type="int"  />
-    <param name="ticksPerMeter" value="1214" type="int" />
-    <param name="ticksPer2PI" value = "2083" type = "int"/>         
-    <!-- 2709 -->
-    <!-- 2350 -->
+    <param name="ticksPerMeter" value="1224" type="int" />
+    <param name="ticksPer2PI" value = "2266" type = "int"/>         
+    <!-- 1214 -->
+    <!-- 2083 -->
     
     <node pkg="imu_calib" type="apply_calib" name="apply_calib" output="screen" respawn="false">
-      <param name="calib_file" value="$(find test_pkg)/calib/imu_calib1.yaml" />
+      <param name="calib_file" value="$(find test_pkg)/calib/imu_calib.yaml" />
       <param name="calibrate_gyros" value="true" />
       <remap from="corrected" to="imu/data_raw" />
     </node>
@@ -27,7 +27,7 @@
       <remap from="imu/data" to="imu_data" />
     </node>
 
-     <node pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf" output="screen"  respawn="true">
+     <node pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf"   respawn="true">
       <param name="output_frame" value="odom"/>
       <param name="base_footprint_frame" value="base_link"/>
       <param name="freq" value="30.0"/>
@@ -40,7 +40,7 @@
       <param name="self_diagnose" value="false"/>
     </node>
 
-    <node pkg="test_pkg" type="odom_ekf.py" name="odom_ekf" output="screen">
+    <node pkg="test_pkg" type="odom_ekf.py" name="odom_ekf">
       <remap from="input" to="robot_pose_ekf/odom_combined"/>
       <remap from="output" to="/odom_ekf"/>
     </node>  

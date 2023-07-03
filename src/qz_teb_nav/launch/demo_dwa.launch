@@ -1,0 +1,21 @@
+ <launch>
+ 
+    <include file="$(find test_pkg)/launch/qingzhou_bringup.launch" />
+
+    <include file="$(find qingzhou_nav)/launch/amcl.launch" /> 
+
+    <!-- <node name="map_server" pkg="map_server" type="map_server" args="$(find qz_teb_nav)/map/map.yaml" output="screen"/> -->
+    <node name="map_server" pkg="map_server" type="map_server" args="$(find test_pkg)/map/nav.yaml" output="screen"/>
+    
+    <node pkg="move_base" type="move_base" respawn="false" name="dwa" output="screen" >
+        <param name="base_local_planner" value="dwa_local_planner/DWAPlannerROS" />
+        <rosparam file="$(find qz_teb_nav)/config/dwa/costmap_common_params.yaml" command="load" ns="global_costmap" />
+        <rosparam file="$(find qz_teb_nav)/config/dwa/costmap_common_params.yaml" command="load" ns="local_costmap" />
+        <rosparam file="$(find qz_teb_nav)/config/dwa/local_costmap_params.yaml" command="load" />
+        <rosparam file="$(find qz_teb_nav)/config/dwa/global_costmap_params.yaml" command="load" />
+        <rosparam file="$(find qz_teb_nav)/config/dwa/dwa_local_planner_params.yaml" command="load" />
+
+        <remap from="/cmd_vel" to="/qz_cmd_vel" /> 
+    </node>
+ 
+</launch>

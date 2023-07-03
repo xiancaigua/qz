@@ -9,28 +9,6 @@ import cv2, time, socket, json
 import multiprocessing as mp
 from _02GStreamer import *
 
-def getRoadLine(img):
-	lower1=np.array([0,90,46])
-	upper1=np.array([10,255,255])
-	lower2=np.array([156,43,46])
-	upper2=np.array([180,255,255])
-	hsv_img=cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
-	mask1=cv2.inRange(hsv_img,lower1,upper1)
-	mask2=cv2.inRange(hsv_img,lower2,upper2)
-
-	masked_img1=cv2.bitwise_and(img,img,mask=mask1)
-	masked_img2=cv2.bitwise_and(img,img,mask=mask2)
-	masked_img=masked_img1+masked_img2
-
-	gray_img=cv2.cvtColor(masked_img,cv2.COLOR_BGR2GRAY)
-	ret,binary_img=cv2.threshold(gray_img,50,255,cv2.THRESH_BINARY)
-	kernel=cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(5,5))
-	binary_img=cv2.morphologyEx(binary_img,cv2.MORPH_OPEN,kernel)
-	binary_img=cv2.morphologyEx(binary_img,cv2.MORPH_CLOSE,kernel)
-
-	return binary_img
-
-
 def ImgRead(ImgQueue):
 	# %% 从摄像头读取数据
 	# cam = cv2.VideoCapture(0)
@@ -46,10 +24,10 @@ def ImgRead(ImgQueue):
 			while not ImgQueue.empty():
 				ImgQueue.get()
 			ImgQueue.put(Img)
-			cv2.imshow('ImgRead', Img)
-			key = cv2.waitKey(5)
-			if key == 27:
-				break
+			# cv2.imshow('ImgRead', Img)
+			# key = cv2.waitKey(5)
+			# if key == 27:
+			# 	break
 		cam.release()
 
 def vision():
@@ -62,13 +40,13 @@ def vision():
 	while ImgQueue.empty():
 		pass
 	while True:
-		Key = input('Press s or S to save image:')
-		if Key == 's' or Key == 'S':
+		Key = input('Press 2 or 1 to save image:')
+		if Key == '1' or Key == '2':
 			Img = ImgQueue.get()
-			cv2.imwrite('%04d.jpg' % Frame, Img)
-			print('Save image %04d.jpg success!' % Frame)
+			cv2.imwrite('/home/cquer/2023_qingzhou/src/2020.01.19NanoCSITest/biaoding/biaoding%4d.jpg' % Frame, Img)
+			print('Save image %03d.jpg success!' % Frame)
 			Frame = Frame + 1
-		elif Key == 'Q' or Key == 'q':
+		elif Key == '3':
 			break
 	[Mp.terminate() for Mp in Mps]
 

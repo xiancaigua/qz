@@ -1,4 +1,4 @@
-/******************************************
+/******************************************qingzhou_locate
 文件名：qingzhou_locate.cpp
 
 功  能：机器人当前坐标和目标点坐标
@@ -38,7 +38,7 @@ Locate::Locate()
 	location_pub = nh.advertise<std_msgs::Int32>("/qingzhou_locate", 1);
 	locate_sub = nh.subscribe("/qingzhou_locate", 1, &Locate::locateCB,this);
 
-					 ROS_INFO("Locate Service Start");
+	ROS_INFO("Locate Service Start");
 
 	ros::Rate(1).sleep();
 
@@ -55,13 +55,14 @@ Func : amcl_pose订阅者的回调函数，可以获取小车位置
 void Locate::odomCB(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& odomMsg)
 {
 	odom = *odomMsg;
-	ROS_INFO("Odom Received!");
+	// ROS_INFO("Odom Received!---[Qingzhou Locate]");
 	// ROS_INFO_STREAM("Robot x: " << odom.pose.pose.position.x << "Robot y: " << odom.pose.pose.position.y);
 	//以下代码可以用定时器另外写一个函数实现，不知道哪种更好
 	if (goalLocation == Unknown)
 	{
 		robotLocation == Unknown;
 		locationPub();
+		// ROS_INFO("Goal is UNKNOW---[Qingzhou Locate]");
 		return;
 	}
 
@@ -87,7 +88,7 @@ void Locate::odomCB(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& od
 		break;
 
 	case TrafficLight:
-		if (lastLocation != TrafficLightToUnload 
+		if (lastLocation == LoadToTrafficLight 
 		&& odom.pose.pose.position.x > goalPoint.x1[TrafficLight] 
 		&& odom.pose.pose.position.x < goalPoint.x2[TrafficLight] 
 		&& odom.pose.pose.position.y > goalPoint.y1[TrafficLight] 
@@ -96,7 +97,7 @@ void Locate::odomCB(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& od
 			robotLocation = goalLocation;
 			ROS_INFO("----IN TrafficLight case %d", robotLocation);
 		}
-		else if (lastLocation != TrafficLightToUnload)
+		else if (lastLocation == Load)
 		{
 
 			robotLocation = RobotLocation(goalLocation + 5);
@@ -106,6 +107,7 @@ void Locate::odomCB(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& od
 
 	// 是否在卸货区或路上的其他区域
 	case Unload:
+		//第一个和第二个和第三个判断意义不明
 		if (lastLocation == Load)
 		{
 			robotLocation = LoadToTrafficLight;
@@ -178,6 +180,7 @@ void Locate::odomCB(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& od
 		// 	robotLocation = Start;
 		// 	// ROS_INFO("----IN Start case %d", robotLocation);
 		// }
+		// reverse倒车
 		if (lastLocation == RoadLineToStart
 		&& odom.pose.pose.position.x > goalPoint.x1[Start] 
 		&& odom.pose.pose.position.x < goalPoint.x2[Start] 
@@ -204,8 +207,8 @@ Func : move_base/goal订阅者的回调函数，可以获取
 ******************************************/
 void Locate::goalCB(const geometry_msgs::PoseStamped::ConstPtr& goalMsg)
 {
+	// ROS_INFO("Goal Received!---[Qingzhou Locate]");
 	goal = *goalMsg;
-	// ROS_INFO("Goal Received!");
 	for (int i = 0; i < 5; ++i)
 	{
 		//通过判断机器人目标点坐标是否在目标点范围内，若不在目标点范围内，就是未知

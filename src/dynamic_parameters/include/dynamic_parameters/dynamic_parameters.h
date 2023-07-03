@@ -22,7 +22,7 @@
 #include "dynamic_reconfigure/client.h"
 #include "qingzhou_nav/L1_dynamicConfig.h"
 #include <geometry_msgs/PoseWithCovarianceStamped.h>
-
+#include <unistd.h> 
 
 struct ParametersConfig
 {
@@ -32,6 +32,7 @@ struct ParametersConfig
 	qingzhou_nav::L1_dynamicConfig config4;
 	qingzhou_nav::L1_dynamicConfig config5;
 	ParametersConfig(){
+		// Start开始
 		config1.L = 0.23;
 		config1.Lrv = 1.0;
 		config1.Vcmd = 0.7;
@@ -39,7 +40,7 @@ struct ParametersConfig
 		config1.lfw = 0.13;
 		config1.lrv = 10.0;   
 		config1.controller_freq = 20.0;
-		config1.angle_gain = 0.113;//0.113
+		config1.angle_gain = 0.10;//0.113
 		config1.gas_gain =1.0;
 		config1.base_speed = 0.5;
 		config1.base_angle = 0.5;
@@ -51,33 +52,33 @@ struct ParametersConfig
 		config2.lfw = 0.14;
 		config2.lrv = 10.0;
 		config2.controller_freq = 20.0;
-		config2.angle_gain = 0.1;
+		config2.angle_gain = 0.08; // 7月3日0.1   原来0.08
 		config2.gas_gain = 1.0;
 		config2.base_speed = 0.5;
 		config2.base_angle = 0.0;	
 
-		config3.L = 0.3;
+		config3.L = 0.27; //0.3
 		config3.Lrv = 1.0;
 		config3.Vcmd = 0.7;
-		config3.Lfw =0.7;
-		config3.lfw = 0.13;
+		config3.Lfw =0.55;//0.65
+		config3.lfw = 0.1;
 		config3.lrv = 10.0;
 		config3.controller_freq = 20.0;
-		config3.angle_gain = 0.125;//0.25
+		config3.angle_gain = 0.111;//0.125
 		config3.gas_gain = 1.0;
-		config3.base_speed = 0.65;
+		config3.base_speed = 0.7;
 		config3.base_angle = 0.0;		
 		
-		config4.L = 0.23;//0.3
+		config4.L = 0.23;//0.3越大角度越大
 		config4.Lrv = 0.6;
 		config4.Vcmd = 0.7;
-		config4.Lfw = 0.7;
-		config4.lfw = 0.13;
+		config4.Lfw = 0.6;//前瞻距离，越大角度越小
+		config4.lfw = 0.13;//越大角度越小
 		config4.lrv = 10.0;
 		config4.controller_freq = 20.0;
-		config4.angle_gain = 1.33;//角度
+		config4.angle_gain = 1.45;//角度增益
 		config4.gas_gain = 1.6;
-		config4.base_speed = 0.45;
+		config4.base_speed = 0.55;//速度
 		config4.base_angle = 0.0;
 				
 		config5.L = 0.3;
@@ -118,7 +119,8 @@ private:
 	RobotLocation robotLocation;
 	ParametersConfig paramConfig;
 	dynamic_reconfigure::Config costmapConfUnload;
-	dynamic_reconfigure::Config costmapConfOther;
+	dynamic_reconfigure::Config costmapConfStart;
+	dynamic_reconfigure::Config costmapConfTraffic;
 	dynamic_reconfigure::ReconfigureRequest srv_req;
 	dynamic_reconfigure::ReconfigureResponse srv_resp;
 
@@ -135,7 +137,7 @@ public:
 	void initCostmapConf();
 	void setCostmapConf(dynamic_reconfigure::Config& conf);
 
-// 屎山代码的ODOM
+	// 屎山代码的ODOM
 	ros::Subscriber odom_sub;
 	void odomCB(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr &odomMsg);
 

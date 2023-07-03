@@ -2,9 +2,10 @@ global_costmap:
     footprint: [[0.325,0.225],[0.325,-0.225],[-0.325,-0.225],[-0.325,0.225]] 
     footprint_padding: 0.01
     transform_tolerance: 1.0
-    update_frequency: 1.0
+    update_frequency: 5.0
     publish_frequency: 5.0
     rolling_window: false
+    static_map: true
 
     global_frame: map
     robot_base_frame: base_link
@@ -15,8 +16,10 @@ global_costmap:
 
 
     plugins: 
-        - {name: static,    type: "costmap_2d::StaticLayer"}            
+        # - {name: sensor_global,    type: "costmap_2d::ObstacleLayer"}
+        - {name: static,    type: "costmap_2d::StaticLayer"} 
         - {name: inflation, type: "costmap_2d::InflationLayer"}
+
 
     static:        
         map_topic: /map 

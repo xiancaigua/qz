@@ -43,14 +43,15 @@ Func : 构造函数
 DynamicParameters::DynamicParameters()
 {
 	client = new dynamic_reconfigure::Client<qingzhou_nav::L1_dynamicConfig> ("/L1_controller_v3", dynCallBack);
-
-	//先设置初始参数，使其他函数可用
+	// 先设置初始参数，使其他函数可用
 	ros::service::waitForService("/move_base/clear_costmaps");
 	ros::service::waitForService("/L1_controller_v3/set_parameters");
 	ros::service::waitForService("/move_base/global_costmap/inflation/set_parameters");
 
 	map_client = nh.serviceClient<std_srvs::Empty>("/move_base/clear_costmaps");
+	ROS_INFO("-------------/qingzhou_locate_sub1-----------------");
 	locate_sub = nh.subscribe("/qingzhou_locate", 1, &DynamicParameters::locateCB, this);
+	ROS_INFO("-------------/qingzhou_locate_sub2-----------------");
 	odom_sub = nh.subscribe<geometry_msgs::PoseWithCovarianceStamped>("/amcl_pose", 1, &DynamicParameters::odomCB, this);
 	setParameters(paramConfig.config1);
 	initCostmapConf();
@@ -104,26 +105,29 @@ Name ：locateCB
 Param: Null
 Func : 当机器人位置改变时，根据改变的位置来修改
 		参数
-		加了一托答辩
-作 者 ：胡杨&赵子涵
+作 者 ：胡杨&赵子涵（加了一托答辩）
 ******************************************/
 void DynamicParameters::locateCB(const std_msgs::Int32& data)
 {
-	if (data.data==Start)
+	ROS_INFO("-----------------locateCB in qingzhou_locate-----------------");
+	if (data.data == Start)
 	{
+		ROS_INFO("-----------------Start config--------------------");
 		setParameters(paramConfig.config1);
-		setCostmapConf(costmapConfOther);
+		setCostmapConf(costmapConfStart);
 		map_client.call(empty);
 	}
 	else if (data.data == Load)
 	{
+		ROS_INFO("-----------------Load config--------------------");
 		setParameters(paramConfig.config2);
 	}
-	else if (data.data == TrafficLightToUnload &&
-	 odom_msg.pose.pose.position.y<-5.5
-	)
+	//  && odom_msg.pose.pose.position.y < -3.3
+	else if (data.data == TrafficLightToUnload)
 	{
+		ROS_INFO("-----------------Traffic config--------------------");
 		setParameters(paramConfig.config3);
+		setCostmapConf(costmapConfTraffic);
 	}
 	else if (data.data == Unload)
 	{
@@ -133,7 +137,7 @@ void DynamicParameters::locateCB(const std_msgs::Int32& data)
 	else if (data.data == RoadLine)
 	{
 		setParameters(paramConfig.config5);
-		setCostmapConf(costmapConfOther);
+		setCostmapConf(costmapConfStart);
 	}
 
 		// switch (data.data)
@@ -174,6 +178,7 @@ Func : 屎山代码的ODOM
 void DynamicParameters::odomCB(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr &odomMsg)
 {
 	odom_msg = *odomMsg;
+	// ROS_INFO("---------------------odomCB in dynamicParameters------------------------%f",odom_msg.pose.pose.position.y);
 }
 
 void DynamicParameters::initCostmapConf()
@@ -182,21 +187,27 @@ void DynamicParameters::initCostmapConf()
 	dynamic_reconfigure::DoubleParameter doubleParam;
 
 	doubleParam.name = "inflation_radius";
-	doubleParam.value = 0.45;
+	doubleParam.value = 0.55;
 	costmapConfUnload.doubles.push_back(doubleParam);
 
-	doubleParam.value = 0.55;
-	costmapConfOther.doubles.push_back(doubleParam);
+	doubleParam.value = 0.3;//0.15
+	costmapConfTraffic.doubles.push_back(doubleParam);
+
+	doubleParam.value = 0.32;
+	costmapConfStart.doubles.push_back(doubleParam);
 	ROS_INFO("Initialize Costmap Config");
 
 	doubleParam.name = "cost_scaling_factor";
 	doubleParam.value = 5.0;
-	costmapConfOther.doubles.push_back(doubleParam);
+	costmapConfStart.doubles.push_back(doubleParam);
+
+	doubleParam.value = 5.0;
+	costmapConfTraffic.doubles.push_back(doubleParam);
 
 	doubleParam.value = 5.0;
 	costmapConfUnload.doubles.push_back(doubleParam);
 
-	srv_req.config = costmapConfOther;
+	srv_req.config = costmapConfStart;
 
 	if (ros::service::call("/move_base/global_costmap/inflation/set_parameters", srv_req, srv_resp)) 
 	{
