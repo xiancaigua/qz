@@ -180,9 +180,15 @@ if __name__ == "__main__":
                 # 调试结束后删去
                 # time.sleep(1)
                 # traffic_flag.publish(1)
+                framecount = 0
                 while cam.isOpened():
 
                     ret, img = cam.read()
+                    if framecount <= 10:
+                        framecount += 1
+                        continue
+                    else:
+                        framecount = 0
                     if greencount == 3 :
                         traffic_flag.publish(1)
                         greencount = 0

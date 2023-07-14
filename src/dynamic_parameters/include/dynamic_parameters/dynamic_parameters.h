@@ -27,7 +27,6 @@
 struct ParametersConfig
 {
 	// catkin_make -DCATKIN_WHITELIST_PACKAGES="dynamic_parameters"
-	double limit = -7.75;//-7.62
 	qingzhou_nav::L1_dynamicConfig config1;
 	qingzhou_nav::L1_dynamicConfig config2;
 	qingzhou_nav::L1_dynamicConfig config3;
@@ -35,7 +34,6 @@ struct ParametersConfig
 	qingzhou_nav::L1_dynamicConfig config5;
 	ParametersConfig(){
 		// Start开始
-		config1.y_limit = limit;
 		config1.L = 0.3;
 		config1.Lrv = 1.0;
 		config1.Vcmd = 0.7;
@@ -50,8 +48,7 @@ struct ParametersConfig
 		config1.base_speed_back = 0.5;
 		config1.base_angle = 0.5;
 		config1.AllowReverse = false;
-
-		config2.y_limit = limit;	
+	
 		config2.L = 0.3;
 		config2.Lrv = 1.0;
 		config2.Vcmd = 0.7;
@@ -67,7 +64,6 @@ struct ParametersConfig
 		config2.base_angle = 0.0;
 		config2.AllowReverse = false;
 
-		config3.y_limit = limit;
 		config3.L = 0.3; //0.27
 		config3.Lrv = 1.0;
 		config3.Vcmd = 0.7;
@@ -83,7 +79,6 @@ struct ParametersConfig
 		config3.base_angle = 0.0;
 		config3.AllowReverse = false;
 
-		config4.y_limit = limit;
 		config4.L = 0.25;//越大角度越大 0.23
 		config4.Lrv = 0.6;
 		config4.Vcmd = 0.7;
@@ -99,7 +94,6 @@ struct ParametersConfig
 		config4.base_angle = 0.0;
 		config4.AllowReverse = false;
 
-		config5.y_limit = limit;
 		config5.L = 0.3;
 		config5.Lrv = 1.0;
 		config5.Vcmd = 0.7;

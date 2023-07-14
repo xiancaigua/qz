@@ -234,8 +234,6 @@ public:
 private:
     ros::NodeHandle n_;
 
-    double y_limit = -7.52; // 负得越多越靠近左边，远离坡道 -7.55 -7.538 -7.51
-
     RobotLocation goalLocation;
     GoalPoint goalPoint;
 
@@ -506,14 +504,17 @@ geometry_msgs::Point L1Controller::get_odom_car2WayPtVec(const geometry_msgs::Po
 
     if (!goal_reached)
     {
-        // for (int j = 0; j < map_path.poses.size(); j++)
-        // {
-        //     if (map_path.poses[j].pose.position.y < y_limit)
-        //     {
-        //         map_path.poses[j].pose.position.y = y_limit;
-        //     }
-        // }  // planner_pub
-        // planner_pub.publish(map_path);//可视化操作
+        double y_limit = -7.72;
+
+        for (int j = 0; j < map_path.poses.size(); j++)
+        {
+            if (map_path.poses[j].pose.position.y < y_limit)
+            {
+                map_path.poses[j].pose.position.y = y_limit;
+            }
+        }  // planner_pub
+        planner_pub.publish(map_path);//可视化操作
+        
         for (int i = 0; i < map_path.poses.size(); i++)
         {
             geometry_msgs::PoseStamped map_path_pose = map_path.poses[i];
@@ -740,7 +741,6 @@ void L1Controller::controlLoopCB(const ros::TimerEvent &)
 
 void L1Controller::dynamicCB(qingzhou_nav::L1_dynamicConfig &config, uint32_t level)
 {
-    y_limit = config.y_limit;
     L = config.L;
     Lrv = config.Lrv;
     Vcmd = config.Vcmd;
