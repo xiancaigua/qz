@@ -10,6 +10,8 @@ from geometry_msgs.msg import PoseStamped
 from std_msgs.msg import Int32
 import Queue
 import std_msgs.msg as std_msgs
+import time
+from ackermann_msgs.msg import AckermannDrive
 """
 ackermann_msgs/AckermannDrive.h
 rostopic pub -r 20 /move_base_simple/goal geometry_msgs/PoseStamped "header:
@@ -30,24 +32,23 @@ pose:
 #该flag调试用
 p_flag_ = False
 
-goal_flag = False
-park_flag = Int32()
+park_flag = 0
 amcl_x = 0.0
 amcl_y = 0.0
 amcl_yaw = 0.0
 u0 = 0.0
 u1 = 0.0
 #1.0 -0.62
-goal1_x = -0.65
-goal1_y = -0.1 
+goal_x = np.array([0.0, -2.2, -2.2,0])
+goal_y = np.array([-0.18, -0.6, -0.3,0])
 # 0.55 0.85
-goal2_x = -2.0
-goal2_y = -0.46
-
+# goal2_x = -2.0
+# goal2_y = -0.46
+"""
 class Config(object):
-    """
-    Parameters used for simulation
-    """
+    
+    #Parameters used for simulation
+    
     def __init__(self):
         # robot parameter
         self.max_speed = 0.8 # [m/s] # 最大速度    原来的0.4
@@ -71,6 +72,84 @@ class Config(object):
 
     def set_angle_cost_gain(self,angle_cost_gain):
         self.angle_cost_gain = angle_cost_gain
+"""
+
+class Config(object):
+    """
+    Parameters used for simulation
+    """
+    def __init__(self,path):
+        if path == 1:
+            # robot parameter
+            self.max_speed = 0.5  # [m/s] # 最大速度    原来的0.5
+            # self.min_speed = -0.5 # [m/s] # min v Set to reverse
+            self.min_speed =-0.5 # [m/s] # min v Set to can not reverse  原来的是-0.5
+            self.max_yawrate = 120 * 3.1415926 / 180.0 # [rad/s] # 最大角速度 #60
+            self.max_accel = 0.18 # [m/ss] # 最大加速度0.15
+            self.max_dyawrate = 3 * 3.1415926 / 180.0 # [rad/ss] # 最大角加速度45  原来是5 速度为4的时候 速度为8的时候为4 
+            self.v_reso = 0.01 # [m/s] 速度分辨率0.01
+            self.yawrate_reso = 0.2 * 3.1415926 / 180.0 # [rad/s] 角度分辨率 原来的是0.2
+            self.dt = 0.05 # [s] # 采样时间
+            self.predict_time = 1.0  # [s] # 模拟时间 1.0
+            #权重参数
+            self.ob_cost_gain = 1.0 #障碍物权重（没用到）
+            self.to_goal_cost_gain = 1.0 # Target cost gain  1.0
+            self.angle_cost_gain =1.6 #朝向的权重3.0 原来 1.6
+            self.dx_cost_gain = 10   #水平线的权重 原来10
+            self.speed_cost_gain = 1.2 # Target cost reduction 0.8
+            # self.to_goal_angle_cost = 5.0
+            self.robot_radius = 0.3 # [m] # robor radius 0.3
+        
+        elif path == 2:
+            # robot parameter
+            self.max_speed = 0.4  # [m/s] # 最大速度    原来的0.4
+            # self.min_speed = -0.5 # [m/s] # min v Set to reverse
+            self.min_speed =-0.4 # [m/s] # min v Set to can not reverse  原来的是-0.4
+            self.max_yawrate = 115 * 3.1415926 / 180.0 # [rad/s] # 最大角速度120 115
+            self.max_accel = 0.2 # [m/ss] # 最大加速度0.15
+            self.max_dyawrate = 3 * 3.1415926 / 180.0 # [rad/ss] # 最大角加速度45  原来是3
+            self.v_reso = 0.01 # [m/s] 速度分辨率0.01
+            self.yawrate_reso = 0.2 * 3.1415926 / 180.0 # [rad/s] 角度分辨率 原来的是0.2
+            self.dt = 0.05 # [s] # 采样时间
+            self.predict_time = 1.0  # [s] # 模拟时间 1.0
+            #权重参数
+            self.ob_cost_gain = 1.0 #障碍物权重（没用到）
+            self.to_goal_cost_gain = 1.0 # Target cost gain  1.0
+            self.angle_cost_gain = 3.15#朝向的权重 原来3.1
+            self.dx_cost_gain = 20.0 #水平线的权重 原来20
+            self.speed_cost_gain = 25 # Target cost reduction 25
+            # self.to_goal_angle_cost = 5.0
+            self.robot_radius = 0.3 # [m] # robor radius  0.3
+        elif path == 3:
+            # robot parameter
+            self.max_speed = 0.8  # [m/s] # 最大速度    原来的0.4
+            # self.min_speed = -0.5 # [m/s] # min v Set to reverse
+            self.min_speed =-0.4 # [m/s] # min v Set to can not reverse  原来的是-0.4
+            self.max_yawrate = 120 * 3.1415926 / 180.0 # [rad/s] # 最大角速度
+            self.max_accel = 0.2 # [m/ss] # 最大加速度0.15
+            self.max_dyawrate = 3 * 3.1415926 / 180.0 # [rad/ss] # 最大角加速度45  原来是3
+            self.v_reso = 0.01 # [m/s] 速度分辨率0.01
+            self.yawrate_reso = 0.2 * 3.1415926 / 180.0 # [rad/s] 角度分辨率 原来的是0.2
+            self.dt = 0.05 # [s] # 采样时间
+            self.predict_time = 1.0  # [s] # 模拟时间 1.0
+            #权重参数
+            self.ob_cost_gain = 1.0 #障碍物权重（没用到）
+            self.to_goal_cost_gain = 1.0 # Target cost gain  1.0
+            self.angle_cost_gain = 3.1 #朝向的权重3.0 原来3.1
+            self.dx_cost_gain = 20.0 #水平线的权重 原来20
+            self.speed_cost_gain = 25 # Target cost reduction 25
+            # self.to_goal_angle_cost = 5.0
+            self.robot_radius = 0.3 # [m] # robor radius  0.3
+
+
+    def set_to_goal_cost_gain(self,to_goal_cost_gain):
+        self.to_goal_cost_gain = to_goal_cost_gain
+    def set_angle_cost_gain(self,angle_cost_gain):
+        self.angle_cost_gain = angle_cost_gain
+    def set_dx_cost_gain(self,dx_cost_gain):
+        self.dx_cost_gain = dx_cost_gain
+    def set_speed_cost_gain(self,speed_cost_gain):
+        self.speed_cost_gain = speed_cost_gain
 
 
 def amcl_cb(amcl_msg):
@@ -146,10 +225,12 @@ def calc_trajectory(x_init, v, w, config):
     return trajectory
 
 
-def calc_final_input(x, u, vr, config, goal):
+def calc_final_input(x, u, vr, config, goal,path):
     x_init = x[:]
     min_cost = 10000.0
     min_u = u
+
+    min_toGoalCost,min_AngleCost,min_DxCost,min_SpeedCost = 0,0,0,0
 
     # evaluate all trajectory with sampled input in dynamic window
     # v,w
@@ -162,7 +243,12 @@ def calc_final_input(x, u, vr, config, goal):
             # to_goal_angle_cost = calc_to_goal_angle_cost(trajectory, goal, config)
             angle_cost = calc_angle_cost(trajectory,config)
             dx_cost = calc_dy_cost(trajectory,goal,config)
-            speed_cost = config.speed_cost_gain * (config.max_speed - abs(trajectory[3]))
+            # 第一段为防止出现倒车，只允许前进，惩罚函数速度值带符号
+            if path == 1 or path == 3:
+                speed_cost = config.speed_cost_gain * (config.max_speed - trajectory[3])
+            # 第二段为鼓励出现倒车
+            elif path == 2:
+                speed_cost = config.speed_cost_gain * (config.max_speed + trajectory[3])
             # print(ob_cost)
 
             #
@@ -178,38 +264,38 @@ def calc_final_input(x, u, vr, config, goal):
             if min_cost >= final_cost:
                 min_cost = final_cost
                 min_u = [v, w]
+                min_toGoalCost,min_AngleCost,min_DxCost,min_SpeedCost = to_goal_cost,angle_cost,dx_cost,speed_cost
+                # print("[DWA]次优解----to_goal_cost: %f,----angle_cost:%f,----dx_cost:%f,----speed_cost:%f"%(min_toGoalCost,min_AngleCost,min_DxCost,min_SpeedCost))
 
                 # print(min_u)
                 # input()
-
+    # print("[DWA]----to_goal_cost: %f,----angle_cost:%f,----dx_cost:%f,----speed_cost:%f"%(min_toGoalCost,min_AngleCost,min_DxCost,min_SpeedCost))
+    # print("[DWA]-------------V:%f,W:%f"%(min_u[0],min_u[1]))
     return min_u
 
 
-def dwa_control(x, u, config, goal):
+def dwa_control(x, u, config, goal,path):
     # Dynamic Window control
 
     vr = calc_dynamic_window(x, config)
 
-    u = calc_final_input(x, u, vr, config, goal)
+    u = calc_final_input(x, u, vr, config, goal,path)
 
     return u
 
 
 def park_cb(park_flag_msg):
-    # print("------------------in the park callback-----------------------")
     global park_flag
-    park_flag = park_flag_msg
-    global goal_flag
-    goal_flag = True
-    # print(goal_flag)
-    # print("-----------park callback over------------------")
+    park_flag = park_flag_msg.data
+
+
     print('-------In the park Callback---')
 
 
 def cmdCB(qz_cmd_msg):
     global u0 , u1
-    u0 = qz_cmd_msg.linear.x
-    u1 = qz_cmd_msg.angular.z
+    u0 = qz_cmd_msg.speed
+    u1 = qz_cmd_msg.steering_angle
 
 
 Queue_=Queue.Queue()
@@ -220,16 +306,26 @@ def FlagCB(msg):
 
 def main():
     global amcl_x,amcl_y,amcl_yaw
+    global park_flag
+    dwa_control_twist = AckermannDrive()
 
+    cnt1 = time.time()
+    while park_flag == 0:
+        cnt2 = time.time()
+        if abs(cnt1-cnt2) >= 3:
+            dwa_locate_pub.publish(5)
+            dwa_flag_pub.publish(0)
+            print("-------------------------no parking--------------------[dwa]")
+            return 0
+        if park_flag != 0:
+            break   
     # dwa_control_pub = rospy.Publisher("/dwa_control" , Twist , Queue_size=1)
-    dwa_control_twist = Twist()
-    config = Config()
 
     #transformPose
 
     #goal的值固定死
-    global goal1_x,goal1_y
-    goal1 = np.array([goal1_x , goal1_y])
+    global goal_x,goal_y
+    goal1 = np.array([goal_x[0] , goal_y[0]])
     msg = PoseStamped()
     msg.header.seq = 0
     msg.header.stamp.secs = 0
@@ -242,25 +338,46 @@ def main():
     msg.pose.orientation.z = 0.0
     msg.pose.orientation.w = 0.0
     move_base_pub.publish(msg)
+    #注释
     # goal_temp = tf_listener.transformPose('odom' , park_flag)
     # goal = np.array([goal_temp.pose.position.x , goal_temp.pose.position.y])
     
     #x的速度和角速度可能要改
     x = np.array([amcl_x , amcl_y , amcl_yaw , 0 , 0])
-
+    path = 1
+    t1, t2 = 0,0
+    delta_t = 0
+    config = Config(path)
     while not rospy.is_shutdown():
         u = np.array([u0, u1])
-        u = dwa_control(x, u, config, goal1)
-        dwa_control_twist.linear.x = u[0]
-        dwa_control_twist.angular.z = u[1]
+        u = dwa_control(x, u, config, goal1,path)
+        dwa_control_twist.speed = u[0]
+        dwa_control_twist.steering_angle = u[1]
         dwa_control_pub.publish(dwa_control_twist)
+        
+        if abs(u[0]) <0.05:
+            t2 = time.time()
+            delta_t = (delta_t + abs(t2-t1)) if t1!=0 else 0
+            t1 = time.time()
+            if delta_t>=5:
+                delta_t = 0
+                t1,t2 = 0,0
+                dwa_locate_pub.publish(5)
+                dwa_flag_pub.publish(0)
+                print("[VISION]---------暂缓时间过久，放弃倒车！ EXITCODE=1")
+                break
+        else:
+            t1,t2 = 0,0
+            delta_t = 0
+        
         # print("--------------twist pub-----------",u[0],u[1])
         #通过定位更新x(x中的u[0],u[1]好像没用)
         x = np.array([amcl_x , amcl_y , amcl_yaw , u[0] , u[1]])
 
+
         if ((x[0] - goal1[0]) ** 2 + (x[1] - goal1[1]) ** 2) <= config.robot_radius ** 2:
-            dwa_control_twist.linear.x = 0
-            dwa_control_twist.angular.z = 0
+            dwa_control_twist.speed = 0
+            dwa_control_twist.steering_angle = 0
             dwa_control_pub.publish(dwa_control_twist)
             print("------------Goal1 Reached!--------------")
             break
@@ -268,10 +385,12 @@ def main():
 
     #目标点写死，并且这个goal2根据park_flag文字识别结果变化（目前设定为p2）
     # goal2 = np.array([0.55 , 0.85])
-    global goal2_x,goal2_y
-    config.set_angle_cost_gain(2.0)
-    goal2 = np.array([goal2_x , goal2_y])
-    goal2 = np.array([goal2_x , goal2_y])
+    # config.set_angle_cost_gain(2.0)
+    # goal2 = np.array([goal2_x , goal2_y])
+
+ 
+        
+    goal2 = np.array([goal_x[park_flag] , goal_y[park_flag]])
     msg = PoseStamped()
     msg.header.seq = 0
     msg.header.stamp.secs = 0
@@ -288,38 +407,98 @@ def main():
     x = np.array([amcl_x , amcl_y , amcl_yaw , 0 , 0])
 
     #初始速度和角速度可能要改
-    u = np.array([-config.max_speed, 0.0])
-
+    u = np.array([0.0, 0.0])
+    path = 2
+    t1, t2 = 0,0
+    delta_t = 0
+    config = Config(path)
     while not rospy.is_shutdown():
-        u = dwa_control(x, u, config, goal2)
-        dwa_control_twist.linear.x = u[0]
-        dwa_control_twist.angular.z = u[1]
-        dwa_control_pub.publish(dwa_control_twist)
         u = np.array([u0, u1])
+        u = dwa_control(x, u, config, goal2,path)
+        dwa_control_twist.speed = u[0]
+        dwa_control_twist.steering_angle = u[1]
+        dwa_control_pub.publish(dwa_control_twist)
         #通过定位更新x
         x = np.array([amcl_x , amcl_y , amcl_yaw , u[0] , u[1]])
-
+        
+        if abs(u[0]) <0.05:
+            t2 = time.time()
+            delta_t = (delta_t + abs(t2-t1)) if t1!=0 else 0
+            t1 = time.time()
+            if delta_t>=5:
+                delta_t = 0
+                t1,t2 = 0,0
+                dwa_locate_pub.publish(5)
+                dwa_flag_pub.publish(0)
+                print("[VISION]---------暂缓时间过久，放弃倒车！ EXITCODE=2")
+                break
+        else:
+            t1,t2 = 0,0
+            delta_t = 0
         if ((x[0] - goal2[0]) ** 2 + (x[1] - goal2[1]) ** 2) <= config.robot_radius ** 2:
-            dwa_locate_pub.publish(5)
-            dwa_control_twist.linear.x = 0
-            dwa_control_twist.angular.z = 0
+            dwa_control_twist.speed = 0
+            dwa_control_twist.steering_angle = 0
             dwa_control_pub.publish(dwa_control_twist)
+            dwa_locate_pub.publish(5)
+            dwa_flag_pub.publish(0)
             print("------------Goal2 Reached!--------------")
             break
 
+    # #回去
+    # goal3 = np.array([goal_x[3] , goal_y[3]])
+    # u = np.array([0.0, 0.0])
+    # path = 3
+    # t1, t2 = 0,0
+    # delta_t = 0
+    # config = Config(path)
+    # while not rospy.is_shutdown():
+    #     u = np.array([u0, u1])
+    #     u = dwa_control(x, u, config, goal3,path)
+    #     dwa_control_twist.speed = u[0]
+    #     dwa_control_twist.steering_angle = u[1]
+    #     dwa_control_pub.publish(dwa_control_twist)
+    #     #通过定位更新x
+    #     x = np.array([amcl_x , amcl_y , amcl_yaw , u[0] , u[1]])
+        
+    #     if abs(u[0]) <0.05:
+    #         t2 = time.time()
+    #         delta_t = (delta_t + abs(t2-t1)) if t1!=0 else 0
+    #         t1 = time.time()
+    #         if delta_t>=5:
+    #             delta_t = 0
+    #             t1,t2 = 0,0
+    #             dwa_locate_pub.publish(0)
+    #             dwa_flag_pub.publish(0)
+    #             print("[VISION]---------暂缓时间过久，放弃倒车！ EXITCODE=2")
+    #             return 1
+    #     else:
+    #         t1,t2 = 0,0
+    #         delta_t = 0
+
+
+    #     if ((x[0] - goal3[0]) ** 2 + (x[1] - goal3[1]) ** 2) <= config.robot_radius ** 2:
+    #         dwa_control_twist.speed = 0
+    #         dwa_control_twist.steering_angle = 0
+    #         dwa_control_pub.publish(dwa_control_twist)
+    #         dwa_locate_pub.publish(0)
+    #         dwa_flag_pub.publish(0)
+    #         print("------------Goal3 Reached!--------------")
+    #         break
+    
 
 if __name__ == '__main__':
     rospy.init_node("DWA")
     #/dwa_cmd_vel
-    dwa_control_pub = rospy.Publisher("/dwa_cmd_vel" , Twist , queue_size=1)#dwa速度消息发布者
+    dwa_control_pub = rospy.Publisher("/dwa_cmd_vel" , AckermannDrive , queue_size=1)#dwa速度消息发布者
     dwa_locate_pub = rospy.Publisher("/qingzhou_locate" , Int32 , queue_size=1)
+    dwa_flag_pub = rospy.Publisher("/dwa_flag" , Int32 , queue_size=1)#dwa速度消息发布者
     tf_listener = tf.TransformListener()
     move_base_pub = rospy.Publisher("/move_base_simple/goal_dwa" , PoseStamped , queue_size=1)
     amcl_sub = rospy.Subscriber("/amcl_pose" , PoseWithCovarianceStamped , amcl_cb, queue_size=1)
     park_sub = rospy.Subscriber("/park_flag" , Int32 , park_cb, queue_size=1)#接收停车点的位置P1或P2
     locate_sub=rospy.Subscriber("/dwa_flag" , Int32 , FlagCB)#开启dwa算法的接收者
-    qz_cmd_sub=rospy.Subscriber("/qz_cmd_vel" , Twist , cmdCB)
-    print("--------------------")
+    qz_cmd_sub=rospy.Subscriber("/dwa_cmd_vel" , AckermannDrive , cmdCB)
+    # print("--------------------")
     while not rospy.is_shutdown():
         queue_out=Queue_.get()
         print("----------queue get success----------")

@@ -1,0 +1,110 @@
+TebLocalPlannerROS:
+
+ odom_topic: /odom
+ map_frame: odom
+
+
+ #Trajectory
+ teb_autosize: True #优化期间允许改变轨迹的时域长度
+ dt_ref: 0.42 #0.45局部路径规划的解析度# minimum 0.01
+ dt_hysteresis: 0.042 #0.045允许改变的时域解析度的浮动范围， 一般为 dt_ref 的 10% 左右 minimum0.002
+ global_plan_overwrite_orientation: false #false覆盖全局路径中局部路径点的朝向
+ max_global_plan_lookahead_dist: 1.5 #2.0 考虑优化的全局计划子集的最大长度
+ feasibility_check_no_poses: 3 #检测位姿可到达的时间间隔 minimum 0
+
+
+ # Robot
+ max_vel_x: 0.7 #0.56 最大xy前向速度
+ max_vel_y: 0  #最大y前向速度，非全向移动小车需要设置为0
+ max_vel_x_backwards: 0.5 #0.5最大后退速度
+ max_vel_theta: 0.80 #0.45 最大转向角速度
+ acc_lim_x: 0.20 #0.2 最大x向加速度
+ acc_lim_y: 0  #最大y向加速度，非全向移动小车需要设置为0
+ acc_lim_theta: 0.55 #0.3最大角加速度
+ #阿克曼小车参数，非阿克曼小车设置为0
+ min_turning_radius: 1.5   #mini_akm  1.0  # Min turning radius of the carlike robot (compute value using a model or adjust with rqt_reconfigure manually)
+ #min_turning_radius: 0.773  #senior_akm
+ #min_turning_radius: 0.871 #top_akm_bs
+ #min_turning_radius: 1.318 #top_akm_dl
+ wheelbase: 0.3 #foe mini_akm
+ cmd_angle_instead_rotvel: false #无论是不是阿克曼小车都设置为false，因为阿克曼小车启用了阿克曼速度转换包
+                                 #true则cmd_vel/angular/z内的数据是舵机角度
+ footprint_model: # types: "point", "circular", "two_circles", "line", "polygon" 默认“point”类型
+  type: "polygon"   #多边形类型for akm/mec，默认”point”。
+  vertices: [[0.20,0.14],[0.23,0],[0.20,-0.14],[-0.20, -0.14],[-0.20,0.14]] #机器人形状 for mini_akm
+ 
+
+# tolerance
+ xy_goal_tolerance: 0.20 #0.20 目标 xy 偏移容忍度  minimum 0.001 maximum 0.2
+ yaw_goal_tolerance: 3.14  #目标 角度 偏移容忍度 minimum 0.001 maximum 0.1
+ free_goal_vel: false  #允许机器人以最大速度驶向目的地 false
+ complete_global_plan: True
+ 
+
+ # Obstacles
+ min_obstacle_dist: 0.22 #0.18和障碍物最小距离
+ include_costmap_obstacles: True  #是否将动态障碍物预测为速度模型，
+ costmap_obstacles_behind_robot_dist: 1.0  #1.5 限制机器人后方规划时考虑的局部成本地图障碍物
+ obstacle_poses_affected: 15   #障碍物姿态受影响0~30
+ costmap_converter_plugin: "costmap_converter::CostmapToLinesDBSRANSAC"
+ costmap_converter_spin_thread: True
+ costmap_converter_rate: 5
+ include_dynamic_obstacles: False #true 
+ dynamic_obstacle_inflation_dist: 0.15 # 0.1 0.6
+
+
+ # Optimization  
+ no_inner_iterations: 4 #5
+ no_outer_iterations: 3 #4
+ optimization_activate: True #Jihuo youhua
+ optimization_verbose: False #dayin youhua xiangqing
+ penalty_epsilon: 0.1
+ obstacle_cost_exponent: 4
+ weight_max_vel_x: 10 #5
+ weight_max_vel_theta: 2 #1
+ weight_acc_lim_x: 2 #1
+ weight_acc_lim_theta: 1
+ weight_kinematics_nh: 100  #1000
+ weight_kinematics_forward_drive: 0 #500
+ weight_kinematics_turning_radius: 1 #1
+ weight_optimaltime: 20  #2.5 20 must be > 0
+ weight_shortest_path: 2  #1
+ weight_obstacle: 50 #200
+ weight_inflation: 10
+ weight_dynamic_obstacle: 10 # not in use yet
+ weight_dynamic_obstacle_inflation: 1.0
+ weight_viapoint: 5
+ weight_adapt_factor: 2.0
+
+
+ # Homotopy Class Planner
+ enable_homotopy_class_planning: False 
+ enable_multithreading: False #duoxiancheng
+ max_number_classes: 4
+ selection_cost_hysteresis: 1.0
+ selection_prefer_initial_plan: 0.95
+ selection_obst_cost_scale: 1.0
+ selection_alternative_time_cost: False
+
+ roadmap_graph_no_samples: 15
+ roadmap_graph_area_width: 5
+ roadmap_graph_area_length_scale: 1.0
+ h_signature_prescaler: 0.5
+ h_signature_threshold: 0.1
+ obstacle_heading_threshold: 0.45
+ switching_blocking_period: 0.0
+ viapoints_all_candidates: True
+ delete_detours_backwards: True
+ max_ratio_detours_duration_best_duration: 3.0
+ visualize_hc_graph: False
+ visualize_with_time_as_z_axis_scale: False
+
+
+ # Recovery
+ shrink_horizon_backup: True
+ shrink_horizon_min_duration: 10
+ oscillation_recovery: True #FALSE
+ oscillation_v_eps: 0.1
+ oscillation_omega_eps: 0.1
+ oscillation_recovery_min_duration: 10
+ oscillation_filter_duration: 10

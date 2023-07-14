@@ -68,15 +68,28 @@ install/strip/fast: preinstall/fast
 	/usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
 .PHONY : install/strip/fast
 
-# Special rule for the target list_install_components
-list_install_components:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Available install components are: \"Unspecified\""
-.PHONY : list_install_components
+# Special rule for the target install
+install: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
+	/usr/bin/cmake -P cmake_install.cmake
+.PHONY : install
 
-# Special rule for the target list_install_components
-list_install_components/fast: list_install_components
+# Special rule for the target install
+install/fast: preinstall/fast
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
+	/usr/bin/cmake -P cmake_install.cmake
+.PHONY : install/fast
 
-.PHONY : list_install_components/fast
+# Special rule for the target rebuild_cache
+rebuild_cache:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
+	/usr/bin/cmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+.PHONY : rebuild_cache
+
+# Special rule for the target rebuild_cache
+rebuild_cache/fast: rebuild_cache
+
+.PHONY : rebuild_cache/fast
 
 # Special rule for the target edit_cache
 edit_cache:
@@ -89,16 +102,15 @@ edit_cache/fast: edit_cache
 
 .PHONY : edit_cache/fast
 
-# Special rule for the target rebuild_cache
-rebuild_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
-	/usr/bin/cmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
-.PHONY : rebuild_cache
+# Special rule for the target list_install_components
+list_install_components:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Available install components are: \"Unspecified\""
+.PHONY : list_install_components
 
-# Special rule for the target rebuild_cache
-rebuild_cache/fast: rebuild_cache
+# Special rule for the target list_install_components
+list_install_components/fast: list_install_components
 
-.PHONY : rebuild_cache/fast
+.PHONY : list_install_components/fast
 
 # Special rule for the target install/local
 install/local: preinstall
@@ -122,18 +134,6 @@ test:
 test/fast: test
 
 .PHONY : test/fast
-
-# Special rule for the target install
-install: preinstall
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
-	/usr/bin/cmake -P cmake_install.cmake
-.PHONY : install
-
-# Special rule for the target install
-install/fast: preinstall/fast
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
-	/usr/bin/cmake -P cmake_install.cmake
-.PHONY : install/fast
 
 # The main all target
 all: cmake_check_build_system
@@ -168,36 +168,6 @@ depend:
 .PHONY : depend
 
 # Convenience name for target.
-test_pkg/CMakeFiles/cmd_filter.dir/rule:
-	cd /home/cquer/2023_qingzhou/build && $(MAKE) -f CMakeFiles/Makefile2 test_pkg/CMakeFiles/cmd_filter.dir/rule
-.PHONY : test_pkg/CMakeFiles/cmd_filter.dir/rule
-
-# Convenience name for target.
-cmd_filter: test_pkg/CMakeFiles/cmd_filter.dir/rule
-
-.PHONY : cmd_filter
-
-# fast build rule for target.
-cmd_filter/fast:
-	cd /home/cquer/2023_qingzhou/build && $(MAKE) -f test_pkg/CMakeFiles/cmd_filter.dir/build.make test_pkg/CMakeFiles/cmd_filter.dir/build
-.PHONY : cmd_filter/fast
-
-# Convenience name for target.
-test_pkg/CMakeFiles/goal_pub.dir/rule:
-	cd /home/cquer/2023_qingzhou/build && $(MAKE) -f CMakeFiles/Makefile2 test_pkg/CMakeFiles/goal_pub.dir/rule
-.PHONY : test_pkg/CMakeFiles/goal_pub.dir/rule
-
-# Convenience name for target.
-goal_pub: test_pkg/CMakeFiles/goal_pub.dir/rule
-
-.PHONY : goal_pub
-
-# fast build rule for target.
-goal_pub/fast:
-	cd /home/cquer/2023_qingzhou/build && $(MAKE) -f test_pkg/CMakeFiles/goal_pub.dir/build.make test_pkg/CMakeFiles/goal_pub.dir/build
-.PHONY : goal_pub/fast
-
-# Convenience name for target.
 test_pkg/CMakeFiles/qingzhou_bringup_node.dir/rule:
 	cd /home/cquer/2023_qingzhou/build && $(MAKE) -f CMakeFiles/Makefile2 test_pkg/CMakeFiles/qingzhou_bringup_node.dir/rule
 .PHONY : test_pkg/CMakeFiles/qingzhou_bringup_node.dir/rule
@@ -228,259 +198,49 @@ bringup_head/fast:
 .PHONY : bringup_head/fast
 
 # Convenience name for target.
-test_pkg/CMakeFiles/topic_tools_generate_messages_py.dir/rule:
-	cd /home/cquer/2023_qingzhou/build && $(MAKE) -f CMakeFiles/Makefile2 test_pkg/CMakeFiles/topic_tools_generate_messages_py.dir/rule
-.PHONY : test_pkg/CMakeFiles/topic_tools_generate_messages_py.dir/rule
+test_pkg/CMakeFiles/goal_pub.dir/rule:
+	cd /home/cquer/2023_qingzhou/build && $(MAKE) -f CMakeFiles/Makefile2 test_pkg/CMakeFiles/goal_pub.dir/rule
+.PHONY : test_pkg/CMakeFiles/goal_pub.dir/rule
 
 # Convenience name for target.
-topic_tools_generate_messages_py: test_pkg/CMakeFiles/topic_tools_generate_messages_py.dir/rule
+goal_pub: test_pkg/CMakeFiles/goal_pub.dir/rule
 
-.PHONY : topic_tools_generate_messages_py
+.PHONY : goal_pub
 
 # fast build rule for target.
-topic_tools_generate_messages_py/fast:
-	cd /home/cquer/2023_qingzhou/build && $(MAKE) -f test_pkg/CMakeFiles/topic_tools_generate_messages_py.dir/build.make test_pkg/CMakeFiles/topic_tools_generate_messages_py.dir/build
-.PHONY : topic_tools_generate_messages_py/fast
+goal_pub/fast:
+	cd /home/cquer/2023_qingzhou/build && $(MAKE) -f test_pkg/CMakeFiles/goal_pub.dir/build.make test_pkg/CMakeFiles/goal_pub.dir/build
+.PHONY : goal_pub/fast
 
 # Convenience name for target.
-test_pkg/CMakeFiles/diagnostic_msgs_generate_messages_nodejs.dir/rule:
-	cd /home/cquer/2023_qingzhou/build && $(MAKE) -f CMakeFiles/Makefile2 test_pkg/CMakeFiles/diagnostic_msgs_generate_messages_nodejs.dir/rule
-.PHONY : test_pkg/CMakeFiles/diagnostic_msgs_generate_messages_nodejs.dir/rule
+test_pkg/CMakeFiles/cmd_filter.dir/rule:
+	cd /home/cquer/2023_qingzhou/build && $(MAKE) -f CMakeFiles/Makefile2 test_pkg/CMakeFiles/cmd_filter.dir/rule
+.PHONY : test_pkg/CMakeFiles/cmd_filter.dir/rule
 
 # Convenience name for target.
-diagnostic_msgs_generate_messages_nodejs: test_pkg/CMakeFiles/diagnostic_msgs_generate_messages_nodejs.dir/rule
+cmd_filter: test_pkg/CMakeFiles/cmd_filter.dir/rule
 
-.PHONY : diagnostic_msgs_generate_messages_nodejs
+.PHONY : cmd_filter
 
 # fast build rule for target.
-diagnostic_msgs_generate_messages_nodejs/fast:
-	cd /home/cquer/2023_qingzhou/build && $(MAKE) -f test_pkg/CMakeFiles/diagnostic_msgs_generate_messages_nodejs.dir/build.make test_pkg/CMakeFiles/diagnostic_msgs_generate_messages_nodejs.dir/build
-.PHONY : diagnostic_msgs_generate_messages_nodejs/fast
+cmd_filter/fast:
+	cd /home/cquer/2023_qingzhou/build && $(MAKE) -f test_pkg/CMakeFiles/cmd_filter.dir/build.make test_pkg/CMakeFiles/cmd_filter.dir/build
+.PHONY : cmd_filter/fast
 
 # Convenience name for target.
-test_pkg/CMakeFiles/_catkin_empty_exported_target.dir/rule:
-	cd /home/cquer/2023_qingzhou/build && $(MAKE) -f CMakeFiles/Makefile2 test_pkg/CMakeFiles/_catkin_empty_exported_target.dir/rule
-.PHONY : test_pkg/CMakeFiles/_catkin_empty_exported_target.dir/rule
+test_pkg/CMakeFiles/msg_transform.dir/rule:
+	cd /home/cquer/2023_qingzhou/build && $(MAKE) -f CMakeFiles/Makefile2 test_pkg/CMakeFiles/msg_transform.dir/rule
+.PHONY : test_pkg/CMakeFiles/msg_transform.dir/rule
 
 # Convenience name for target.
-_catkin_empty_exported_target: test_pkg/CMakeFiles/_catkin_empty_exported_target.dir/rule
+msg_transform: test_pkg/CMakeFiles/msg_transform.dir/rule
 
-.PHONY : _catkin_empty_exported_target
+.PHONY : msg_transform
 
 # fast build rule for target.
-_catkin_empty_exported_target/fast:
-	cd /home/cquer/2023_qingzhou/build && $(MAKE) -f test_pkg/CMakeFiles/_catkin_empty_exported_target.dir/build.make test_pkg/CMakeFiles/_catkin_empty_exported_target.dir/build
-.PHONY : _catkin_empty_exported_target/fast
-
-# Convenience name for target.
-test_pkg/CMakeFiles/topic_tools_generate_messages_cpp.dir/rule:
-	cd /home/cquer/2023_qingzhou/build && $(MAKE) -f CMakeFiles/Makefile2 test_pkg/CMakeFiles/topic_tools_generate_messages_cpp.dir/rule
-.PHONY : test_pkg/CMakeFiles/topic_tools_generate_messages_cpp.dir/rule
-
-# Convenience name for target.
-topic_tools_generate_messages_cpp: test_pkg/CMakeFiles/topic_tools_generate_messages_cpp.dir/rule
-
-.PHONY : topic_tools_generate_messages_cpp
-
-# fast build rule for target.
-topic_tools_generate_messages_cpp/fast:
-	cd /home/cquer/2023_qingzhou/build && $(MAKE) -f test_pkg/CMakeFiles/topic_tools_generate_messages_cpp.dir/build.make test_pkg/CMakeFiles/topic_tools_generate_messages_cpp.dir/build
-.PHONY : topic_tools_generate_messages_cpp/fast
-
-# Convenience name for target.
-test_pkg/CMakeFiles/std_srvs_generate_messages_nodejs.dir/rule:
-	cd /home/cquer/2023_qingzhou/build && $(MAKE) -f CMakeFiles/Makefile2 test_pkg/CMakeFiles/std_srvs_generate_messages_nodejs.dir/rule
-.PHONY : test_pkg/CMakeFiles/std_srvs_generate_messages_nodejs.dir/rule
-
-# Convenience name for target.
-std_srvs_generate_messages_nodejs: test_pkg/CMakeFiles/std_srvs_generate_messages_nodejs.dir/rule
-
-.PHONY : std_srvs_generate_messages_nodejs
-
-# fast build rule for target.
-std_srvs_generate_messages_nodejs/fast:
-	cd /home/cquer/2023_qingzhou/build && $(MAKE) -f test_pkg/CMakeFiles/std_srvs_generate_messages_nodejs.dir/build.make test_pkg/CMakeFiles/std_srvs_generate_messages_nodejs.dir/build
-.PHONY : std_srvs_generate_messages_nodejs/fast
-
-# Convenience name for target.
-test_pkg/CMakeFiles/diagnostic_msgs_generate_messages_py.dir/rule:
-	cd /home/cquer/2023_qingzhou/build && $(MAKE) -f CMakeFiles/Makefile2 test_pkg/CMakeFiles/diagnostic_msgs_generate_messages_py.dir/rule
-.PHONY : test_pkg/CMakeFiles/diagnostic_msgs_generate_messages_py.dir/rule
-
-# Convenience name for target.
-diagnostic_msgs_generate_messages_py: test_pkg/CMakeFiles/diagnostic_msgs_generate_messages_py.dir/rule
-
-.PHONY : diagnostic_msgs_generate_messages_py
-
-# fast build rule for target.
-diagnostic_msgs_generate_messages_py/fast:
-	cd /home/cquer/2023_qingzhou/build && $(MAKE) -f test_pkg/CMakeFiles/diagnostic_msgs_generate_messages_py.dir/build.make test_pkg/CMakeFiles/diagnostic_msgs_generate_messages_py.dir/build
-.PHONY : diagnostic_msgs_generate_messages_py/fast
-
-# Convenience name for target.
-test_pkg/CMakeFiles/amcl_gencfg.dir/rule:
-	cd /home/cquer/2023_qingzhou/build && $(MAKE) -f CMakeFiles/Makefile2 test_pkg/CMakeFiles/amcl_gencfg.dir/rule
-.PHONY : test_pkg/CMakeFiles/amcl_gencfg.dir/rule
-
-# Convenience name for target.
-amcl_gencfg: test_pkg/CMakeFiles/amcl_gencfg.dir/rule
-
-.PHONY : amcl_gencfg
-
-# fast build rule for target.
-amcl_gencfg/fast:
-	cd /home/cquer/2023_qingzhou/build && $(MAKE) -f test_pkg/CMakeFiles/amcl_gencfg.dir/build.make test_pkg/CMakeFiles/amcl_gencfg.dir/build
-.PHONY : amcl_gencfg/fast
-
-# Convenience name for target.
-test_pkg/CMakeFiles/diagnostic_msgs_generate_messages_eus.dir/rule:
-	cd /home/cquer/2023_qingzhou/build && $(MAKE) -f CMakeFiles/Makefile2 test_pkg/CMakeFiles/diagnostic_msgs_generate_messages_eus.dir/rule
-.PHONY : test_pkg/CMakeFiles/diagnostic_msgs_generate_messages_eus.dir/rule
-
-# Convenience name for target.
-diagnostic_msgs_generate_messages_eus: test_pkg/CMakeFiles/diagnostic_msgs_generate_messages_eus.dir/rule
-
-.PHONY : diagnostic_msgs_generate_messages_eus
-
-# fast build rule for target.
-diagnostic_msgs_generate_messages_eus/fast:
-	cd /home/cquer/2023_qingzhou/build && $(MAKE) -f test_pkg/CMakeFiles/diagnostic_msgs_generate_messages_eus.dir/build.make test_pkg/CMakeFiles/diagnostic_msgs_generate_messages_eus.dir/build
-.PHONY : diagnostic_msgs_generate_messages_eus/fast
-
-# Convenience name for target.
-test_pkg/CMakeFiles/diagnostic_msgs_generate_messages_cpp.dir/rule:
-	cd /home/cquer/2023_qingzhou/build && $(MAKE) -f CMakeFiles/Makefile2 test_pkg/CMakeFiles/diagnostic_msgs_generate_messages_cpp.dir/rule
-.PHONY : test_pkg/CMakeFiles/diagnostic_msgs_generate_messages_cpp.dir/rule
-
-# Convenience name for target.
-diagnostic_msgs_generate_messages_cpp: test_pkg/CMakeFiles/diagnostic_msgs_generate_messages_cpp.dir/rule
-
-.PHONY : diagnostic_msgs_generate_messages_cpp
-
-# fast build rule for target.
-diagnostic_msgs_generate_messages_cpp/fast:
-	cd /home/cquer/2023_qingzhou/build && $(MAKE) -f test_pkg/CMakeFiles/diagnostic_msgs_generate_messages_cpp.dir/build.make test_pkg/CMakeFiles/diagnostic_msgs_generate_messages_cpp.dir/build
-.PHONY : diagnostic_msgs_generate_messages_cpp/fast
-
-# Convenience name for target.
-test_pkg/CMakeFiles/std_srvs_generate_messages_eus.dir/rule:
-	cd /home/cquer/2023_qingzhou/build && $(MAKE) -f CMakeFiles/Makefile2 test_pkg/CMakeFiles/std_srvs_generate_messages_eus.dir/rule
-.PHONY : test_pkg/CMakeFiles/std_srvs_generate_messages_eus.dir/rule
-
-# Convenience name for target.
-std_srvs_generate_messages_eus: test_pkg/CMakeFiles/std_srvs_generate_messages_eus.dir/rule
-
-.PHONY : std_srvs_generate_messages_eus
-
-# fast build rule for target.
-std_srvs_generate_messages_eus/fast:
-	cd /home/cquer/2023_qingzhou/build && $(MAKE) -f test_pkg/CMakeFiles/std_srvs_generate_messages_eus.dir/build.make test_pkg/CMakeFiles/std_srvs_generate_messages_eus.dir/build
-.PHONY : std_srvs_generate_messages_eus/fast
-
-# Convenience name for target.
-test_pkg/CMakeFiles/std_srvs_generate_messages_lisp.dir/rule:
-	cd /home/cquer/2023_qingzhou/build && $(MAKE) -f CMakeFiles/Makefile2 test_pkg/CMakeFiles/std_srvs_generate_messages_lisp.dir/rule
-.PHONY : test_pkg/CMakeFiles/std_srvs_generate_messages_lisp.dir/rule
-
-# Convenience name for target.
-std_srvs_generate_messages_lisp: test_pkg/CMakeFiles/std_srvs_generate_messages_lisp.dir/rule
-
-.PHONY : std_srvs_generate_messages_lisp
-
-# fast build rule for target.
-std_srvs_generate_messages_lisp/fast:
-	cd /home/cquer/2023_qingzhou/build && $(MAKE) -f test_pkg/CMakeFiles/std_srvs_generate_messages_lisp.dir/build.make test_pkg/CMakeFiles/std_srvs_generate_messages_lisp.dir/build
-.PHONY : std_srvs_generate_messages_lisp/fast
-
-# Convenience name for target.
-test_pkg/CMakeFiles/diagnostic_msgs_generate_messages_lisp.dir/rule:
-	cd /home/cquer/2023_qingzhou/build && $(MAKE) -f CMakeFiles/Makefile2 test_pkg/CMakeFiles/diagnostic_msgs_generate_messages_lisp.dir/rule
-.PHONY : test_pkg/CMakeFiles/diagnostic_msgs_generate_messages_lisp.dir/rule
-
-# Convenience name for target.
-diagnostic_msgs_generate_messages_lisp: test_pkg/CMakeFiles/diagnostic_msgs_generate_messages_lisp.dir/rule
-
-.PHONY : diagnostic_msgs_generate_messages_lisp
-
-# fast build rule for target.
-diagnostic_msgs_generate_messages_lisp/fast:
-	cd /home/cquer/2023_qingzhou/build && $(MAKE) -f test_pkg/CMakeFiles/diagnostic_msgs_generate_messages_lisp.dir/build.make test_pkg/CMakeFiles/diagnostic_msgs_generate_messages_lisp.dir/build
-.PHONY : diagnostic_msgs_generate_messages_lisp/fast
-
-# Convenience name for target.
-test_pkg/CMakeFiles/topic_tools_generate_messages_nodejs.dir/rule:
-	cd /home/cquer/2023_qingzhou/build && $(MAKE) -f CMakeFiles/Makefile2 test_pkg/CMakeFiles/topic_tools_generate_messages_nodejs.dir/rule
-.PHONY : test_pkg/CMakeFiles/topic_tools_generate_messages_nodejs.dir/rule
-
-# Convenience name for target.
-topic_tools_generate_messages_nodejs: test_pkg/CMakeFiles/topic_tools_generate_messages_nodejs.dir/rule
-
-.PHONY : topic_tools_generate_messages_nodejs
-
-# fast build rule for target.
-topic_tools_generate_messages_nodejs/fast:
-	cd /home/cquer/2023_qingzhou/build && $(MAKE) -f test_pkg/CMakeFiles/topic_tools_generate_messages_nodejs.dir/build.make test_pkg/CMakeFiles/topic_tools_generate_messages_nodejs.dir/build
-.PHONY : topic_tools_generate_messages_nodejs/fast
-
-# Convenience name for target.
-test_pkg/CMakeFiles/std_srvs_generate_messages_cpp.dir/rule:
-	cd /home/cquer/2023_qingzhou/build && $(MAKE) -f CMakeFiles/Makefile2 test_pkg/CMakeFiles/std_srvs_generate_messages_cpp.dir/rule
-.PHONY : test_pkg/CMakeFiles/std_srvs_generate_messages_cpp.dir/rule
-
-# Convenience name for target.
-std_srvs_generate_messages_cpp: test_pkg/CMakeFiles/std_srvs_generate_messages_cpp.dir/rule
-
-.PHONY : std_srvs_generate_messages_cpp
-
-# fast build rule for target.
-std_srvs_generate_messages_cpp/fast:
-	cd /home/cquer/2023_qingzhou/build && $(MAKE) -f test_pkg/CMakeFiles/std_srvs_generate_messages_cpp.dir/build.make test_pkg/CMakeFiles/std_srvs_generate_messages_cpp.dir/build
-.PHONY : std_srvs_generate_messages_cpp/fast
-
-# Convenience name for target.
-test_pkg/CMakeFiles/std_srvs_generate_messages_py.dir/rule:
-	cd /home/cquer/2023_qingzhou/build && $(MAKE) -f CMakeFiles/Makefile2 test_pkg/CMakeFiles/std_srvs_generate_messages_py.dir/rule
-.PHONY : test_pkg/CMakeFiles/std_srvs_generate_messages_py.dir/rule
-
-# Convenience name for target.
-std_srvs_generate_messages_py: test_pkg/CMakeFiles/std_srvs_generate_messages_py.dir/rule
-
-.PHONY : std_srvs_generate_messages_py
-
-# fast build rule for target.
-std_srvs_generate_messages_py/fast:
-	cd /home/cquer/2023_qingzhou/build && $(MAKE) -f test_pkg/CMakeFiles/std_srvs_generate_messages_py.dir/build.make test_pkg/CMakeFiles/std_srvs_generate_messages_py.dir/build
-.PHONY : std_srvs_generate_messages_py/fast
-
-# Convenience name for target.
-test_pkg/CMakeFiles/topic_tools_generate_messages_eus.dir/rule:
-	cd /home/cquer/2023_qingzhou/build && $(MAKE) -f CMakeFiles/Makefile2 test_pkg/CMakeFiles/topic_tools_generate_messages_eus.dir/rule
-.PHONY : test_pkg/CMakeFiles/topic_tools_generate_messages_eus.dir/rule
-
-# Convenience name for target.
-topic_tools_generate_messages_eus: test_pkg/CMakeFiles/topic_tools_generate_messages_eus.dir/rule
-
-.PHONY : topic_tools_generate_messages_eus
-
-# fast build rule for target.
-topic_tools_generate_messages_eus/fast:
-	cd /home/cquer/2023_qingzhou/build && $(MAKE) -f test_pkg/CMakeFiles/topic_tools_generate_messages_eus.dir/build.make test_pkg/CMakeFiles/topic_tools_generate_messages_eus.dir/build
-.PHONY : topic_tools_generate_messages_eus/fast
-
-# Convenience name for target.
-test_pkg/CMakeFiles/topic_tools_generate_messages_lisp.dir/rule:
-	cd /home/cquer/2023_qingzhou/build && $(MAKE) -f CMakeFiles/Makefile2 test_pkg/CMakeFiles/topic_tools_generate_messages_lisp.dir/rule
-.PHONY : test_pkg/CMakeFiles/topic_tools_generate_messages_lisp.dir/rule
-
-# Convenience name for target.
-topic_tools_generate_messages_lisp: test_pkg/CMakeFiles/topic_tools_generate_messages_lisp.dir/rule
-
-.PHONY : topic_tools_generate_messages_lisp
-
-# fast build rule for target.
-topic_tools_generate_messages_lisp/fast:
-	cd /home/cquer/2023_qingzhou/build && $(MAKE) -f test_pkg/CMakeFiles/topic_tools_generate_messages_lisp.dir/build.make test_pkg/CMakeFiles/topic_tools_generate_messages_lisp.dir/build
-.PHONY : topic_tools_generate_messages_lisp/fast
+msg_transform/fast:
+	cd /home/cquer/2023_qingzhou/build && $(MAKE) -f test_pkg/CMakeFiles/msg_transform.dir/build.make test_pkg/CMakeFiles/msg_transform.dir/build
+.PHONY : msg_transform/fast
 
 src/cmd_filter.o: src/cmd_filter.cpp.o
 
@@ -535,6 +295,33 @@ src/goal_pub.s: src/goal_pub.cpp.s
 src/goal_pub.cpp.s:
 	cd /home/cquer/2023_qingzhou/build && $(MAKE) -f test_pkg/CMakeFiles/goal_pub.dir/build.make test_pkg/CMakeFiles/goal_pub.dir/src/goal_pub.cpp.s
 .PHONY : src/goal_pub.cpp.s
+
+src/msg_transform.o: src/msg_transform.cpp.o
+
+.PHONY : src/msg_transform.o
+
+# target to build an object file
+src/msg_transform.cpp.o:
+	cd /home/cquer/2023_qingzhou/build && $(MAKE) -f test_pkg/CMakeFiles/msg_transform.dir/build.make test_pkg/CMakeFiles/msg_transform.dir/src/msg_transform.cpp.o
+.PHONY : src/msg_transform.cpp.o
+
+src/msg_transform.i: src/msg_transform.cpp.i
+
+.PHONY : src/msg_transform.i
+
+# target to preprocess a source file
+src/msg_transform.cpp.i:
+	cd /home/cquer/2023_qingzhou/build && $(MAKE) -f test_pkg/CMakeFiles/msg_transform.dir/build.make test_pkg/CMakeFiles/msg_transform.dir/src/msg_transform.cpp.i
+.PHONY : src/msg_transform.cpp.i
+
+src/msg_transform.s: src/msg_transform.cpp.s
+
+.PHONY : src/msg_transform.s
+
+# target to generate assembly for a file
+src/msg_transform.cpp.s:
+	cd /home/cquer/2023_qingzhou/build && $(MAKE) -f test_pkg/CMakeFiles/msg_transform.dir/build.make test_pkg/CMakeFiles/msg_transform.dir/src/msg_transform.cpp.s
+.PHONY : src/msg_transform.cpp.s
 
 src/qingzhou_bringup.o: src/qingzhou_bringup.cpp.o
 
@@ -597,39 +384,26 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... install/strip"
-	@echo "... list_install_components"
-	@echo "... edit_cache"
+	@echo "... install"
 	@echo "... rebuild_cache"
-	@echo "... cmd_filter"
-	@echo "... install/local"
-	@echo "... goal_pub"
+	@echo "... edit_cache"
 	@echo "... qingzhou_bringup_node"
 	@echo "... bringup_head"
-	@echo "... topic_tools_generate_messages_py"
-	@echo "... diagnostic_msgs_generate_messages_nodejs"
-	@echo "... _catkin_empty_exported_target"
-	@echo "... topic_tools_generate_messages_cpp"
-	@echo "... std_srvs_generate_messages_nodejs"
-	@echo "... diagnostic_msgs_generate_messages_py"
-	@echo "... amcl_gencfg"
-	@echo "... diagnostic_msgs_generate_messages_eus"
-	@echo "... diagnostic_msgs_generate_messages_cpp"
+	@echo "... list_install_components"
+	@echo "... goal_pub"
+	@echo "... cmd_filter"
+	@echo "... msg_transform"
+	@echo "... install/local"
 	@echo "... test"
-	@echo "... std_srvs_generate_messages_eus"
-	@echo "... std_srvs_generate_messages_lisp"
-	@echo "... diagnostic_msgs_generate_messages_lisp"
-	@echo "... topic_tools_generate_messages_nodejs"
-	@echo "... install"
-	@echo "... std_srvs_generate_messages_cpp"
-	@echo "... std_srvs_generate_messages_py"
-	@echo "... topic_tools_generate_messages_eus"
-	@echo "... topic_tools_generate_messages_lisp"
 	@echo "... src/cmd_filter.o"
 	@echo "... src/cmd_filter.i"
 	@echo "... src/cmd_filter.s"
 	@echo "... src/goal_pub.o"
 	@echo "... src/goal_pub.i"
 	@echo "... src/goal_pub.s"
+	@echo "... src/msg_transform.o"
+	@echo "... src/msg_transform.i"
+	@echo "... src/msg_transform.s"
 	@echo "... src/qingzhou_bringup.o"
 	@echo "... src/qingzhou_bringup.i"
 	@echo "... src/qingzhou_bringup.s"

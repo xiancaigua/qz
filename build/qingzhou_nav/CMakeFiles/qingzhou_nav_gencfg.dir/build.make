@@ -53,34 +53,34 @@ CMAKE_BINARY_DIR = /home/cquer/2023_qingzhou/build
 # Include the progress variables for this target.
 include qingzhou_nav/CMakeFiles/qingzhou_nav_gencfg.dir/progress.make
 
-qingzhou_nav/CMakeFiles/qingzhou_nav_gencfg: /home/cquer/2023_qingzhou/devel/include/qingzhou_nav/mycarConfig.h
-qingzhou_nav/CMakeFiles/qingzhou_nav_gencfg: /home/cquer/2023_qingzhou/devel/lib/python2.7/dist-packages/qingzhou_nav/cfg/mycarConfig.py
+qingzhou_nav/CMakeFiles/qingzhou_nav_gencfg: /home/cquer/2023_qingzhou/devel/include/qingzhou_nav/L1_dynamicConfig.h
+qingzhou_nav/CMakeFiles/qingzhou_nav_gencfg: /home/cquer/2023_qingzhou/devel/lib/python2.7/dist-packages/qingzhou_nav/cfg/L1_dynamicConfig.py
 
 
-/home/cquer/2023_qingzhou/devel/include/qingzhou_nav/mycarConfig.h: /home/cquer/2023_qingzhou/src/qingzhou_nav/cfg/mycar.cfg
-/home/cquer/2023_qingzhou/devel/include/qingzhou_nav/mycarConfig.h: /opt/ros/melodic/share/dynamic_reconfigure/templates/ConfigType.py.template
-/home/cquer/2023_qingzhou/devel/include/qingzhou_nav/mycarConfig.h: /opt/ros/melodic/share/dynamic_reconfigure/templates/ConfigType.h.template
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/cquer/2023_qingzhou/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating dynamic reconfigure files from cfg/mycar.cfg: /home/cquer/2023_qingzhou/devel/include/qingzhou_nav/mycarConfig.h /home/cquer/2023_qingzhou/devel/lib/python2.7/dist-packages/qingzhou_nav/cfg/mycarConfig.py"
-	cd /home/cquer/2023_qingzhou/build/qingzhou_nav && ../catkin_generated/env_cached.sh /home/cquer/2023_qingzhou/build/qingzhou_nav/setup_custom_pythonpath.sh /home/cquer/2023_qingzhou/src/qingzhou_nav/cfg/mycar.cfg /opt/ros/melodic/share/dynamic_reconfigure/cmake/.. /home/cquer/2023_qingzhou/devel/share/qingzhou_nav /home/cquer/2023_qingzhou/devel/include/qingzhou_nav /home/cquer/2023_qingzhou/devel/lib/python2.7/dist-packages/qingzhou_nav
+/home/cquer/2023_qingzhou/devel/include/qingzhou_nav/L1_dynamicConfig.h: /home/cquer/2023_qingzhou/src/qingzhou_nav/cfg/L1_dynamic.cfg
+/home/cquer/2023_qingzhou/devel/include/qingzhou_nav/L1_dynamicConfig.h: /opt/ros/melodic/share/dynamic_reconfigure/templates/ConfigType.py.template
+/home/cquer/2023_qingzhou/devel/include/qingzhou_nav/L1_dynamicConfig.h: /opt/ros/melodic/share/dynamic_reconfigure/templates/ConfigType.h.template
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/cquer/2023_qingzhou/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating dynamic reconfigure files from cfg/L1_dynamic.cfg: /home/cquer/2023_qingzhou/devel/include/qingzhou_nav/L1_dynamicConfig.h /home/cquer/2023_qingzhou/devel/lib/python2.7/dist-packages/qingzhou_nav/cfg/L1_dynamicConfig.py"
+	cd /home/cquer/2023_qingzhou/build/qingzhou_nav && ../catkin_generated/env_cached.sh /home/cquer/2023_qingzhou/build/qingzhou_nav/setup_custom_pythonpath.sh /home/cquer/2023_qingzhou/src/qingzhou_nav/cfg/L1_dynamic.cfg /opt/ros/melodic/share/dynamic_reconfigure/cmake/.. /home/cquer/2023_qingzhou/devel/share/qingzhou_nav /home/cquer/2023_qingzhou/devel/include/qingzhou_nav /home/cquer/2023_qingzhou/devel/lib/python2.7/dist-packages/qingzhou_nav
 
-/home/cquer/2023_qingzhou/devel/share/qingzhou_nav/docs/mycarConfig.dox: /home/cquer/2023_qingzhou/devel/include/qingzhou_nav/mycarConfig.h
-	@$(CMAKE_COMMAND) -E touch_nocreate /home/cquer/2023_qingzhou/devel/share/qingzhou_nav/docs/mycarConfig.dox
+/home/cquer/2023_qingzhou/devel/share/qingzhou_nav/docs/L1_dynamicConfig.dox: /home/cquer/2023_qingzhou/devel/include/qingzhou_nav/L1_dynamicConfig.h
+	@$(CMAKE_COMMAND) -E touch_nocreate /home/cquer/2023_qingzhou/devel/share/qingzhou_nav/docs/L1_dynamicConfig.dox
 
-/home/cquer/2023_qingzhou/devel/share/qingzhou_nav/docs/mycarConfig-usage.dox: /home/cquer/2023_qingzhou/devel/include/qingzhou_nav/mycarConfig.h
-	@$(CMAKE_COMMAND) -E touch_nocreate /home/cquer/2023_qingzhou/devel/share/qingzhou_nav/docs/mycarConfig-usage.dox
+/home/cquer/2023_qingzhou/devel/share/qingzhou_nav/docs/L1_dynamicConfig-usage.dox: /home/cquer/2023_qingzhou/devel/include/qingzhou_nav/L1_dynamicConfig.h
+	@$(CMAKE_COMMAND) -E touch_nocreate /home/cquer/2023_qingzhou/devel/share/qingzhou_nav/docs/L1_dynamicConfig-usage.dox
 
-/home/cquer/2023_qingzhou/devel/lib/python2.7/dist-packages/qingzhou_nav/cfg/mycarConfig.py: /home/cquer/2023_qingzhou/devel/include/qingzhou_nav/mycarConfig.h
-	@$(CMAKE_COMMAND) -E touch_nocreate /home/cquer/2023_qingzhou/devel/lib/python2.7/dist-packages/qingzhou_nav/cfg/mycarConfig.py
+/home/cquer/2023_qingzhou/devel/lib/python2.7/dist-packages/qingzhou_nav/cfg/L1_dynamicConfig.py: /home/cquer/2023_qingzhou/devel/include/qingzhou_nav/L1_dynamicConfig.h
+	@$(CMAKE_COMMAND) -E touch_nocreate /home/cquer/2023_qingzhou/devel/lib/python2.7/dist-packages/qingzhou_nav/cfg/L1_dynamicConfig.py
 
-/home/cquer/2023_qingzhou/devel/share/qingzhou_nav/docs/mycarConfig.wikidoc: /home/cquer/2023_qingzhou/devel/include/qingzhou_nav/mycarConfig.h
-	@$(CMAKE_COMMAND) -E touch_nocreate /home/cquer/2023_qingzhou/devel/share/qingzhou_nav/docs/mycarConfig.wikidoc
+/home/cquer/2023_qingzhou/devel/share/qingzhou_nav/docs/L1_dynamicConfig.wikidoc: /home/cquer/2023_qingzhou/devel/include/qingzhou_nav/L1_dynamicConfig.h
+	@$(CMAKE_COMMAND) -E touch_nocreate /home/cquer/2023_qingzhou/devel/share/qingzhou_nav/docs/L1_dynamicConfig.wikidoc
 
 qingzhou_nav_gencfg: qingzhou_nav/CMakeFiles/qingzhou_nav_gencfg
-qingzhou_nav_gencfg: /home/cquer/2023_qingzhou/devel/include/qingzhou_nav/mycarConfig.h
-qingzhou_nav_gencfg: /home/cquer/2023_qingzhou/devel/share/qingzhou_nav/docs/mycarConfig.dox
-qingzhou_nav_gencfg: /home/cquer/2023_qingzhou/devel/share/qingzhou_nav/docs/mycarConfig-usage.dox
-qingzhou_nav_gencfg: /home/cquer/2023_qingzhou/devel/lib/python2.7/dist-packages/qingzhou_nav/cfg/mycarConfig.py
-qingzhou_nav_gencfg: /home/cquer/2023_qingzhou/devel/share/qingzhou_nav/docs/mycarConfig.wikidoc
+qingzhou_nav_gencfg: /home/cquer/2023_qingzhou/devel/include/qingzhou_nav/L1_dynamicConfig.h
+qingzhou_nav_gencfg: /home/cquer/2023_qingzhou/devel/share/qingzhou_nav/docs/L1_dynamicConfig.dox
+qingzhou_nav_gencfg: /home/cquer/2023_qingzhou/devel/share/qingzhou_nav/docs/L1_dynamicConfig-usage.dox
+qingzhou_nav_gencfg: /home/cquer/2023_qingzhou/devel/lib/python2.7/dist-packages/qingzhou_nav/cfg/L1_dynamicConfig.py
+qingzhou_nav_gencfg: /home/cquer/2023_qingzhou/devel/share/qingzhou_nav/docs/L1_dynamicConfig.wikidoc
 qingzhou_nav_gencfg: qingzhou_nav/CMakeFiles/qingzhou_nav_gencfg.dir/build.make
 
 .PHONY : qingzhou_nav_gencfg

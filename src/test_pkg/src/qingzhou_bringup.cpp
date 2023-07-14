@@ -7,17 +7,17 @@ long long rightticksPer2PI = 0;
 
 actuator::actuator(ros::NodeHandle nh)
 {
-    m_baudrate = 115200;  // 114514 哼哼哼，阿啊啊啊啊啊
-    m_serialport = "/dev/stm32";  //这个在lsusb  配置软连接时有
+    m_baudrate = 115200;         // 114514 哼哼哼，阿啊啊啊啊啊
+    m_serialport = "/dev/stm32"; // 这个在lsusb  配置软连接时有
 
-    calibrate_lineSpeed = 0;                   // 后面launch文件设置参数服务器
-    calibrate_angularSpeed = 0;                // 后面launch文件设置参数服务器
+    calibrate_lineSpeed = 0;    // 后面launch文件设置参数服务器
+    calibrate_angularSpeed = 0; // 后面launch文件设置参数服务器
     batteryVoltage = 0;
-    ticksPerMeter = 0;                      // 后面launch文件设置参数服务器
-    ticksPer2PI = 0;                        // 后面launch文件设置参数服务器
-    linearSpeed = 0;                       // 来自编码器，用于发布在odom中计算线速度
-    angularSpeed = 0;                  // 同上
-    velDeltaTime = 0;                   // linearSpeed = detdistance/velDeltaTime;  数值上来自读取stm32的时间差
+    ticksPerMeter = 0; // 后面launch文件设置参数服务器
+    ticksPer2PI = 0;   // 后面launch文件设置参数服务器
+    linearSpeed = 0;   // 来自编码器，用于发布在odom中计算线速度
+    angularSpeed = 0;  // 同上
+    velDeltaTime = 0;  // linearSpeed = detdistance/velDeltaTime;  数值上来自读取stm32的时间差
 
     nh.param("mcubaudrate", m_baudrate, m_baudrate);
     nh.param("mcuserialport", m_serialport, std::string("/dev/stm32"));
@@ -29,7 +29,7 @@ actuator::actuator(ros::NodeHandle nh)
     try
     {
 
-        //准备开启串口
+        // 准备开启串口
         std::cout << "[qingzhou_actuator-->]"
                   << "Serial initialize start!" << std::endl;
         ser.setPort(m_serialport.c_str());
@@ -44,7 +44,7 @@ actuator::actuator(ros::NodeHandle nh)
         std::cout << "[qingzhou_actuator-->]"
                   << "Unable to open port!" << std::endl;
     }
-    if(ser.isOpen())
+    if (ser.isOpen())
     {
         std::cout << "[qingzhou_actuator-->]"
                   << "Serial initialize successfully!" << std::endl;
@@ -57,81 +57,140 @@ actuator::actuator(ros::NodeHandle nh)
     // debug 串口完成
 
     // 读取ROS中的运动控制话题，用于解析并且组织到下位机,这是具有经过filter分滤过的
-    sub_move_base = nh.subscribe("/qz_cmd_vel", 1, &actuator::callback_move_base, this);
-    //这一行是调试用，记得删掉
-    // sub_move_base = nh.subscribe("/cmd_vel", 1, &actuator::callback_move_base, this);
+    sub_l1 = nh.subscribe("/qz_cmd_vel_l1", 1, &actuator::l1_move_callback, this);
+    sub_vision = nh.subscribe("/qz_cmd_vel_vision", 1, &actuator::vision_move_callback, this);
+    sub_dwa = nh.subscribe("/dwa_cmd_vel", 1, &actuator::dwa_move_callback, this);
+    location_sub = nh.subscribe("/qingzhou_locate", 1, &actuator::locateCB, this);
+    dwa_flag_sub = nh.subscribe("/dwa_flag",1,&actuator::dwa_flag_callback, this);
+    // 这一行是调试用，记得删掉
+    //  sub_move_base = nh.subscribe("/cmd_vel", 1, &actuator::callback_move_base, this);
 
-    //发布下位机IMU  ODOM  电池数据到ROS 话题中
+        // 发布下位机IMU  ODOM  电池数据到ROS 话题中
     pub_imu = nh.advertise<sensor_msgs::Imu>("raw", 2);
     pub_mag = nh.advertise<sensor_msgs::MagneticField>("imu/mag", 5);
     pub_odom = nh.advertise<nav_msgs::Odometry>("odom", 2);
     pub_battery = nh.advertise<std_msgs::Float32>("battery", 10);
 
-    
 }
 
 actuator::~actuator()
 {
-
 }
 
-void actuator::callback_move_base(const geometry_msgs::Twist::ConstPtr &msg)
+
+// filter 's callback
+void actuator::l1_move_callback(const ackermann_msgs::AckermannDrive::ConstPtr &msg)
 {
-    memset(&moveBaseControl, 0, sizeof(sMartcarControl)); // 清零movebase数据存储区
+    memset(&l1_cmd, 0, sizeof(sMartcarControl)); // 清零movebase数据存储区
 
-    float v = msg->linear.x;
-    float w = msg->angular.z;
+    float v = msg->speed;
+    float w = msg->steering_angle;
 
-    moveBaseControl.TargetSpeed = v*32/0.43; //这里可能要加一个增益值,这里是我随意写的
-    moveBaseControl.TargetAngle = round(atan(w * CARL / v) * 57.3); //数学原理不清楚，保持与官方一致
-    //moveBaseControl.TargetAngle += 0.017435* 57.3;
-    //0.0175左偏，0.017435右偏
-    // ROS_INFO("%.2f", &v);
-    // ROS_INFO("%.2f", &w);
-    // ROS_INFO("----targetangle----%.2f", &moveBaseControl.TargetAngle);
+    l1_cmd.TargetSpeed = v * 42 / 0.43;              // 这里可能要加一个增益值,这里是我随意写的
+    l1_cmd.TargetAngle = round(atan(w * CARL / v) * 57.3); // 数学原理不清楚，保持与官方一致
+    l1_cmd.TargetAngle += 60;
+    // moveBaseControl.TargetAngle += 0.017435* 57.3;
+    // 0.0175左偏，0.017435右偏
+    //  ROS_INFO("%.2f", &v);
+    //  ROS_INFO("%.2f", &w);
+    //  ROS_INFO("----targetangle----%.2f", &moveBaseControl.TargetAngle);
+}
+
+void actuator::vision_move_callback(const ackermann_msgs::AckermannDrive::ConstPtr &msg)
+{
+    memset(&vision_cmd, 0, sizeof(sMartcarControl)); // 清零movebase数据存储区
+
+    float v = msg->speed;
+    float w = msg->steering_angle;
+
+    vision_cmd.TargetSpeed = v * 42 / 0.43;             // 这里可能要加一个增益值,这里是我随意写的，原来是乘32
+    // vision_cmd.TargetAngle = round(atan(w * CARL / v)); // 数学原理不清楚，保持与官方一致round(atan(w*CARL/v)*57.3);
+    vision_cmd.TargetAngle = round(atan(w * CARL / v) * 57.3); // 数学原理不清楚，保持与官方一致round(atan(w*CARL/v)*57.3);
+    vision_cmd.TargetAngle += 60;
+}
+void actuator::dwa_move_callback(const ackermann_msgs::AckermannDrive::ConstPtr &msg)
+{
+    memset(&dwa_cmd, 0, sizeof(sMartcarControl)); // 清零movebase数据存储区
+
+    float v = msg->speed;
+    float w = msg->steering_angle;
+
+    dwa_cmd.TargetSpeed = v * 42 / 0.43;           // 这里可能要加一个增益值,这里是我随意写的
+    dwa_cmd.TargetAngle = round(atan(w * CARL / v) * 57.3); // 数学原理不清楚，保持与官方一致
+    dwa_cmd.TargetAngle += 60;
+}
+
+void actuator::locateCB(const std_msgs::Int32::ConstPtr &msg)
+{
+    robotlocation = *msg;
+}
+
+void actuator::dwa_flag_callback(const std_msgs::Int32::ConstPtr &msg)
+{
+    dwa_flag = *msg;
 }
 
 void actuator::run()
 {
-    ros::Rate rate(50); //你想改？改啊，我看你改
+    memset(&moveBaseControl, 0, sizeof(sMartcarControl)); // 清零movebase数据存储区
+    memset(&l1_cmd, 0, sizeof(sMartcarControl));          // 清零movebase数据存储区
+    memset(&vision_cmd, 0, sizeof(sMartcarControl));      // 清零movebase数据存储区
+    memset(&dwa_cmd, 0, sizeof(sMartcarControl));          // 清零movebase数据存储区
+    
+    ros::Rate rate(150);
 
-    double x = 0.0;    //后面发布在odom中会用，用速度计算距离，随后加在odom里
+    double x = 0.0; // 后面发布在odom中会用，用速度计算距离，随后加在odom里
     double y = 0.0;
     double th = 0.0;
 
     ros::Time current_time, last_time;
-    memset(&moveBaseControl, 0, sizeof(sMartcarControl)); // 清零movebase数据存储区
 
-    while(ros::ok())
+    while (ros::ok())
     {
         ros::spinOnce();
+        memset(&moveBaseControl, 0, sizeof(sMartcarControl)); // 清零movebase数据存储区
 
-        //计算velDeltatime,后面算速度用得到
+        // ROS_INFO("[BRING_UP]---------------Bring Up is Ready");
+        if (robotlocation.data == int(RoadLine)&& dwa_flag.data != 1)
+        {
+            moveBaseControl = vision_cmd;
+            // ROS_INFO("[BRING_UP]---------------FROM VISION");
+        }
+        else if (dwa_flag.data == 1)
+        {
+            // ROS_INFO("[BRING_UP]---------------FROM DWA");
+            moveBaseControl = dwa_cmd;
+        }
+        else
+        {
+            moveBaseControl = l1_cmd;
+            // ROS_INFO("----%d",int(moveBaseControl.speed));
+            // ROS_INFO("[BRING_UP]---------------FROM L1");
+        };
+        // 计算velDeltatime,后面算速度用得到
         current_time = ros::Time::now();
         velDeltaTime = (current_time - last_time).toSec();
         last_time = ros::Time::now();
 
         recvCarInfoKernel();
-        pub_9250();// 你不必知道发生了什么，不重要，发布电池相关数据而以
+        pub_9250(); // 你不必知道发生了什么，不重要，发布电池相关数据而以
         int bit0_z = batteryVoltage & (255);
         int bit1_x = (unsigned char)((batteryVoltage) >> 8);
         currentBattery.data = bit0_z + ((float)bit1_x / 100.0f);
         pub_battery.publish(currentBattery);
 
-
-
-        //下面是用编码器数据计算速度用以发布在odom坐标系中
+        // 下面是用编码器数据计算速度用以发布在odom坐标系中
 #if 10
         if (encoderLeft > 220 || encoderLeft < -220)
-            {
-                encoderLeft = 0;
-                ROS_INFO(">220-LEFT--66678r97836r97");
-            };
+        {
+            encoderLeft = 0;
+            ROS_INFO(">220-LEFT--66678r97836r97");
+        };
         if (encoderRight > 220 || encoderRight < -220)
-            {
-                encoderRight = 0;
-                ROS_INFO(">220--RIGHT-66678r97836r97");
-            };
+        {
+            encoderRight = 0;
+            ROS_INFO(">220--RIGHT-66678r97836r97");
+        };
 
         // encoderLeft = -encoderLeft;
         encoderRight = -encoderRight;
@@ -143,7 +202,6 @@ void actuator::run()
 
         linearSpeed = detdistance / velDeltaTime;
         angularSpeed = detth / velDeltaTime;
-
 
         // if (detdistance != 0)
         if (1)
@@ -176,14 +234,13 @@ void actuator::run()
         odom.pose.pose.position.z = 0.0;
         odom.pose.pose.orientation = odom_quat;
 
-        
         odom.twist.twist.linear.x = linearSpeed; // 线速度
         odom.twist.twist.linear.y = 0;
         odom.twist.twist.linear.z = 0;
         odom.twist.twist.angular.x = 0;
         odom.twist.twist.angular.y = 0;
         odom.twist.twist.angular.z = angularSpeed; // 角速度
-        
+
         // tfs.child_frame_id = "base_link";
         // tfs.header.frame_id = "odom";
         // tfs.header.stamp = ros::Time::now();
@@ -247,7 +304,6 @@ void actuator::sendCarInfoKernel()
         moveBaseControl.TargetShiftPosition = 0x01; // 后退
     else if (moveBaseControl.TargetSpeed == 0)
         moveBaseControl.TargetShiftPosition = 0x00; // 停止
-
 
     // 限制转动角度，防止进入死点
     if (moveBaseControl.TargetAngle < -120)
@@ -410,15 +466,15 @@ void actuator::recvCarInfoKernel()
         magZ = (float)tempmagZ * 0.14;
 
         if (encoderLeft > 220 || encoderLeft < -220)
-            {
-                encoderLeft = 0;
-                ROS_INFO(">220-LEFT--wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww");
-            };
+        {
+            encoderLeft = 0;
+            ROS_INFO(">220-LEFT--wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww");
+        };
         if (encoderRight > 220 || encoderRight < -220)
-            {
-                encoderRight = 0;
-                ROS_INFO(">220-RIGHT--qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq");
-            };
+        {
+            encoderRight = 0;
+            ROS_INFO(">220-RIGHT--qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq");
+        };
         LeftticksPerMeter += encoderLeft;   // 获得左轮总脉冲数
         rightticksPerMeter += encoderRight; // 获得右轮总脉冲数
     }

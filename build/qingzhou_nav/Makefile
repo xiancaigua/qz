@@ -348,6 +348,21 @@ actionlib_msgs_generate_messages_eus/fast:
 .PHONY : actionlib_msgs_generate_messages_eus/fast
 
 # Convenience name for target.
+qingzhou_nav/CMakeFiles/qingzhou_nav_gencfg.dir/rule:
+	cd /home/cquer/2023_qingzhou/build && $(MAKE) -f CMakeFiles/Makefile2 qingzhou_nav/CMakeFiles/qingzhou_nav_gencfg.dir/rule
+.PHONY : qingzhou_nav/CMakeFiles/qingzhou_nav_gencfg.dir/rule
+
+# Convenience name for target.
+qingzhou_nav_gencfg: qingzhou_nav/CMakeFiles/qingzhou_nav_gencfg.dir/rule
+
+.PHONY : qingzhou_nav_gencfg
+
+# fast build rule for target.
+qingzhou_nav_gencfg/fast:
+	cd /home/cquer/2023_qingzhou/build && $(MAKE) -f qingzhou_nav/CMakeFiles/qingzhou_nav_gencfg.dir/build.make qingzhou_nav/CMakeFiles/qingzhou_nav_gencfg.dir/build
+.PHONY : qingzhou_nav_gencfg/fast
+
+# Convenience name for target.
 qingzhou_nav/CMakeFiles/actionlib_msgs_generate_messages_cpp.dir/rule:
 	cd /home/cquer/2023_qingzhou/build && $(MAKE) -f CMakeFiles/Makefile2 qingzhou_nav/CMakeFiles/actionlib_msgs_generate_messages_cpp.dir/rule
 .PHONY : qingzhou_nav/CMakeFiles/actionlib_msgs_generate_messages_cpp.dir/rule
@@ -843,6 +858,7 @@ help:
 	@echo "... actionlib_msgs_generate_messages_nodejs"
 	@echo "... actionlib_msgs_generate_messages_lisp"
 	@echo "... actionlib_msgs_generate_messages_eus"
+	@echo "... qingzhou_nav_gencfg"
 	@echo "... actionlib_msgs_generate_messages_cpp"
 	@echo "... tf_generate_messages_eus"
 	@echo "... move_base_msgs_generate_messages_cpp"

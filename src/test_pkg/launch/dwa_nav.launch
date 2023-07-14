@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+
+<launch>
+    <master auto="start"/>
+ 
+    <include file="$(find qingzhou_nav)/launch/amcl.launch" /> 
+
+    <node name="map_server" pkg="map_server" type="map_server" args="$(find test_pkg)/map/new_nav.yaml" output="screen"/>
+
+      <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+        <!-- <param name="use_map_topic" value="true"/>
+        <param name="first_map_only" value="true"/> -->
+        <param name="base_global_planner" value="global_planner/GlobalPlanner" />
+        <param name="planner_frequency" value="1.0" />
+        <param name="planner_patience" value="5.0" />
+
+        <param name="base_local_planner" value="dwa_local_planner/DWAPlannerROS" />
+        <param name="controller_frequency" value="5.0" />
+        <param name="controller_patience" value="5.0" />
+
+        <rosparam file="$(find qingzhou_nav)/config/sikydwa/costmap_common_params.yaml" command="load" ns="global_costmap" />
+        <rosparam file="$(find qingzhou_nav)/config/sikydwa/costmap_common_params.yaml" command="load" ns="local_costmap" />
+        <rosparam file="$(find qingzhou_nav)/config/sikydwa/local_costmap_params.yaml" command="load" />
+        <rosparam file="$(find qingzhou_nav)/config/sikydwa/global_costmap_params.yaml" command="load" />
+        <rosparam file="$(find qingzhou_nav)/config/sikydwa/dwa_local_planner_params.yaml" command="load" />
+        <rosparam file="$(find qingzhou_nav)/config/sikydwa/global_planner_params.yaml" command="load" />
+
+    </node>
+
+    <node name="msg_transform" pkg="test_pkg" type="msg_transform" output="screen"/>
+    
+
+	
+</launch>

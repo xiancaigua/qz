@@ -3,6 +3,7 @@
 
 test_pkg/CMakeFiles/bringup_head.dir/src/qingzhou_bringup.cpp.o: /home/cquer/2023_qingzhou/src/test_pkg/include/test_pkg/qingzhou_bringup.h
 test_pkg/CMakeFiles/bringup_head.dir/src/qingzhou_bringup.cpp.o: /home/cquer/2023_qingzhou/src/test_pkg/src/qingzhou_bringup.cpp
+test_pkg/CMakeFiles/bringup_head.dir/src/qingzhou_bringup.cpp.o: /opt/ros/melodic/include/ackermann_msgs/AckermannDrive.h
 test_pkg/CMakeFiles/bringup_head.dir/src/qingzhou_bringup.cpp.o: /opt/ros/melodic/include/geometry_msgs/Point.h
 test_pkg/CMakeFiles/bringup_head.dir/src/qingzhou_bringup.cpp.o: /opt/ros/melodic/include/geometry_msgs/Point32.h
 test_pkg/CMakeFiles/bringup_head.dir/src/qingzhou_bringup.cpp.o: /opt/ros/melodic/include/geometry_msgs/PointStamped.h
@@ -84,6 +85,7 @@ test_pkg/CMakeFiles/bringup_head.dir/src/qingzhou_bringup.cpp.o: /opt/ros/melodi
 test_pkg/CMakeFiles/bringup_head.dir/src/qingzhou_bringup.cpp.o: /opt/ros/melodic/include/serial/v8stdint.h
 test_pkg/CMakeFiles/bringup_head.dir/src/qingzhou_bringup.cpp.o: /opt/ros/melodic/include/std_msgs/Float32.h
 test_pkg/CMakeFiles/bringup_head.dir/src/qingzhou_bringup.cpp.o: /opt/ros/melodic/include/std_msgs/Header.h
+test_pkg/CMakeFiles/bringup_head.dir/src/qingzhou_bringup.cpp.o: /opt/ros/melodic/include/std_msgs/Int32.h
 test_pkg/CMakeFiles/bringup_head.dir/src/qingzhou_bringup.cpp.o: /opt/ros/melodic/include/tf/LinearMath/Matrix3x3.h
 test_pkg/CMakeFiles/bringup_head.dir/src/qingzhou_bringup.cpp.o: /opt/ros/melodic/include/tf/LinearMath/MinMax.h
 test_pkg/CMakeFiles/bringup_head.dir/src/qingzhou_bringup.cpp.o: /opt/ros/melodic/include/tf/LinearMath/QuadWord.h

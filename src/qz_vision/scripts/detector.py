@@ -145,9 +145,9 @@ def shiftArea(img):
 
 # 根据传入的color，从color_dict中获取对应上下限提取对应的颜色
 def getColorArea(img, color):
-    hsv_img = cv2.cvtColor(temp_img, cv2.COLOR_BGR2HSV)
+    hsv_img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
     mask = cv2.inRange(hsv_img, lowerb=np.array(color_dict[color][0]), upperb=np.array(color_dict[color][1])) 
-    color_img = cv2.bitwise_and(temp_img,temp_img, mask = mask)
+    color_img = cv2.bitwise_and(img,img, mask = mask)
     return color_img
 
 
@@ -159,7 +159,7 @@ flag = 0
 pianyi_before = 0
 cnt=0
 
-def pianyi_detect(img):
+def pianyi_detect_old(img):
     """
     参数调试区
     """
@@ -341,6 +341,159 @@ def pianyi_detect(img):
     # print('-------------------',pianyi_now )
     return pianyi_now, show_img
 
+def pianyi_detect(img):
+    """
+    参数调试区
+    """
+
+    #清空上一次的日志
+    file = open("/home/cquer/2023_qingzhou/src/qz_vision/scripts/only_swan.txt", "w")
+    file.close()
+    file = open("/home/cquer/2023_qingzhou/src/qz_vision/scripts/only_swan.txt", "a")
+    pianyi=0
+    pianyi_text=''
+    about_to_reach = False # 最后一段绿白线
+    global pianyi_before
+    global cnt
+    ##############读取图像#########################
+    (img_h, img_w) = img.shape[:2] #获取传入图片的长与宽   w是高 h是宽
+
+    cropped_img=region_of_interest(img) #对图像进行ROI的分割
+    # if cnt==0:
+    #     cv2.imwrite('/home/cquer/2023_qingzhou/src/qz_vision/cropped_img.jpg',cropped_img)
+    #     cnt+=1
+    cropped_img_1=cropped_img.copy() #将ROI图像复制一份给cropped_img_1
+    cropped_img = color_seperate(cropped_img) #将ROI图像中的绿色部分提取出来
+    gray_img = cv2.cvtColor(cropped_img, cv2.COLOR_BGR2GRAY) #将提取的  ROI的绿色部分转化为灰度图
+    ####1.如果检测到绿色线或者绿白线，进行判断###########
+    ret, img_thresh = cv2.threshold(gray_img,10, 255, cv2.THRESH_BINARY)  #大于10的地方就转化为白色255，返回两个值第一个是域值，第二个是二值图图像
+    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (4, 4)) #返回一个4*4的椭圆形矩阵核，椭圆的地方是1，其他地方是0
+    img_thresh = cv2.morphologyEx(img_thresh, cv2.MORPH_CLOSE, kernel) #闭运算，运用核kernel先进行膨胀，再进行腐蚀
+    img_thresh = cv2.morphologyEx(img_thresh, cv2.MORPH_OPEN, kernel) #开运算，运用核kernel先进行腐蚀，再进行膨胀
+    contours, hierarchy = cv2.findContours(img_thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE) # print(len(contours))#findcontours返回两个值，一个是一组轮廓信息，还有一个是每条轮廓对应的属性
+    #####顺带检测蓝色车道线###########
+    cropped_img_1 = color_seperate_1(cropped_img_1)
+    gray_img_blue = cv2.cvtColor(cropped_img_1, cv2.COLOR_BGR2GRAY)
+    ret, img_thresh_blue = cv2.threshold(gray_img_blue, 10, 255, cv2.THRESH_BINARY)
+    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
+    img_thresh_blue = cv2.morphologyEx(img_thresh_blue, cv2.MORPH_OPEN, kernel)
+    img_thresh_blue = cv2.morphologyEx(img_thresh_blue, cv2.MORPH_CLOSE, kernel)
+    contours_blue, hierarchy = cv2.findContours(img_thresh_blue, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    if (len(contours_blue) > 0):
+        contours_blue_2 = []
+        for c1 in range(len(contours_blue)):
+            for c2 in range(len(contours_blue[c1])):
+                contours_blue_2.append(contours_blue[c1][c2])
+        contours_blue_2 = np.array(contours_blue_2)
+        (x2, y2, w2, h2) = cv2.boundingRect(contours_blue_2)
+    nothing_point = 0 #无用的点
+    if (len(contours) > 0):   # 如果检测到的轮廓数量大于0
+        con_num = len(contours) #将轮廓的个数赋值给con_num
+        contour1 = [] #将contour1 赋值为空列表，[]表示列表，列表是可变的序列
+        for c1 in range(len(contours)): #遍历每一个轮廓
+                for c2 in range(len(contours[c1])): #遍历每一个轮廓的轮廓上的点
+                    contour1.append(contours[c1][c2]) #将每一个轮廓的每一个点都排列起来组成一个新列表，.append() 方法用于在列表末尾添加新的对象
+        contour1 = np.array(contour1) #将组成的新列表转化为矩阵，方便下一步处理
+        (x, y, w, h) = cv2.boundingRect(contour1) #用一个最小的矩形，把找到的所有的轮廓包起来，返回轮值x，y是矩阵左上点的坐标，w，h是矩阵的宽和高
+        # ####################1.1 同时检测到两条绿线，删选出中间线，计算位置########################
+        if w>img_w/3  and con_num > 1 : #如果整体轮廓的宽度大于三分之图片的宽度，则说明同时检测到了两条绿线
+
+            mask=np.zeros_like(gray_img) 
+            #将mask的部分进行白色填充，
+            # 参数为填充区域的左上角顶将gray_img转化为全是0的矩阵并赋值给mask即全黑点和右下角顶点
+            cv2.rectangle(mask, (x+(3*w)//4, y), (x + w, y + h-3), (255, 255, 255), cv2.FILLED) 
+
+             #将优化后的二值图img_thresh中的mask区域提取出来给temp_img
+            temp_img=cv2.bitwise_and(img_thresh, img_thresh, mask=mask)
+
+             #对只剩下中间线的二值图图像进行轮廓检测   （希望是中间线）
+            contours1, hierarchy = cv2.findContours(temp_img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            if (len(contours1) > 0):
+                contour2 = []
+                for c1 in range(len(contours1)):
+                    for c2 in range(len(contours1[c1])):
+                        contour2.append(contours1[c1][c2])
+                contour2 = np.array(contour2) #将中间线的轮廓信息存于contour2矩阵中
+                (x1, y1, w1, h1) = cv2.boundingRect(contour2) #中间线的轮廓信息
+                cv2.rectangle(img, (x1, y1), (x1 + w1, img_w), (255, 255, 255), 3)#白框-----同时检测到绿线和绿白线给蓝白线画白框——永远贴着底画矩形框
+                pianyi=((x1+w1/2)-(img_w/2))*FOV_w/img_w #pianyi值为矩形方框的中线距离视野中央的实际距离
+                if pianyi>0:
+                    pianyi_text='right'
+                elif pianyi<0:
+                    pianyi_text='left'
+                    # pianyi+=80
+                else:
+                    pianyi_text = 'stright'
+                print("[VISION]同时检测到边线和中线, 偏向：{}, 偏移：{}".format(pianyi_text,pianyi))
+                file.write("[VISION]同时检测到边线和中线, 偏向：{}, 偏移：{}\n".format(pianyi_text,pianyi))
+                # 防止车进弯道时过于靠近绿线
+                # if  len(contours_blue)>0 and np.sum(img_thresh_blue)<10000 and  pianyi_text == 'right':
+                #     pianyi = pianyi // 3
+                #     print('防止车进弯道时过于靠近绿线')
+                #     # print(np.sum(img_thresh_blue))
+                # print(1,pianyi_text)
+        #########################1.2 只检测到一条线，需要判断是绿白线还是绿线##############
+        elif w<img_w/3:
+            cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 255), 3) #黄框----------只检测到绿白线并用黄框画出
+            # 如果是绿白线
+            if con_num>1: #轮廓数量大于1，就是有好几段绿色,但是会出现边线误识别成中线，因为线可能会断掉？
+                pianyi = ((x + w / 2) - (img_w / 2)) * FOV_w / img_w #pianyi值为矩形方框的中线距离视野中央的实际距离
+                if pianyi > 0:
+                    #print('右偏')
+                    pianyi_text='right'
+                elif pianyi<0:
+                    #print('左偏')
+                    pianyi_text='left'
+                    # pianyi -= 80
+                else:
+                    # print('左偏')
+                    pianyi_text = 'stright'
+                print("[VISION]只检测到绿白线, 偏向：{}, 偏移：{}".format(pianyi_text,pianyi))
+                file.write("[VISION]只检测到绿白线, 偏向：{}, 偏移：{}\n".format(pianyi_text,pianyi))
+                if abs(pianyi) >= 45:
+                    pianyi = 45 
+        elif con_num == 1: #横向绿线和最后一小段绿白线的绿线
+            cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 3) #蓝框-----------------只检测到绿线并用蓝框画出
+            pianyi =((x + w / 2 + 100) - (img_w / 2)) * FOV_w / img_w #平滑过渡
+            pianyi_text='right'
+            print("[VISION]横向绿线, 偏向：{}, 偏移：{}".format(pianyi_text,pianyi))
+            file.write("[VISION]横向绿线, 偏向：{}, 偏移：{}\n".format(pianyi_text,pianyi))
+        else : #检测到了左下角的点了
+            nothing_point = 1
+
+
+    # 2.未检测到绿线或者绿白线，就检测蓝线
+    else:
+        if len(contours_blue)>0:
+            cv2.rectangle(img, (x2, y2), (x2 + w2, img_w), (255, 0, 255), 3) #红框
+            pianyi =  ((x2 + w2 / 2 - 200) - (img_w / 2)) * FOV_w / img_w
+            pianyi_text='left'
+            print("[VISION]蓝线, 偏向：{}, 偏移：{}".format(pianyi_text,pianyi))
+            file.write("[VISION]蓝线, 偏向：{}, 偏移：{}\n".format(pianyi_text,pianyi))
+            # if h2 < 70:
+            #     pianyi = pianyi_before
+            #     print("[VISION]")
+
+    show_img = img
+
+    pianyi_now = abs(pianyi)
+
+    angle_gain_left =  40 # 这个值随速度变化，速度0.3差不多对应40的angle_gain
+    angle_gain_right = 50 #80
+    if pianyi_text == 'right' :
+        pianyi_now = 0 - pianyi_now -  angle_gain_right
+
+    elif  pianyi_text == 'left' :
+        pianyi_now =  pianyi_now + angle_gain_left
+ 
+    if pianyi_before == -pianyi_now or nothing_point ==1 : #这一句如果加上防止突变有点危险
+        pianyi_now = pianyi_before       
+        print("*****检测到干扰*******")   
+        file.write("*****检测到干扰*******\n")
+    pianyi_before = pianyi_now
+    # print('-------------------',pianyi_now )
+    file.close()
+    return pianyi_now, show_img
 
 
 
@@ -547,12 +700,6 @@ def FindBlueBlockWhenYouWantKonwOutOfRoadLineOrNot(img):
     else:
         return False,binary_img
 
-"""
-文字识别区
-"""
-def do_recog():
-    return 'p1'
-
 
 """
 回调函数
@@ -575,7 +722,7 @@ def OdomCallBack(msg):
     # DWA的FLAG只会在S弯结束复位时复位，此后不再发布消息
     if x<-1.0 and y>-1.0 and roadlineflag and turn_on_dwa_flag_flag:
         dwa_flag=True
-        print("---------DWA 启动！[qz_vision]-----------------------")
+        # print("---------DWA 启动！[qz_vision]-----------------------")
     return 0
 
 Queue=queue.LifoQueue()
@@ -607,7 +754,7 @@ if __name__=="__main__":
     """
     # detect()
     # qz_cmd_vel_vision  调试完话题换成这个
-    move_pub=rospy.Publisher("/qz_cmd_vel_vision",Twist,queue_size=1)
+    move_pub=rospy.Publisher("/qz_cmd_vel_vision",AckermannDrive,queue_size=1)
     
     locate_sub=rospy.Subscriber("/qingzhou_locate",std_msgs.Int32,LoacateCB)
     # locate_pub=rospy.Publisher("/qingzhou_locate",std_msgs.Int32,queue_size=1)
@@ -635,6 +782,11 @@ if __name__=="__main__":
     now_shift=0
     last_shift =  0
     outcheck = 0
+    recog_flag_count = 0
+    pk1_cnt = 0
+    pk2_cnt = 0
+
+
 
 
     #红绿灯使用的参数
@@ -657,252 +809,287 @@ if __name__=="__main__":
     redtime = 0
     acc = -0.1
     v = 0.5
-    cmdData = Twist()
-
+    cmdData = AckermannDrive()
+    # cmdData = Twist()
 
     det = Detect()
     cam=cv2.VideoCapture(gstreamer_pipeline(flip_method=0),cv2.CAP_GSTREAMER) 
     # 程序会在这里阻塞 调试视觉时关掉，之后记得开启
     print("欧尼酱，视觉开始了哟～","FBI open the camera!------------------")
-    while not rospy.is_shutdown():
-        queue_out=Queue.get()   
-        if (queue_out=="line" and roadlineflag):
-            print("欧尼酱,S弯开始了~")
-            filter_dwa_flag_.publish(0)
-            keep_count = 0  # 前50张图片忽略不计
-            twist = 0
-            twist_before = 0.026
-            twist_count = 0
-            while cam.isOpened():
-                delta_time = end_time-start_time
-                start_time = time.time()
-                print("程序用时：%.4f"%delta_time)
-                # 出弯判断
-                # *******************重点：切换状态机至DWA倒车*******************
-                # S弯参数复位
-                # 切换状态至TOSTART
-                # 给出开启DWA导航的FLAG_DWA，在定位函数中进行
-                # 由定位开启文字识别的子程序，并根据识别结果发布停车位置的FLAG_POS
-                if outcheck == 10:
-                    # 复位
-                    outcheck = 0
-                    roadlineflag=False
-                    dwa_flag=False
-                    recog_flag = False
-                    # 切换状态
-                    # locate_pub.publish(5)
-                    filter_dwa_flag_.publish(1)
-                    print("欧尼酱，S弯结束了")
-                    break
-                ret, Img = cam.read()
-                # 出弯小判断，提取赛道，确定pix值区间，低于某个值则认为出圈
-                if ret:
-                    if keep_count>=50:
-                            FindLine, FindBlueBlockWhenYouWantKonwOutOfRoadLineOrNot_img = FindBlueBlockWhenYouWantKonwOutOfRoadLineOrNot(Img[Img.shape[0]//2+50:,:])                            
-                            if FindLine:
-                                outcheck = 0
-                            else:
-                                outcheck = 1
+    try:
+        while not rospy.is_shutdown():
+            queue_out=Queue.get()   
+            if (queue_out=="line" and roadlineflag):
+                print("欧尼酱,S弯开始了~")
+                filter_dwa_flag_.publish(0)
+                keep_count = 0  # 前50张图片忽略不计
+                twist = 0
+                twist_before = 0
+                twist_count = 0
+                while cam.isOpened():
+                    delta_time = end_time-start_time
+                    start_time = time.time()
+                    # print("程序用时：%.4f"%delta_time)
+                    # 出弯判断
+                    # *******************重点：切换状态机至DWA倒车*******************
+                    # S弯参数复位
+                    # 切换状态至TOSTART
+                    # 给出开启DWA导航的FLAG_DWA，在定位函数中进行
+                    # 由定位开启文字识别的子程序，并根据识别结果发布停车位置的FLAG_POS
+                    if outcheck == 10:
+                        # 复位
+                        outcheck = 0
+                        roadlineflag=False
+                        dwa_flag=False
+                        # recog_flag = False
+                        # 切换状态
+                        # locate_pub.publish(5)
+                        filter_dwa_flag_.publish(1)
+                        print("欧尼酱，S弯结束了")
+                        break
+                    ret, Img = cam.read()
+                    # 出弯小判断，提取赛道，确定pix值区间，低于某个值则认为出圈
+                    if ret:
+                        if keep_count>=50:
+                                FindLine, FindBlueBlockWhenYouWantKonwOutOfRoadLineOrNot_img = FindBlueBlockWhenYouWantKonwOutOfRoadLineOrNot(Img[Img.shape[0]//2+50:,:])                            
+                                if FindLine:
+                                    outcheck = 0
+                                else:
+                                    outcheck += 1
+                        else:
+                            # 前50张图片忽略不计
+                            keep_count+=1
+                    # 计算弯道转角以及发布可视化&运控  
+                    if  recog_flag and recog_flag_count==20:
+                        park_id = det.detect(Img)
+                        print(park_id)
+                        keep_count=20
+                        # 计数
+                        if park_id=='hangtian' or park_id == 'jidian':
+                            pk1_cnt+=1
+                        elif park_id=='sanyuan' or park_id == 'xinghang':
+                            pk2_cnt+=1
+                        # 终止计数，标志位复位
+                        if pk1_cnt==3:
+                            park_id_.publish(1)
+                            pk1_cnt = 0
+                            recog_flag = False
+                            turn_on_recog_flag_flag = False
+                        elif pk2_cnt==3:
+                            park_id_.publish(2)
+                            pk2_cnt = 0
+                            recog_flag = False
+                            turn_on_recog_flag_flag = False
                     else:
-                        # 前50张图片忽略不计
-                        keep_count+=1
-                # 计算弯道转角以及发布可视化&运控  recog_flag and
-                if  keep_count==70:
+                        recog_flag_count+=1
+
+                    if ret and keep_count>=50:
+                        Img_2 = cv2.resize(Img,(640,480))
+                        Img_2 = Img_2[3: 475,3:635]  #切割掉左右下角干扰点
+                        Img_2 = cv2.resize(Img_2,(640,480))
+                        pianyi, show_img = pianyi_detect(Img_2)
+                        twist = (pianyi/70)
+                        # twist *= wheelbase/v
+                        # 忽略小角度变化, 平滑轨迹
+                        if abs(twist-twist_before) < 0.1:
+                            twist = twist_before
+
+                        if outcheck==10:
+                            # cmdData.angular.z = 0
+                            # cmdData.linear.x = 0
+                            cmdData.speed = 0
+                            cmdData.steering_angle = 0
+                        else:
+                            # cmdData.angular.z = twist
+                            # cmdData.linear.x = v
+                            cmdData.steering_angle=twist
+                            cmdData.speed = v
+                        move_pub.publish(cmdData)
+                        pianyi_before = pianyi
+                        twist_before = twist
+                        for index,value in enumerate(pianyisamelist):
+                            if(not(index == len(pianyisamelist)-1)):#每个元素往前移动
+                                pianyisamelist[index] = pianyisamelist[index+1]
+                            else:#列表最后一个进来
+                                pianyisamelist[index] = pianyi
+                        if(len(set(pianyisamelist)) == 2):
+                                pianyi = 999
+                        final_img_msg=Image()
+                        final_img_msg.header=std_msgs.Header()
+                        final_img_msg.width=show_img.shape[1]
+                        final_img_msg.height=show_img.shape[0]
+                        final_img_msg.encoding="bgr8"
+                        final_img_msg.step=1920
+                        final_img_msg.data=np.array(show_img).tostring()
+                        RoadLine_Pub.publish(final_img_msg)
+                    # 由定位开启文字识别的子程序，并根据识别结果发布停车位置的FLAG_POS
+                    # 给出开启DWA导航的FLAG_DWA，在定位函数中进行
+                    if dwa_flag:
+                        dwa_flag_.publish(1)
+                        turn_on_dwa_flag_flag=False
+                        dwa_flag=False
+                    end_time = time.time()
+                    
+
+
+                    # binary2_msg=Image()
+                    # binary2_msg.header=std_msgs.Header()
+                    # binary2_msg.width=binary_img.shape[1]
+                    # binary2_msg.height=binary_img.shape[0]
+                    # binary2_msg.encoding="mono8"
+                    # binary2_msg.step=1920
+                    # binary2_msg.data=np.array(binary_img).tostring()
+                    # raw_pub.publish(binary2_msg)
+
+
+            # not break_flag ：break_flag用于判断是否在执行😡绿灯任务的标志位，在LOAD会变成FALSE，允许执行
+            elif queue_out=="traffic" and (not break_flag):
+                traffic_flag.publish(1)
+                print("[INFO]---I am in the traffic now!!!")
+                while cam.isOpened():
+                    # 这一圈的红绿灯检测任务彻底结束
+                    # 检测到了绿灯，发布状态机到TOUNLOAD，复位
+                    if color_flag==1:
+                            print("Green, you can go.")
+                            # locate_pub.publish(8)
+                            traffic_flag.publish(1)
+                            break_flag=True
+                            color_flag, green_count, notgreen_count = 0, 0, 0
+                            break
+                    # 未检测到绿灯，复位，保持状态机在LOAD
+                    elif color_flag==2:
+                            print("Red or yellow, stop.")
+                            color_flag, green_count, notgreen_count = 0, 0, 0
+                    ret,img = cam.read()
+                    # print(img)
+                    if ret:
+                        img = cv2.resize(img, None, fx = 0.5, fy = 0.5, interpolation = cv2.INTER_CUBIC)
+                        if True:
+                            # 截取有用的区域
+                            temp_img=shiftArea(img)
+                            # 获取红色黄色的色图(bushi)和绿色的色图(bushi)
+                            green_Limg = getColorArea(temp_img, 'Green')
+                            RandY_Limg = getColorArea(temp_img, 'RandY')
+
+                            # gray_green = cv2.cvtColor(green_Limg,cv2.COLOR_BGR2GRAY)
+                            # _,gray_green = cv2.threshold(gray_green,thread,255,cv2.THRESH_BINARY)
+                            
+                            #由设置的阈值thread确定是否绿灯亮阈值 
+                            print("I am counting green   ------------   ",np.sum(green_Limg))
+                            if np.sum(green_Limg) > thread:
+                                green_count += 1
+                            # elif np.sum(RandY_Limg) > thread:
+                            else:
+                                # print("I am counting not green")
+                                notgreen_count += 1
+                            # 数八次如果都是绿灯就给绿灯的标志位
+                            if green_count == 8:
+                                color_flag = 1
+                            elif notgreen_count == 8:
+                                color_flag = 2
+
+                            # traffic_msg=Image()
+                            # header=std_msgs.Header()
+                            # header.frame_id="Camera"
+                            # traffic_msg.header=header
+                            # traffic_msg.width=green_Limg.shape[1]
+                            # traffic_msg.height=green_Limg.shape[0]
+                            # traffic_msg.encoding="bgr8"
+                            # traffic_msg.step=1920
+                            # traffic_msg.data=np.array(green_Limg).tostring()
+                            # traffic_pub.publish(traffic_msg)
+
+                            # redmsg=Image()
+                            # header=std_msgs.Header()
+                            # header.frame_id="Camera"
+
+                            # redmsg.header=header
+                            # redmsg.width=RandY_Limg.shape[1]
+                            # redmsg.height=RandY_Limg.shape[0]
+                            # redmsg.encoding="bgr8"
+                            # redmsg.step=1920
+                            # redmsg.data=np.array(RandY_Limg).tostring()
+                            # gray_pub.publish(redmsg)
+
+                        # RVIZ显示便于调试
+                        # imgmsg=Image()
+                        # header=std_msgs.Header()
+                        # header.frame_id="Camera"
+
+                        # imgmsg.header=header
+                        # imgmsg.width=img.shape[1]
+                        # imgmsg.height=img.shape[0]
+                        # imgmsg.encoding="bgr8"
+                        # imgmsg.step=1920
+                        # imgmsg.data=np.array(img).tostring()
+                        # # print("i am in the while loop")
+                        # traffic_pub.publish(imgmsg)
+
+            """
+            OLD的S弯道
+            """
+            while recog_flag:
+                # 计算弯道转角以及发布可视化&运控  
+                if  recog_flag and recog_flag_count==20:
                     park_id = det.detect(Img)
                     print(park_id)
-                    keep_count=50
-                    if park_id=='hangtian' or park_id=='jidian':
+                    recog_flag_count=0
+                    # 计数
+                    if park_id=='hangtian' or park_id == 'jidian':
+                        pk1_cnt+=1
+                    elif park_id=='sanyuan' or park_id == 'xinghang':
+                        pk2_cnt+=1
+                    # 终止计数，标志位复位
+                    if pk1_cnt==3:
                         park_id_.publish(1)
-                        recog_flag=False
-                        turn_on_recog_flag_flag=False
-                    elif park_id=='xinghang' or park_id=='sanyuan':
-                        park_id_.publish(2)
-                        recog_flag=False
-                        turn_on_recog_flag_flag=False
-                else:
-                    keep_count+=1
-                    # 识别失败，放弃倒车
-                if ret and keep_count>=50:
-                    Img_2 = cv2.resize(Img,(640,480))
-                    Img_2 = Img_2[3: 475,3:635]  #切割掉左右下角干扰点
-                    Img_2 = cv2.resize(Img_2,(640,480))
-                    pianyi, show_img = pianyi_detect(Img_2)
-                    twist = pianyi/7000
-                    # twist *= wheelbase/v
-                    # 忽略小角度变化, 平滑轨迹
-                    if abs(twist-twist_before) < 0.001:
-                        twist = twist_before
-
-                    if outcheck==10:
-                        cmdData.angular.z=0
-                        cmdData.linear.x = 0
-                    else:
-                        # cmdData.angular.z=0
-                        # cmdData.linear.x = 0
-                        cmdData.angular.z=twist
-                        # print(cmdData.angular.z)
-                        cmdData.linear.x = v
-                    move_pub.publish(cmdData)
-                    pianyi_before = pianyi
-                    twist_before = twist
-                    for index,value in enumerate(pianyisamelist):
-                        if(not(index == len(pianyisamelist)-1)):#每个元素往前移动
-                            pianyisamelist[index] = pianyisamelist[index+1]
-                        else:#列表最后一个进来
-                            pianyisamelist[index] = pianyi
-                    if(len(set(pianyisamelist)) == 2):
-                            pianyi = 999
-                    final_img_msg=Image()
-                    final_img_msg.header=std_msgs.Header()
-                    final_img_msg.width=show_img.shape[1]
-                    final_img_msg.height=show_img.shape[0]
-                    final_img_msg.encoding="bgr8"
-                    final_img_msg.step=1920
-                    final_img_msg.data=np.array(show_img).tostring()
-                    RoadLine_Pub.publish(final_img_msg)
-                # 由定位开启文字识别的子程序，并根据识别结果发布停车位置的FLAG_POS
-                # 给出开启DWA导航的FLAG_DWA，在定位函数中进行
-                if dwa_flag:
-                    dwa_flag_.publish(1)
-                    turn_on_dwa_flag_flag=False
-                    dwa_flag=False
-                end_time = time.time()
-                
-
-
-                # binary2_msg=Image()
-                # binary2_msg.header=std_msgs.Header()
-                # binary2_msg.width=binary_img.shape[1]
-                # binary2_msg.height=binary_img.shape[0]
-                # binary2_msg.encoding="mono8"
-                # binary2_msg.step=1920
-                # binary2_msg.data=np.array(binary_img).tostring()
-                # raw_pub.publish(binary2_msg)
-
-
-        # not break_flag ：break_flag用于判断是否在执行😡绿灯任务的标志位，在LOAD会变成FALSE，允许执行
-        elif queue_out=="traffic" and (not break_flag):
-            print("[INFO]---I am in the traffic now!!!")
-            while cam.isOpened():
-                # 这一圈的红绿灯检测任务彻底结束
-                # 检测到了绿灯，发布状态机到TOUNLOAD，复位
-                if color_flag==1:
-                        print("Green, you can go.")
-                        # locate_pub.publish(8)
-                        traffic_flag.publish(1)
-                        break_flag=True
-                        color_flag, green_count, notgreen_count = 0, 0, 0
+                        pk1_cnt = 0
+                        recog_flag = False
+                        turn_on_recog_flag_flag = False
                         break
-                # 未检测到绿灯，复位，保持状态机在LOAD
-                elif color_flag==2:
-                        print("Red or yellow, stop.")
-                        color_flag, green_count, notgreen_count = 0, 0, 0
-                ret,img = cam.read()
-                # print(img)
-                if ret:
-                    img = cv2.resize(img, None, fx = 0.5, fy = 0.5, interpolation = cv2.INTER_CUBIC)
-                    if True:
-                        # 截取有用的区域
-                        temp_img=shiftArea(img)
-                        # 获取红色黄色的色图(bushi)和绿色的色图(bushi)
-                        green_Limg = getColorArea(temp_img, 'Green')
-                        RandY_Limg = getColorArea(temp_img, 'RandY')
+                    elif pk2_cnt==3:
+                        park_id_.publish(2)
+                        pk2_cnt = 0
+                        recog_flag = False
+                        turn_on_recog_flag_flag = False
+                        break
+                else:
+                    recog_flag_count+=1
+            # if ret:
+            # 	Img=Img[Img.shape[0]//2+50:,:]
+            # 	FindLine,blueblock = FindBlueBlockWhenYouWantKonwOutOfRoadLineOrNot(Img)
 
-                        # gray_green = cv2.cvtColor(green_Limg,cv2.COLOR_BGR2GRAY)
-                        # _,gray_green = cv2.threshold(gray_green,thread,255,cv2.THRESH_BINARY)
-                        
-                        #由设置的阈值thread确定是否绿灯亮阈值 
-                        print("I am counting green   ------------   ",np.sum(green_Limg))
-                        if np.sum(green_Limg) > thread:
-                            green_count += 1
-                        # elif np.sum(RandY_Limg) > thread:
-                        else:
-                            # print("I am counting not green")
-                            notgreen_count += 1
-                        # 数八次如果都是绿灯就给绿灯的标志位
-                        if green_count == 8:
-                            color_flag = 1
-                        elif notgreen_count == 8:
-                            color_flag = 2
+            # 	if FindLine:
+            # 		outcheck = 0
+            # 	else:
+            # 		outcheck += 1
+            # 	# cv2.imwrite("/home/cquer/2023_qingzhou/src/qz_vision/RAW.jpg",Img)
 
-                        # traffic_msg=Image()
-                        # header=std_msgs.Header()
-                        # header.frame_id="Camera"
-                        # traffic_msg.header=header
-                        # traffic_msg.width=green_Limg.shape[1]
-                        # traffic_msg.height=green_Limg.shape[0]
-                        # traffic_msg.encoding="bgr8"
-                        # traffic_msg.step=1920
-                        # traffic_msg.data=np.array(green_Limg).tostring()
-                        # traffic_pub.publish(traffic_msg)
+            # 	binary_img=getWhiteLine(Img)
+            # 	if cou==0:
+            # 		defalt_pos=(binary_img.shape[1]//2,binary_img.shape[0]//2)
+            # 	cou+=1
+            # 	roallineFinalImg,position,shift,vel=FindBlueCenterLine(binary_img,Img,defalt_pos)
+            # 	defalt_pos=position
+                
+                
+                
+            # 	if shift:
+            # 		last_shift=now_shift
+            # 		now_shift=shift
+            # 		D_shift.append(shift)
 
-                        # redmsg=Image()
-                        # header=std_msgs.Header()
-                        # header.frame_id="Camera"
+            # 		angle=Kp*now_shift+Kd*(now_shift-last_shift)+Ki*(sum(D_shift)/len(D_shift))
+            # 	else:
+            # 		angle=0
+            # 	# print(angle)
+            # 	if outcheck==6:
+            # 		cmdData.linear.x=0
+            # 		cmdData.angular.z=0
+            # 		locate_pub.publish(5)
 
-                        # redmsg.header=header
-                        # redmsg.width=RandY_Limg.shape[1]
-                        # redmsg.height=RandY_Limg.shape[0]
-                        # redmsg.encoding="bgr8"
-                        # redmsg.step=1920
-                        # redmsg.data=np.array(RandY_Limg).tostring()
-                        # gray_pub.publish(redmsg)
-
-                    # RVIZ显示便于调试
-                    # imgmsg=Image()
-                    # header=std_msgs.Header()
-                    # header.frame_id="Camera"
-
-                    # imgmsg.header=header
-                    # imgmsg.width=img.shape[1]
-                    # imgmsg.height=img.shape[0]
-                    # imgmsg.encoding="bgr8"
-                    # imgmsg.step=1920
-                    # imgmsg.data=np.array(img).tostring()
-                    # # print("i am in the while loop")
-                    # traffic_pub.publish(imgmsg)
-
-        """
-        OLD的S弯道
-        """
-
-        # if ret:
-        # 	Img=Img[Img.shape[0]//2+50:,:]
-        # 	FindLine,blueblock = FindBlueBlockWhenYouWantKonwOutOfRoadLineOrNot(Img)
-
-        # 	if FindLine:
-        # 		outcheck = 0
-        # 	else:
-        # 		outcheck += 1
-        # 	# cv2.imwrite("/home/cquer/2023_qingzhou/src/qz_vision/RAW.jpg",Img)
-
-        # 	binary_img=getWhiteLine(Img)
-        # 	if cou==0:
-        # 		defalt_pos=(binary_img.shape[1]//2,binary_img.shape[0]//2)
-        # 	cou+=1
-        # 	roallineFinalImg,position,shift,vel=FindBlueCenterLine(binary_img,Img,defalt_pos)
-        # 	defalt_pos=position
-            
-            
-            
-        # 	if shift:
-        # 		last_shift=now_shift
-        # 		now_shift=shift
-        # 		D_shift.append(shift)
-
-        # 		angle=Kp*now_shift+Kd*(now_shift-last_shift)+Ki*(sum(D_shift)/len(D_shift))
-        # 	else:
-        # 		angle=0
-        # 	# print(angle)
-        # 	if outcheck==6:
-        # 		cmdData.linear.x=0
-        # 		cmdData.angular.z=0
-        # 		locate_pub.publish(5)
-
-        # 	else:
-        # 		cmdData.linear.x=vel
-        # 		cmdData.angular.z=angle*12
-        # 	move_pub.publish(cmdData)
-                        
-
-    cam.release()
+            # 	else:
+            # 		cmdData.linear.x=vel
+            # 		cmdData.angular.z=angle*12
+            # 	move_pub.publish(cmdData)                            
+    except rospy.ROSInterruptException:
+        cam.release()

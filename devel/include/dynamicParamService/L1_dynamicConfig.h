@@ -242,6 +242,7 @@ class DEFAULT
         if("lfw"==(*_i)->name){lfw = boost::any_cast<double>(val);}
         if("lrv"==(*_i)->name){lrv = boost::any_cast<double>(val);}
         if("Lfw"==(*_i)->name){Lfw = boost::any_cast<double>(val);}
+        if("AllowReverse"==(*_i)->name){AllowReverse = boost::any_cast<bool>(val);}
         if("controller_freq"==(*_i)->name){controller_freq = boost::any_cast<double>(val);}
         if("angle_gain"==(*_i)->name){angle_gain = boost::any_cast<double>(val);}
         if("gas_gain"==(*_i)->name){gas_gain = boost::any_cast<double>(val);}
@@ -256,6 +257,7 @@ double Vcmd;
 double lfw;
 double lrv;
 double Lfw;
+bool AllowReverse;
 double controller_freq;
 double angle_gain;
 double gas_gain;
@@ -282,6 +284,8 @@ double base_angle;
       double lrv;
 //#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
       double Lfw;
+//#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
+      bool AllowReverse;
 //#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
       double controller_freq;
 //#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
@@ -490,6 +494,16 @@ L1_dynamicConfig::GroupDescription<L1_dynamicConfig::DEFAULT, L1_dynamicConfig> 
       Default.abstract_parameters.push_back(L1_dynamicConfig::AbstractParamDescriptionConstPtr(new L1_dynamicConfig::ParamDescription<double>("Lfw", "double", 0, "*min d when car is turning*", "", &L1_dynamicConfig::Lfw)));
 //#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
       __param_descriptions__.push_back(L1_dynamicConfig::AbstractParamDescriptionConstPtr(new L1_dynamicConfig::ParamDescription<double>("Lfw", "double", 0, "*min d when car is turning*", "", &L1_dynamicConfig::Lfw)));
+//#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
+      __min__.AllowReverse = 0;
+//#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
+      __max__.AllowReverse = 1;
+//#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
+      __default__.AllowReverse = 0;
+//#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
+      Default.abstract_parameters.push_back(L1_dynamicConfig::AbstractParamDescriptionConstPtr(new L1_dynamicConfig::ParamDescription<bool>("AllowReverse", "bool", 0, "reverse or not", "", &L1_dynamicConfig::AllowReverse)));
+//#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
+      __param_descriptions__.push_back(L1_dynamicConfig::AbstractParamDescriptionConstPtr(new L1_dynamicConfig::ParamDescription<bool>("AllowReverse", "bool", 0, "reverse or not", "", &L1_dynamicConfig::AllowReverse)));
 //#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
       __min__.controller_freq = 5.0;
 //#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"

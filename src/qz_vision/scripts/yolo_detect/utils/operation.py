@@ -77,7 +77,7 @@ class ONNXModel(object):
 
 
 class YOLO(ONNXModel):
-    def __init__(self, onnx_session):
+    def __init__(self, onnx_session,object):
         super(YOLO, self).__init__(onnx_session)
         # 训练所采用的输入图片大小
         self.img_size = 640
@@ -94,7 +94,10 @@ class YOLO(ONNXModel):
         # 'potted plant', 'bed', 'dining table', 'toilet', 'tv', 'laptop', 'mouse', 'remote', 'keyboard', 'cell phone',
         # 'microwave', 'oven', 'toaster', 'sink', 'refrigerator', 'book', 'clock', 'vase', 'scissors', 'teddy bear',
         # 'hair drier', 'toothbrush']
-        self.classes = ['hangtian', 'jidian', 'sanyuan', 'xinghang']
+        if (object=='text'):
+            self.classes = ['hangtian', 'jidian', 'sanyuan', 'xinghang']
+        elif(object=='traffic'):
+            self.classes = ['green', 'red']
 
     def to_numpy(self, img, shape, gray=False):
         def letterbox_image(image, size):

@@ -26,6 +26,8 @@
 
 struct ParametersConfig
 {
+	// catkin_make -DCATKIN_WHITELIST_PACKAGES="dynamic_parameters"
+	double limit = -7.75;//-7.62
 	qingzhou_nav::L1_dynamicConfig config1;
 	qingzhou_nav::L1_dynamicConfig config2;
 	qingzhou_nav::L1_dynamicConfig config3;
@@ -33,65 +35,85 @@ struct ParametersConfig
 	qingzhou_nav::L1_dynamicConfig config5;
 	ParametersConfig(){
 		// Start开始
-		config1.L = 0.23;
+		config1.y_limit = limit;
+		config1.L = 0.3;
 		config1.Lrv = 1.0;
 		config1.Vcmd = 0.7;
-		config1.Lfw = 0.6;
+		config1.Lfw = 0.55;//早上跑五圈0.55
 		config1.lfw = 0.13;
-		config1.lrv = 10.0;   
+		config1.lrv = 10.0;
 		config1.controller_freq = 20.0;
-		config1.angle_gain = 0.10;//0.113
-		config1.gas_gain =1.0;
-		config1.base_speed = 0.5;
+		config1.angle_gain_forward = 1.8;//早上跑五圈的代码1.8
+		config1.angle_gain_back = 0.113;
+		config1.gas_gain = 1.0;
+		config1.base_speed_forward = 0.55;//五0.7
+		config1.base_speed_back = 0.5;
 		config1.base_angle = 0.5;
+		config1.AllowReverse = false;
 
+		config2.y_limit = limit;	
 		config2.L = 0.3;
 		config2.Lrv = 1.0;
 		config2.Vcmd = 0.7;
-		config2.Lfw = 0.8;
+		config2.Lfw = 0.45;  // 0.55
 		config2.lfw = 0.14;
 		config2.lrv = 10.0;
 		config2.controller_freq = 20.0;
-		config2.angle_gain = 0.08; // 7月3日0.1   原来0.08
+		config2.angle_gain_forward = 1.35; // 0.015
+		config2.angle_gain_back = 0.06; // 7月3日0.1   原来0.08
 		config2.gas_gain = 1.0;
-		config2.base_speed = 0.5;
-		config2.base_angle = 0.0;	
+		config2.base_speed_forward = 0.52;
+		config2.base_speed_back = 0.5;
+		config2.base_angle = 0.0;
+		config2.AllowReverse = false;
 
-		config3.L = 0.27; //0.3
+		config3.y_limit = limit;
+		config3.L = 0.3; //0.27
 		config3.Lrv = 1.0;
 		config3.Vcmd = 0.7;
-		config3.Lfw =0.55;//0.65
+		config3.Lfw =0.33;  //0.55 0.4
 		config3.lfw = 0.1;
 		config3.lrv = 10.0;
 		config3.controller_freq = 20.0;
-		config3.angle_gain = 0.111;//0.125
+		config3.angle_gain_forward = 1.3; //1.8 1.35
+		config3.angle_gain_back = 0.1; 
 		config3.gas_gain = 1.0;
-		config3.base_speed = 0.7;
-		config3.base_angle = 0.0;		
-		
-		config4.L = 0.23;//0.3越大角度越大
+		config3.base_speed_forward = 0.55;
+		config3.base_speed_back = 0.6;
+		config3.base_angle = 0.0;
+		config3.AllowReverse = false;
+
+		config4.y_limit = limit;
+		config4.L = 0.25;//越大角度越大 0.23
 		config4.Lrv = 0.6;
 		config4.Vcmd = 0.7;
-		config4.Lfw = 0.6;//前瞻距离，越大角度越小
+		config4.Lfw = 0.7; //0.7
 		config4.lfw = 0.13;//越大角度越小
 		config4.lrv = 10.0;
 		config4.controller_freq = 20.0;
-		config4.angle_gain = 1.45;//角度增益
+		config4.angle_gain_forward = 3.6; // 角度增益3.6
+		config4.angle_gain_back = 1.8; // 角度增益
 		config4.gas_gain = 1.6;
-		config4.base_speed = 0.55;//速度
+		config4.base_speed_forward = 0.55;//速度
+		config4.base_speed_back = 0.55; // 速度
 		config4.base_angle = 0.0;
-				
+		config4.AllowReverse = false;
+
+		config5.y_limit = limit;
 		config5.L = 0.3;
 		config5.Lrv = 1.0;
 		config5.Vcmd = 0.7;
-		config5.Lfw = 0.7;
+		config5.Lfw = 0.5;
 		config5.lfw = 0.13;
 		config5.lrv = 10.0;
 		config5.controller_freq = 20.0;
-		config5.angle_gain = 0.75;
+		config5.angle_gain_forward = 1.4;//1.4
+		config5.angle_gain_back = 0.75;
 		config5.gas_gain = 1.2;
-		config5.base_speed = 0.6;
+		config5.base_speed_forward = 0.55;
+		config5.base_speed_back = 0.6;
 		config5.base_angle = 0.0;
+		config5.AllowReverse = false;
 	}
 };
 

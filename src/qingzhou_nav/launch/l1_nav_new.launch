@@ -8,18 +8,15 @@
     <!-- for amcl -->    
     <include file="$(find qingzhou_nav)/launch/amcl.launch" /> 
 
-    <!-- for Map server -->
     <node name="map_server" pkg="map_server" type="map_server" args="$(find qingzhou_nav)/maps/map_7_19.yaml" output="screen"/>
-    <!-- Navigation -->
-    <node pkg="move_base" type="move_base" respawn="false" name="move_base" >
-    <!-- costmap layers -->   
+    <!-- <node pkg="move_base" type="move_base" respawn="false" name="move_base" > -->
+    <node name="move_base" pkg="hybrid_astar_planner" type="test_planner" output="screen">
         <rosparam file="$(find qingzhou_nav)/config/l1_local_costmap_params.yaml" command="load" />
         <rosparam file="$(find qingzhou_nav)/config/l1_global_costmap_params.yaml" command="load" />
-<!-- global_planner params -->
-        <!-- <param name="base_global_planner" value="global_planner/GlobalPlanner"/> -->
-        <!-- <rosparam file="$(find qingzhou_nav)/config/global_planner_params.yaml" command="load" /> -->
-<!-- move_base params -->
         <rosparam file="$(find qingzhou_nav)/launch/includes/move_base_params.yaml" command="load"/>
+        <param name="base_global_planner" value="global_planner/GlobalPlanner" /><!--这个标志是选择使用特定的全局规划器-->
+        <!-- <param name="base_local_planner" value="teb_local_planner/TebLocalPlannerROS" /> -->
+        <param name="use_hybrid_astar" value="true" />
     </node>
 
 

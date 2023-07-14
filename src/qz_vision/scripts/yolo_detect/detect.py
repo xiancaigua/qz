@@ -23,8 +23,12 @@ import cv2
 import onnxruntime
 
 class Detect():
-    def __init__(self,
-            onnx_path='/home/cquer/2023_qingzhou/src/qz_vision/scripts/yolo_detect/best.onnx'):
+    def __init__(self, object,
+            onnx_path='/home/cquer/2023_qingzhou/src/qz_vision/scripts/yolo_detect/best2.onnx'):
+        assert object in ['traffic', 'text'], 'object should be traffic or text'
+        self.object = object
+        if (self.object == 'traffic'):
+            onnx_path='/home/cquer/2023_qingzhou/src/qz_vision/scripts/yolo_detect/traffic2.onnx'
         self.onnx_session = onnxruntime.InferenceSession(onnx_path)
         
     def detect(self, img, show=False):
@@ -36,7 +40,7 @@ class Detect():
         :param show:是否展示
         :return:
         '''
-        yolo = YOLO(self.onnx_session)
+        yolo = YOLO(self.onnx_session, self.object)
         # t1 = time.time()
         det_obj = yolo.decect(img)
         # t2 = time.time()
@@ -54,7 +58,7 @@ class Detect():
             for i in range(len(det_obj)):
                 draw.rectangle(det_obj[i]['crop'],width=3)
             img.show()  # 展示
-        return det_obj[0]['classes']
+        return det_obj[0]
 
 if __name__ == "__main__":
     img = cv2.imread('text.jpg')

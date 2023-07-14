@@ -81,7 +81,7 @@ void DynamicParameters::setParameters(qingzhou_nav::L1_dynamicConfig& config)
 	{
 		ROS_INFO("Parameters Set L : %f, Lrv : %f, Vcmd : %f, lfw : %f, lrv : %f, controller_freq : %f, angle_gain : %f, gas_gain : %f, base_speed : %f, base_angle : %f", 
 			config.L, config.Lrv, config.Vcmd, config.lfw, config.lrv, 
-			config.controller_freq, config.angle_gain, config.gas_gain, config.base_speed, config.base_angle);
+			config.controller_freq, config.angle_gain_forward, config.gas_gain, config.base_speed_forward, config.base_angle);
 	}
 	else
 	{
@@ -187,13 +187,13 @@ void DynamicParameters::initCostmapConf()
 	dynamic_reconfigure::DoubleParameter doubleParam;
 
 	doubleParam.name = "inflation_radius";
-	doubleParam.value = 0.55;
+	doubleParam.value = 0.4;//0.45
 	costmapConfUnload.doubles.push_back(doubleParam);
 
-	doubleParam.value = 0.3;//0.15
+	doubleParam.value = 0.25;
 	costmapConfTraffic.doubles.push_back(doubleParam);
 
-	doubleParam.value = 0.32;
+	doubleParam.value = 0.34;
 	costmapConfStart.doubles.push_back(doubleParam);
 	ROS_INFO("Initialize Costmap Config");
 

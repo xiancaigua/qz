@@ -98,6 +98,9 @@ find_package(catkin REQUIRED COMPONENTS
 #   cfg/DynReconf2.cfg
 # )
 
+generate_dynamic_reconfigure_options(
+  cfg/L1_dynamic.cfg
+)
 
 
 
@@ -218,3 +221,4 @@ include_directories(
 add_executable(L1_controller_v3 src/L1_controller_v3.cpp)
 target_link_libraries(L1_controller_v3 ${catkin_LIBRARIES})
 add_dependencies(L1_controller_v3 ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+

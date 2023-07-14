@@ -133,6 +133,32 @@ goal_pub_EXTERNAL_OBJECTS =
 /home/cquer/2023_qingzhou/devel/lib/test_pkg/goal_pub: /usr/lib/aarch64-linux-gnu/libboost_atomic.so
 /home/cquer/2023_qingzhou/devel/lib/test_pkg/goal_pub: /usr/lib/aarch64-linux-gnu/libpthread.so
 /home/cquer/2023_qingzhou/devel/lib/test_pkg/goal_pub: /usr/lib/aarch64-linux-gnu/libconsole_bridge.so.0.4
+/home/cquer/2023_qingzhou/devel/lib/test_pkg/goal_pub: /usr/lib/aarch64-linux-gnu/libBulletDynamics.so
+/home/cquer/2023_qingzhou/devel/lib/test_pkg/goal_pub: /usr/lib/aarch64-linux-gnu/libBulletCollision.so
+/home/cquer/2023_qingzhou/devel/lib/test_pkg/goal_pub: /usr/lib/aarch64-linux-gnu/libLinearMath.so
+/home/cquer/2023_qingzhou/devel/lib/test_pkg/goal_pub: /usr/lib/aarch64-linux-gnu/libBulletSoftBody.so
+/home/cquer/2023_qingzhou/devel/lib/test_pkg/goal_pub: /opt/ros/melodic/lib/libroscpp.so
+/home/cquer/2023_qingzhou/devel/lib/test_pkg/goal_pub: /usr/lib/aarch64-linux-gnu/libboost_filesystem.so
+/home/cquer/2023_qingzhou/devel/lib/test_pkg/goal_pub: /opt/ros/melodic/lib/libxmlrpcpp.so
+/home/cquer/2023_qingzhou/devel/lib/test_pkg/goal_pub: /opt/ros/melodic/lib/libtf2.so
+/home/cquer/2023_qingzhou/devel/lib/test_pkg/goal_pub: /opt/ros/melodic/lib/libroscpp_serialization.so
+/home/cquer/2023_qingzhou/devel/lib/test_pkg/goal_pub: /opt/ros/melodic/lib/librosconsole.so
+/home/cquer/2023_qingzhou/devel/lib/test_pkg/goal_pub: /opt/ros/melodic/lib/librosconsole_log4cxx.so
+/home/cquer/2023_qingzhou/devel/lib/test_pkg/goal_pub: /opt/ros/melodic/lib/librosconsole_backend_interface.so
+/home/cquer/2023_qingzhou/devel/lib/test_pkg/goal_pub: /usr/lib/aarch64-linux-gnu/liblog4cxx.so
+/home/cquer/2023_qingzhou/devel/lib/test_pkg/goal_pub: /usr/lib/aarch64-linux-gnu/libboost_regex.so
+/home/cquer/2023_qingzhou/devel/lib/test_pkg/goal_pub: /opt/ros/melodic/lib/librostime.so
+/home/cquer/2023_qingzhou/devel/lib/test_pkg/goal_pub: /opt/ros/melodic/lib/libcpp_common.so
+/home/cquer/2023_qingzhou/devel/lib/test_pkg/goal_pub: /usr/lib/aarch64-linux-gnu/libboost_system.so
+/home/cquer/2023_qingzhou/devel/lib/test_pkg/goal_pub: /usr/lib/aarch64-linux-gnu/libboost_thread.so
+/home/cquer/2023_qingzhou/devel/lib/test_pkg/goal_pub: /usr/lib/aarch64-linux-gnu/libboost_chrono.so
+/home/cquer/2023_qingzhou/devel/lib/test_pkg/goal_pub: /usr/lib/aarch64-linux-gnu/libboost_date_time.so
+/home/cquer/2023_qingzhou/devel/lib/test_pkg/goal_pub: /usr/lib/aarch64-linux-gnu/libboost_atomic.so
+/home/cquer/2023_qingzhou/devel/lib/test_pkg/goal_pub: /usr/lib/aarch64-linux-gnu/libpthread.so
+/home/cquer/2023_qingzhou/devel/lib/test_pkg/goal_pub: /usr/lib/aarch64-linux-gnu/libconsole_bridge.so.0.4
+/home/cquer/2023_qingzhou/devel/lib/test_pkg/goal_pub: /usr/lib/aarch64-linux-gnu/libSDLmain.a
+/home/cquer/2023_qingzhou/devel/lib/test_pkg/goal_pub: /usr/lib/aarch64-linux-gnu/libSDL.so
+/home/cquer/2023_qingzhou/devel/lib/test_pkg/goal_pub: /usr/lib/aarch64-linux-gnu/libSDL_image.so
 /home/cquer/2023_qingzhou/devel/lib/test_pkg/goal_pub: test_pkg/CMakeFiles/goal_pub.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/cquer/2023_qingzhou/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable /home/cquer/2023_qingzhou/devel/lib/test_pkg/goal_pub"
 	cd /home/cquer/2023_qingzhou/build/test_pkg && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/goal_pub.dir/link.txt --verbose=$(VERBOSE)

@@ -8,9 +8,9 @@
     <param name="calibrate_lineSpeed" value="0" type="int"  />
     <param name="calibrate_angularSpeed" value="0" type="int"  />
     <param name="ticksPerMeter" value="1224" type="int" />
-    <param name="ticksPer2PI" value = "2266" type = "int"/>         
+    <param name="ticksPer2PI" value = "2100" type = "int"/>         
     <!-- 1214 -->
-    <!-- 2083 -->
+    <!-- 2266 -->
     
     <node pkg="imu_calib" type="apply_calib" name="apply_calib" output="screen" respawn="false">
       <param name="calib_file" value="$(find test_pkg)/calib/imu_calib.yaml" />

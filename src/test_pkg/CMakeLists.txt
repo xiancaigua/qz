@@ -177,6 +177,15 @@ target_link_libraries(cmd_filter
 )
 
 
+add_executable(msg_transform src/msg_transform.cpp)
+
+add_dependencies(msg_transform ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
+target_link_libraries(msg_transform
+  ${catkin_LIBRARIES}
+)
+
+
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
 ## target back to the shorter version for ease of user use

@@ -7,7 +7,7 @@
 
     <!-- for Map server -->
     <!-- <node name="map_server" pkg="map_server" type="map_server" args="$(find qingzhou_nav)/maps/map_5_14_blind.yaml" output="screen"/> -->
-    <node name="map_server" pkg="map_server" type="map_server" args="$(find test_pkg)/map/dwa.yaml" output="screen"/>
+    <node name="map_server" pkg="map_server" type="map_server" args="$(find test_pkg)/map/new_nav.yaml" output="screen"/>
 
     <include file="$(find test_pkg)/launch/ydlidar.launch" />
     <node name="qingzhou_bringup_node" pkg="test_pkg" type="qingzhou_bringup_node" />
@@ -17,7 +17,7 @@
     <param name="calibrate_lineSpeed" value="0" type="int"  />
     <param name="calibrate_angularSpeed" value="0" type="int"  />
     <param name="ticksPerMeter" value="1224" type="int" />
-    <param name="ticksPer2PI" value = "2266" type = "int"/>         
+    <param name="ticksPer2PI" value = "2100" type = "int"/>         
     <!-- 1214 -->
     <!-- 2083 -->
     
@@ -56,5 +56,7 @@
 
     <node pkg="tf" type="static_transform_publisher" name="base_link_to_imulink"
     args="-0.08 0.0 0.05 0.0 0.0  0.0 /base_link /imu_link 50" />
+
+    <!-- <node pkg="test_pkg" type="dwa_tiaoshi.py" name="DWA" output="screen"></node>   -->
 
 </launch>

@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+
+<launch>
+    <master auto="start"/>
+    <include file="$(find test_pkg)/launch/qingzhou_bringup.launch" />
+
+    <include file="$(find qingzhou_nav)/launch/amcl.launch" /> 
+
+    <!-- for Map server -->
+    <node name="map_server" pkg="map_server" type="map_server" args="$(find test_pkg)/map/nav.yaml" output="screen"/>
+    <!-- Navigation -->
+    <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+	  
+    <param name="base_global_planner" value="global_planner/GlobalPlanner" />
+    <param name="planner_frequency" value="1.0" />
+    <param name="planner_patience" value="5.0" />
+    <!-- <param name="base_local_planner" value="dwa_local_planner/DWAPlannerROS" />  -->
+    <param name="base_local_planner" value="teb_local_planner/TebLocalPlannerROS"/>
+    <param name="controller_frequency" value="3.8" />
+    <param name="controller_patience" value="5.0" />
+    
+    <rosparam file="$(find qingzhou_nav)/config/costmap_common_params.yaml" command="load" ns="global_costmap" />
+    <rosparam file="$(find qingzhou_nav)/config/costmap_common_params.yaml" command="load" ns="local_costmap" />
+    <rosparam file="$(find qingzhou_nav)/config/l1_global_costmap_params.yaml" command="load" />
+    <rosparam file="$(find qingzhou_nav)/config/l1_local_costmap_params.yaml" command="load" />
+    
+
+    <!-- <rosparam file="$(find qingzhou_nav)/config/teb/dwa_local_planner_params.yaml" command="load" /> -->
+    <rosparam file="$(find qingzhou_nav)/config/teb/teb_local_planner_params_2.yaml" command="load" />
+    <rosparam file="$(find qingzhou_nav)/config/teb/global_planner_params.yaml" command="load" />
+
+    <!-- <rosparam file="$(find qingzhou_nav)/config/teb/costmap_common_params.yaml" command="load" ns="global_costmap" /> -->
+    <!-- <rosparam file="$(find qingzhou_nav)/config/teb/costmap_common_params.yaml" command="load" ns="local_costmap" /> -->
+    <!-- <rosparam file="$(find qingzhou_nav)/config/teb/local_costmap_params.yaml" command="load" /> -->
+    <!-- <rosparam file="$(find qingzhou_nav)/config/teb/global_costmap_params.yaml" command="load" /> -->
+    <rosparam file="$(find qingzhou_nav)/config/teb/costmap_converter_params.yaml" command="load"  />
+    
+    </node>
+    <node name="msg_transform" pkg="test_pkg" type="msg_transform"/>
+
+
+</launch>

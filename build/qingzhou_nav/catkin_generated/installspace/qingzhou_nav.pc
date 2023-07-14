@@ -3,6 +3,6 @@ prefix=/home/cquer/2023_qingzhou/install
 Name: qingzhou_nav
 Description: Description of qingzhou_nav
 Version: 0.0.0
-Cflags: 
+Cflags: -I${prefix}/include
 Libs: -L${prefix}/lib 
 Requires: visualization_msgs

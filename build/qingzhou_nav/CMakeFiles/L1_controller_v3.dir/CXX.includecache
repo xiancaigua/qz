@@ -6,7 +6,7 @@
 
 #IncludeRegexTransform: 
 
-/home/cquer/2023_qingzhou/devel/include/dynamicParamService/L1_dynamicConfig.h
+/home/cquer/2023_qingzhou/devel/include/qingzhou_nav/L1_dynamicConfig.h
 dynamic_reconfigure/config_tools.h
 -
 limits
@@ -31,6 +31,8 @@ ros/ros.h
 /home/cquer/2023_qingzhou/src/qingzhou_nav/src/ros/ros.h
 dynamic_reconfigure/server.h
 /home/cquer/2023_qingzhou/src/qingzhou_nav/src/dynamic_reconfigure/server.h
+qingzhou_nav/L1_dynamicConfig.h
+/home/cquer/2023_qingzhou/src/qingzhou_nav/src/qingzhou_nav/L1_dynamicConfig.h
 geometry_msgs/PoseStamped.h
 -
 geometry_msgs/Twist.h
@@ -43,10 +45,26 @@ nav_msgs/Path.h
 -
 nav_msgs/Odometry.h
 -
+ackermann_msgs/AckermannDrive.h
+-
 visualization_msgs/Marker.h
 -
-dynamicParamService/L1_dynamicConfig.h
-/home/cquer/2023_qingzhou/src/qingzhou_nav/src/dynamicParamService/L1_dynamicConfig.h
+
+/opt/ros/melodic/include/ackermann_msgs/AckermannDrive.h
+string
+-
+vector
+-
+map
+-
+ros/types.h
+-
+ros/serialization.h
+-
+ros/builtin_message_traits.h
+-
+ros/message_operations.h
+-
 
 /opt/ros/melodic/include/dynamic_reconfigure/BoolParameter.h
 string
