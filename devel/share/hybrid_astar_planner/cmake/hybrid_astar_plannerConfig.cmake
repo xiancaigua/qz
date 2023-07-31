@@ -91,9 +91,9 @@ endif()
 # flag project as catkin-based to distinguish if a find_package()-ed project is a catkin project
 set(hybrid_astar_planner_FOUND_CATKIN_PROJECT TRUE)
 
-if(NOT "/home/cquer/2023_qingzhou/src/hybrid_astar_planner/include " STREQUAL " ")
+if(NOT "/home/cquer/2023_qingzhou/devel/include;/home/cquer/2023_qingzhou/src/hybrid_astar_planner/include " STREQUAL " ")
   set(hybrid_astar_planner_INCLUDE_DIRS "")
-  set(_include_dirs "/home/cquer/2023_qingzhou/src/hybrid_astar_planner/include")
+  set(_include_dirs "/home/cquer/2023_qingzhou/devel/include;/home/cquer/2023_qingzhou/src/hybrid_astar_planner/include")
   if(NOT " " STREQUAL " ")
     set(_report "Check the issue tracker '' and consider creating a ticket if the problem has not been reported yet.")
   elseif(NOT " " STREQUAL " ")
@@ -116,7 +116,7 @@ if(NOT "/home/cquer/2023_qingzhou/src/hybrid_astar_planner/include " STREQUAL " 
   endforeach()
 endif()
 
-set(libraries "hybrid_astar_planner;geometry_msgs;pluginlib;roscpp;nav_core;tf2_ros;ompl")
+set(libraries "hybrid_astar_planner;geometry_msgs;pluginlib;roscpp;nav_core;tf2_ros;ompl;dynamic_reconfigure")
 foreach(library ${libraries})
   # keep build configuration keywords, target names and absolute libraries as-is
   if("${library}" MATCHES "^(debug|optimized|general)$")
@@ -177,7 +177,7 @@ foreach(library ${libraries})
   endif()
 endforeach()
 
-set(hybrid_astar_planner_EXPORTED_TARGETS "")
+set(hybrid_astar_planner_EXPORTED_TARGETS "hybrid_astar_planner_gencfg")
 # create dummy targets for exported code generation targets to make life of users easier
 foreach(t ${hybrid_astar_planner_EXPORTED_TARGETS})
   if(NOT TARGET ${t})

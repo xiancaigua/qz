@@ -1,0 +1,8 @@
+<?xml version="1.0" ?>
+<launch>
+    <include file="$(find hybrid_astar_planner)/test_the_plugin/launch/testcopy.launch"/>
+    <include file="$(find test_pkg)/launch/l1_nav_newcopy.launch" /> 
+    <include file="$(find qingzhou_locate)/launch/locate.launch"/> 
+    <include file="$(find qz_vision)/launch/vision.launch"/>
+  <node pkg="dynamic_parameters" type="dynamic_parameters_beifen" name="dynamic_parameters" output = "screen"/>
+</launch>

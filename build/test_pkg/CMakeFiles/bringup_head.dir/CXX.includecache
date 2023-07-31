@@ -53,6 +53,8 @@ geometry_msgs/TransformStamped.h
 /home/cquer/2023_qingzhou/src/test_pkg/include/test_pkg/geometry_msgs/TransformStamped.h
 ackermann_msgs/AckermannDrive.h
 /home/cquer/2023_qingzhou/src/test_pkg/include/test_pkg/ackermann_msgs/AckermannDrive.h
+geometry_msgs/PoseWithCovarianceStamped.h
+-
 serial/serial.h
 -
 time.h
@@ -224,6 +226,26 @@ ros/builtin_message_traits.h
 ros/message_operations.h
 -
 geometry_msgs/Pose.h
+-
+
+/opt/ros/melodic/include/geometry_msgs/PoseWithCovarianceStamped.h
+string
+-
+vector
+-
+map
+-
+ros/types.h
+-
+ros/serialization.h
+-
+ros/builtin_message_traits.h
+-
+ros/message_operations.h
+-
+std_msgs/Header.h
+-
+geometry_msgs/PoseWithCovariance.h
 -
 
 /opt/ros/melodic/include/geometry_msgs/Quaternion.h

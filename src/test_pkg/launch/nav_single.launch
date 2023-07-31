@@ -1,0 +1,10 @@
+<launch>
+    <include file="$(find test_pkg)/launch/qingzhou_bringup.launch" />
+    <include file="$(find qingzhou_nav)/launch/amcl.launch" /> 
+    <node name="map_server" pkg="map_server" type="map_server" args="$(find test_pkg)/map/nav_a.yaml" output="screen"/>
+    <include file="$(find test_pkg)/launch/l1_nav_newcopy.launch" /> 
+  <node pkg="qingzhou_nav" type="L1_controller_v31" respawn="false" name="L1_controller_v3" output="screen">       
+        <rosparam file=	"$(find qingzhou_nav)/config/l1_controller_v3_param.yaml" command="load" />
+    </node>
+
+</launch>

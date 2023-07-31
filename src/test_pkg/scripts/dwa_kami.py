@@ -44,35 +44,6 @@ goal_y = np.array([-0.18, -0.6, -0.3,0])
 # 0.55 0.85
 # goal2_x = -2.0
 # goal2_y = -0.46
-"""
-class Config(object):
-    
-    #Parameters used for simulation
-    
-    def __init__(self):
-        # robot parameter
-        self.max_speed = 0.8 # [m/s] # 最大速度    原来的0.4
-        # self.min_speed = -0.5 # [m/s] # min v Set to reverse
-        self.min_speed = -0.8 # [m/s] # min v Set to can not reverse
-        self.max_yawrate = 120 * 3.1415926 / 180.0 # [rad/s] # 最大角速度
-        self.max_accel = 0.4 # [m/ss] # 最大加速度0.15
-        self.max_dyawrate = 3 * 3.1415926 / 180.0 # [rad/ss] # 最大角加速度45  原来是5 速度为4的时候 速度为8的时候为4 
-        self.v_reso = 0.01 # [m/s] 速度分辨率
-        self.yawrate_reso = 0.2 * 3.1415926 / 180.0 # [rad/s] 角度分辨率 原来的是0.2
-        self.dt = 0.05 # [s] # 采样时间
-        self.predict_time = 0.8  # [s] # 模拟时间 1.0
-        #权重参数
-        self.to_goal_cost_gain = 0.8 # Target cost gain
-        self.speed_cost_gain = 0.8 # Target cost reduction 1.0
-        self.ob_cost_gain = 1.0 #障碍物权重（没用到）
-        self.angle_cost_gain = 0.4 #朝向的权重3.0 原来0.19
-        self.dx_cost_gain = 1.9 #水平线的权重 原来1.7   8的时候是1.9
-        # self.to_goal_angle_cost = 5.0
-        self.robot_radius = 0.3 # [m] # robor radius
-
-    def set_angle_cost_gain(self,angle_cost_gain):
-        self.angle_cost_gain = angle_cost_gain
-"""
 
 class Config(object):
     """

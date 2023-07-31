@@ -29,6 +29,7 @@
 #include "geometry_msgs/TransformStamped.h"
 #include "ackermann_msgs/AckermannDrive.h"
 
+#include <geometry_msgs/PoseWithCovarianceStamped.h>
 // lib
 #include <serial/serial.h>
 #include <time.h>
@@ -52,7 +53,9 @@ enum RobotLocation : int
     LoadToTrafficLight,
     TrafficLightToUnload,
     UnloadToRoadLine,
-    Unknown
+    Unknown,
+    RoadLineToReverse,
+    Reverse
 };
 
 typedef struct sMartcarControl
@@ -82,6 +85,7 @@ public:
     int calibrate_lineSpeed;     // 标定线速度
     int calibrate_angularSpeed;  // 标定角速度
     unsigned int batteryVoltage; // 电池电压
+    int traffic_flag;
     std_msgs::Float32  currentBattery; // 电池数据
 
     float ticksPerMeter; // 一米脉冲数
@@ -95,23 +99,23 @@ public:
     double accelX, accelY, accelZ;            // 加速度
     double gyroX, gyroY, gyroZ;               // 角速度
     double magX, magY, magZ;                  // 磁力计
+    double amcl_y;
 
     double velDeltaTime;       // 时间，存放转换成秒的时间
     double detdistance, detth; // 计算距离和计算角度角度
     double detEncode;
     std_msgs::Int32 robotlocation;
-    std_msgs::Int32 dwa_flag;
+    std_msgs::Int32 odomreset;
     sMartcarControl moveBaseControl;
-    sMartcarControl l1_cmd,vision_cmd,dwa_cmd;
+    sMartcarControl l1_cmd,vision_cmd,zero_cmd;
 
     serial::Serial ser; //串口对象setTimeout
     // 订阅话题
     ros::Subscriber sub_l1;
-    ros::Subscriber sub_dwa;
+    ros::Subscriber sub_traffic;
     ros::Subscriber sub_vision;
-    ros::Subscriber location_sub;
-    ros::Subscriber dwa_flag_sub;
-
+    ros::Subscriber location_sub,amcl_sub;
+    ros::Subscriber SubOdomReset;
 
     // 发布话题
     ros::Publisher pub_odom;    // 发布odom topic
@@ -127,11 +131,11 @@ public:
     void sendCarInfoKernel(); // 发送小车数据到下位机函数
 
     void l1_move_callback(const ackermann_msgs::AckermannDrive::ConstPtr &msg);     // move_base回调函数
-    void dwa_move_callback(const ackermann_msgs::AckermannDrive::ConstPtr &msg);     // move_base回调函数
+    void traffic_move_callback(const std_msgs::Int32::ConstPtr &msg);     // move_base回调函数
     void vision_move_callback(const ackermann_msgs::AckermannDrive::ConstPtr &msg); // move_base回调函数
+    void amcl_callback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& amclMsg);
     void locateCB(const std_msgs::Int32::ConstPtr &msg);
-    void dwa_flag_callback(const std_msgs::Int32::ConstPtr &msg);
-
+    void OdomReset(const std_msgs::Int32::ConstPtr &msg);
 };
 
 

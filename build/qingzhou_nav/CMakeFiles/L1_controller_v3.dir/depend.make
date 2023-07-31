@@ -100,6 +100,7 @@ qingzhou_nav/CMakeFiles/L1_controller_v3.dir/src/L1_controller_v3.cpp.o: /opt/ro
 qingzhou_nav/CMakeFiles/L1_controller_v3.dir/src/L1_controller_v3.cpp.o: /opt/ros/melodic/include/std_msgs/ColorRGBA.h
 qingzhou_nav/CMakeFiles/L1_controller_v3.dir/src/L1_controller_v3.cpp.o: /opt/ros/melodic/include/std_msgs/Empty.h
 qingzhou_nav/CMakeFiles/L1_controller_v3.dir/src/L1_controller_v3.cpp.o: /opt/ros/melodic/include/std_msgs/Header.h
+qingzhou_nav/CMakeFiles/L1_controller_v3.dir/src/L1_controller_v3.cpp.o: /opt/ros/melodic/include/std_msgs/Int32.h
 qingzhou_nav/CMakeFiles/L1_controller_v3.dir/src/L1_controller_v3.cpp.o: /opt/ros/melodic/include/tf/FrameGraph.h
 qingzhou_nav/CMakeFiles/L1_controller_v3.dir/src/L1_controller_v3.cpp.o: /opt/ros/melodic/include/tf/FrameGraphRequest.h
 qingzhou_nav/CMakeFiles/L1_controller_v3.dir/src/L1_controller_v3.cpp.o: /opt/ros/melodic/include/tf/FrameGraphResponse.h

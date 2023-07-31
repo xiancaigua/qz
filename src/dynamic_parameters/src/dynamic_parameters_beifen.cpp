@@ -20,7 +20,7 @@ getCurrentConfig首先需要使用setConfiguration更新一下客户端内的数
 这边使用官方给的函数修改参数，同时也可以使用话题发布信息来修改参数
 ************************************************************************************/
 
-#include "dynamic_parameters.h"
+#include "dynamic_parameters_beifen.h"
 
 int main(int argc, char** argv)
 {
@@ -34,7 +34,8 @@ int main(int argc, char** argv)
 	return 0;
 }
 
-/******************************************
+/******************
+	************************
 Name ：DynamicParameters
 Param: Null
 Func : 构造函数
@@ -81,7 +82,7 @@ void DynamicParameters::setParameters(qingzhou_nav::L1_dynamicConfig& config)
 	{
 		ROS_INFO("Parameters Set L : %f, Lrv : %f, Vcmd : %f, lfw : %f, lrv : %f, controller_freq : %f, angle_gain : %f, gas_gain : %f, base_speed : %f, base_angle : %f", 
 			config.L, config.Lrv, config.Vcmd, config.lfw, config.lrv, 
-			config.controller_freq, config.angle_gain, config.gas_gain, config.base_speed, config.base_angle);
+			config.controller_freq, config.angle_gain_forward, config.gas_gain, config.base_speed_forward, config.base_angle);
 	}
 	else
 	{
@@ -121,6 +122,7 @@ void DynamicParameters::locateCB(const std_msgs::Int32& data)
 	{
 		ROS_INFO("-----------------Load config--------------------");
 		setParameters(paramConfig.config2);
+		setCostmapConf(costmapConfLoad);
 	}
 	//  && odom_msg.pose.pose.position.y < -3.3
 	else if (data.data == TrafficLight)
@@ -137,36 +139,16 @@ void DynamicParameters::locateCB(const std_msgs::Int32& data)
 	else if (data.data == RoadLine)
 	{
 		setParameters(paramConfig.config5);
-		setCostmapConf(costmapConfStart);
+		setCostmapConf(costmapConfRoadLine);
 	}
-
-		// switch (data.data)
-		// {
-		// case Start:
-		// 	setParameters(paramConfig.config1);
-		// 	setCostmapConf(costmapConfOther);
-		// 	map_client.call(empty);
-		// 	break;
-		// case Load:
-		// 	setParameters(paramConfig.config2);
-		// 	// setCostmapConf(costmapConfOther);
-		// 	break;
-		// case TrafficLightToUnload:
-		// 	setParameters(paramConfig.config3);
-		// 	// setCostmapConf(costmapConfOther);
-		// 	break;
-		// case Unload:
-		// 	setParameters(paramConfig.config4);
-		// 	setCostmapConf(costmapConfUnload);
-		// 	break;
-		// case RoadLine :
-		// 	setParameters(paramConfig.config5);
-		// 	setCostmapConf(costmapConfOther);
-		// 	break;
-		// default:
-		// 	ROS_INFO("Keep!");
-		// 	break;
-	// }
+	else if (data.data == Reverse)
+	{
+		setParameters(paramConfig.config6);
+	}
+	else if (data.data == ReverseToStart)
+	{
+		setParameters(paramConfig.config7);
+	}
 }
 
 /******************************************
@@ -187,13 +169,19 @@ void DynamicParameters::initCostmapConf()
 	dynamic_reconfigure::DoubleParameter doubleParam;
 
 	doubleParam.name = "inflation_radius";
-	doubleParam.value = 0.55;
+	doubleParam.value = 0.505;
 	costmapConfUnload.doubles.push_back(doubleParam);
 
-	doubleParam.value = 0.3;//0.15
+	doubleParam.value = 0.28;//0.3
+	costmapConfLoad.doubles.push_back(doubleParam);
+
+	doubleParam.value = 0.3;
 	costmapConfTraffic.doubles.push_back(doubleParam);
 
-	doubleParam.value = 0.32;
+	doubleParam.value = 0.05;
+	costmapConfRoadLine.doubles.push_back(doubleParam);
+
+	doubleParam.value = 0.38;
 	costmapConfStart.doubles.push_back(doubleParam);
 	ROS_INFO("Initialize Costmap Config");
 
@@ -203,6 +191,12 @@ void DynamicParameters::initCostmapConf()
 
 	doubleParam.value = 5.0;
 	costmapConfTraffic.doubles.push_back(doubleParam);
+
+	doubleParam.value = 5.0;
+	costmapConfLoad.doubles.push_back(doubleParam);
+
+	doubleParam.value = 5.0;
+	costmapConfRoadLine.doubles.push_back(doubleParam);
 
 	doubleParam.value = 5.0;
 	costmapConfUnload.doubles.push_back(doubleParam);

@@ -17,9 +17,9 @@ set(CMAKE_TARGET_DEFINITIONS_CXX
 
 # The include file search paths:
 set(CMAKE_CXX_TARGET_INCLUDE_PATH
+  "/home/cquer/2023_qingzhou/devel/include"
   "/home/cquer/2023_qingzhou/src/hybrid_astar_planner/include"
   "/home/cquer/2023_qingzhou/src/hybrid_astar_planner/test_the_plugin/include"
-  "/home/cquer/2023_qingzhou/devel/include"
   "/home/cquer/2023_qingzhou/src/authority_code/costmap_2d/include"
   "/home/cquer/2023_qingzhou/src/authority_code/voxel_grid/include"
   "/home/cquer/2023_qingzhou/src/authority_code/nav_core/include"

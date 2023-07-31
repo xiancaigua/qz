@@ -18,6 +18,11 @@ actuator::actuator(ros::NodeHandle nh)
     linearSpeed = 0;   // 来自编码器，用于发布在odom中计算线速度
     angularSpeed = 0;  // 同上
     velDeltaTime = 0;  // linearSpeed = detdistance/velDeltaTime;  数值上来自读取stm32的时间差
+    traffic_flag = 1;
+    amcl_y = 0.0;
+
+    zero_cmd.TargetSpeed = 0;
+    zero_cmd.TargetAngle = 0;
 
     nh.param("mcubaudrate", m_baudrate, m_baudrate);
     nh.param("mcuserialport", m_serialport, std::string("/dev/stm32"));
@@ -59,24 +64,24 @@ actuator::actuator(ros::NodeHandle nh)
     // 读取ROS中的运动控制话题，用于解析并且组织到下位机,这是具有经过filter分滤过的
     sub_l1 = nh.subscribe("/qz_cmd_vel_l1", 1, &actuator::l1_move_callback, this);
     sub_vision = nh.subscribe("/qz_cmd_vel_vision", 1, &actuator::vision_move_callback, this);
-    sub_dwa = nh.subscribe("/dwa_cmd_vel", 1, &actuator::dwa_move_callback, this);
+    sub_traffic = nh.subscribe("/traffic_flag", 1, &actuator::traffic_move_callback, this);
     location_sub = nh.subscribe("/qingzhou_locate", 1, &actuator::locateCB, this);
-    dwa_flag_sub = nh.subscribe("/dwa_flag",1,&actuator::dwa_flag_callback, this);
+    SubOdomReset = nh.subscribe("/OdomReset", 1, &actuator::OdomReset, this);
+    amcl_sub = nh.subscribe("/amcl_pose",1,&actuator::amcl_callback, this);
     // 这一行是调试用，记得删掉
-    //  sub_move_base = nh.subscribe("/cmd_vel", 1, &actuator::callback_move_base, this);
 
-        // 发布下位机IMU  ODOM  电池数据到ROS 话题中
+    // 发布下位机IMU  ODOM  电池数据到ROS 话题中
     pub_imu = nh.advertise<sensor_msgs::Imu>("raw", 2);
     pub_mag = nh.advertise<sensor_msgs::MagneticField>("imu/mag", 5);
     pub_odom = nh.advertise<nav_msgs::Odometry>("odom", 2);
     pub_battery = nh.advertise<std_msgs::Float32>("battery", 10);
 
+    odomreset.data = 1;
 }
 
 actuator::~actuator()
 {
 }
-
 
 // filter 's callback
 void actuator::l1_move_callback(const ackermann_msgs::AckermannDrive::ConstPtr &msg)
@@ -108,16 +113,10 @@ void actuator::vision_move_callback(const ackermann_msgs::AckermannDrive::ConstP
     vision_cmd.TargetAngle = round(atan(w * CARL / v) * 57.3); // 数学原理不清楚，保持与官方一致round(atan(w*CARL/v)*57.3);
     vision_cmd.TargetAngle += 60;
 }
-void actuator::dwa_move_callback(const ackermann_msgs::AckermannDrive::ConstPtr &msg)
+
+void actuator::traffic_move_callback(const std_msgs::Int32::ConstPtr &msg)
 {
-    memset(&dwa_cmd, 0, sizeof(sMartcarControl)); // 清零movebase数据存储区
-
-    float v = msg->speed;
-    float w = msg->steering_angle;
-
-    dwa_cmd.TargetSpeed = v * 42 / 0.43;           // 这里可能要加一个增益值,这里是我随意写的
-    dwa_cmd.TargetAngle = round(atan(w * CARL / v) * 57.3); // 数学原理不清楚，保持与官方一致
-    dwa_cmd.TargetAngle += 60;
+    traffic_flag = (*msg).data;
 }
 
 void actuator::locateCB(const std_msgs::Int32::ConstPtr &msg)
@@ -125,9 +124,14 @@ void actuator::locateCB(const std_msgs::Int32::ConstPtr &msg)
     robotlocation = *msg;
 }
 
-void actuator::dwa_flag_callback(const std_msgs::Int32::ConstPtr &msg)
+void actuator::OdomReset(const std_msgs::Int32::ConstPtr &msg)
 {
-    dwa_flag = *msg;
+    odomreset = *msg;
+}
+
+void actuator::amcl_callback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr &amclMsg)
+{
+    amcl_y = (*amclMsg).pose.pose.position.y;
 }
 
 void actuator::run()
@@ -135,8 +139,7 @@ void actuator::run()
     memset(&moveBaseControl, 0, sizeof(sMartcarControl)); // 清零movebase数据存储区
     memset(&l1_cmd, 0, sizeof(sMartcarControl));          // 清零movebase数据存储区
     memset(&vision_cmd, 0, sizeof(sMartcarControl));      // 清零movebase数据存储区
-    memset(&dwa_cmd, 0, sizeof(sMartcarControl));          // 清零movebase数据存储区
-    
+
     ros::Rate rate(150);
 
     double x = 0.0; // 后面发布在odom中会用，用速度计算距离，随后加在odom里
@@ -151,22 +154,24 @@ void actuator::run()
         memset(&moveBaseControl, 0, sizeof(sMartcarControl)); // 清零movebase数据存储区
 
         // ROS_INFO("[BRING_UP]---------------Bring Up is Ready");
-        if (robotlocation.data == int(RoadLine)&& dwa_flag.data != 1)
+        if (robotlocation.data == int(RoadLine) )
         {
             moveBaseControl = vision_cmd;
             // ROS_INFO("[BRING_UP]---------------FROM VISION");
         }
-        else if (dwa_flag.data == 1)
+        else if (amcl_y < -5.85 && traffic_flag == 0)
         {
-            // ROS_INFO("[BRING_UP]---------------FROM DWA");
-            moveBaseControl = dwa_cmd;
+            moveBaseControl = zero_cmd;
+            // ROS_INFO("----%d",int(moveBaseControl.speed));
+            ROS_INFO("[BRING_UP]---------------FROM ZERO");
         }
         else
         {
             moveBaseControl = l1_cmd;
-            // ROS_INFO("----%d",int(moveBaseControl.speed));
-            // ROS_INFO("[BRING_UP]---------------FROM L1");
-        };
+        }
+        if (odomreset.data == 0){
+            memset(&moveBaseControl, 0, sizeof(sMartcarControl)); // 清零movebase数据存储区
+        }
         // 计算velDeltatime,后面算速度用得到
         current_time = ros::Time::now();
         velDeltaTime = (current_time - last_time).toSec();
@@ -219,6 +224,12 @@ void actuator::run()
         }
 
         // send command to stm32
+        if (odomreset.data == 0){
+            x = 0;
+            y = 0;
+            th = -1.57;
+        }
+
         sendCarInfoKernel();
         geometry_msgs::Quaternion odom_quat = tf::createQuaternionMsgFromYaw(th);
 

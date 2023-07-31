@@ -1,16 +1,16 @@
 <?xml version="1.0" ?>
 <launch>
     <include file="$(find test_pkg)/launch/ydlidar.launch" />
-    <node name="qingzhou_bringup_node" pkg="test_pkg" type="qingzhou_bringup_node" />
+    <node name="qingzhou_bringup_node" pkg="test_pkg" type="qingzhou_bringup_node"/>
 
     <param name="mcuserialport" value="/dev/stm32board" type="string"  />
     <param name="mcubaudrate" value="115200" type="int" />
     <param name="calibrate_lineSpeed" value="0" type="int"  />
     <param name="calibrate_angularSpeed" value="0" type="int"  />
-    <param name="ticksPerMeter" value="1224" type="int" />
-    <param name="ticksPer2PI" value = "2100" type = "int"/>         
-    <!-- 1214 -->
-    <!-- 2266 -->
+    <param name="ticksPerMeter" value="1191" type="int" />
+    <param name="ticksPer2PI" value = "2145" type = "int"/>         
+    <!-- 1224 -->
+    <!-- 2100 -->
     
     <node pkg="imu_calib" type="apply_calib" name="apply_calib" output="screen" respawn="false">
       <param name="calib_file" value="$(find test_pkg)/calib/imu_calib.yaml" />
@@ -45,6 +45,7 @@
       <remap from="output" to="/odom_ekf"/>
     </node>  
 
+    <!-- -0.08和0.05 -->
     <node pkg="tf" type="static_transform_publisher" name="base_link_to_imulink"
     args="-0.08 0.0 0.05 0.0 0.0  0.0 /base_link /imu_link 50" />
 

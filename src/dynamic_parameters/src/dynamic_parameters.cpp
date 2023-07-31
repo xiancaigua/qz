@@ -187,7 +187,7 @@ void DynamicParameters::initCostmapConf()
 	dynamic_reconfigure::DoubleParameter doubleParam;
 
 	doubleParam.name = "inflation_radius";
-	doubleParam.value = 0.4;//0.45
+	doubleParam.value = 0.45;//0.45
 	costmapConfUnload.doubles.push_back(doubleParam);
 
 	doubleParam.value = 0.25;

@@ -118,7 +118,6 @@ test_planner_EXTERNAL_OBJECTS =
 /home/cquer/2023_qingzhou/devel/lib/hybrid_astar_planner/test_planner: hybrid_astar_planner/CMakeFiles/test_planner.dir/build.make
 /home/cquer/2023_qingzhou/devel/lib/hybrid_astar_planner/test_planner: /home/cquer/2023_qingzhou/devel/lib/libcostmap_2d.so
 /home/cquer/2023_qingzhou/devel/lib/hybrid_astar_planner/test_planner: /home/cquer/2023_qingzhou/devel/lib/liblayers.so
-/home/cquer/2023_qingzhou/devel/lib/hybrid_astar_planner/test_planner: /opt/ros/melodic/lib/libdynamic_reconfigure_config_init_mutex.so
 /home/cquer/2023_qingzhou/devel/lib/hybrid_astar_planner/test_planner: /opt/ros/melodic/lib/liblaser_geometry.so
 /home/cquer/2023_qingzhou/devel/lib/hybrid_astar_planner/test_planner: /opt/ros/melodic/lib/libtf.so
 /home/cquer/2023_qingzhou/devel/lib/hybrid_astar_planner/test_planner: /opt/ros/melodic/lib/libclass_loader.so
@@ -142,6 +141,7 @@ test_planner_EXTERNAL_OBJECTS =
 /home/cquer/2023_qingzhou/devel/lib/hybrid_astar_planner/test_planner: /usr/lib/aarch64-linux-gnu/libboost_regex.so
 /home/cquer/2023_qingzhou/devel/lib/hybrid_astar_planner/test_planner: /opt/ros/melodic/lib/libxmlrpcpp.so
 /home/cquer/2023_qingzhou/devel/lib/hybrid_astar_planner/test_planner: /opt/ros/melodic/lib/libtf2.so
+/home/cquer/2023_qingzhou/devel/lib/hybrid_astar_planner/test_planner: /opt/ros/melodic/lib/libdynamic_reconfigure_config_init_mutex.so
 /home/cquer/2023_qingzhou/devel/lib/hybrid_astar_planner/test_planner: /opt/ros/melodic/lib/libroscpp_serialization.so
 /home/cquer/2023_qingzhou/devel/lib/hybrid_astar_planner/test_planner: /opt/ros/melodic/lib/librostime.so
 /home/cquer/2023_qingzhou/devel/lib/hybrid_astar_planner/test_planner: /opt/ros/melodic/lib/libcpp_common.so

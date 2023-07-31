@@ -1,9 +1,0 @@
-<?xml version="1.0" ?>
-<launch>
-    <include file="$(find test_pkg)/launch/qingzhou_bringup.launch" />
-    <include file="$(find test_pkg)/launch/l1_nav_new.launch" />
-    <include file="$(find qingzhou_locate)/launch/locate.launch"/>
-    <include file="$(find qz_vision)/launch/vision.launch"/>
-    <node pkg="dynamic_parameters" type="dynamic_parameters" name="dynamic_parameters" output = "screen"/>
-    <!-- <node pkg="test_pkg" type="dwa_kami.py" name="dwa_kami" output="screen"/> -->
-</launch>

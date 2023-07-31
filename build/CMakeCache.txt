@@ -127,7 +127,7 @@ CATKIN_SYMLINK_INSTALL:BOOL=OFF
 CATKIN_WHITELIST_PACKAGE:UNINITIALIZED=qingzhou_locate
 
 //List of ';' separated packages to build
-CATKIN_WHITELIST_PACKAGES:STRING=qingzhou_nav
+CATKIN_WHITELIST_PACKAGES:STRING=test_pkg;qingzhou_locate
 
 //Path to a program.
 CMAKE_AR:FILEPATH=/usr/bin/ar
@@ -501,7 +501,7 @@ bond_DIR:PATH=/opt/ros/melodic/share/bond/cmake
 bondcpp_DIR:PATH=/opt/ros/melodic/share/bondcpp/cmake
 
 //Dependencies for the target
-bringup_head_LIB_DEPENDS:STATIC=general;amcl_sensors;general;amcl_map;general;amcl_pf;general;/opt/ros/melodic/lib/libdiagnostic_updater.so;general;/opt/ros/melodic/lib/librosbag.so;general;/opt/ros/melodic/lib/librosbag_storage.so;general;/opt/ros/melodic/lib/libclass_loader.so;general;/usr/lib/libPocoFoundation.so;general;/usr/lib/aarch64-linux-gnu/libdl.so;general;/opt/ros/melodic/lib/libroslib.so;general;/opt/ros/melodic/lib/librospack.so;general;/usr/lib/aarch64-linux-gnu/libpython2.7.so;general;/usr/lib/aarch64-linux-gnu/libboost_program_options.so;general;/usr/lib/aarch64-linux-gnu/libtinyxml2.so;general;/opt/ros/melodic/lib/libroslz4.so;general;/usr/lib/aarch64-linux-gnu/liblz4.so;general;/opt/ros/melodic/lib/libtopic_tools.so;general;map_server_image_loader;general;/opt/ros/melodic/lib/libdynamic_reconfigure_config_init_mutex.so;general;/opt/ros/melodic/lib/libserial.so;general;/opt/ros/melodic/lib/libtf.so;general;/opt/ros/melodic/lib/libtf2_ros.so;general;/opt/ros/melodic/lib/libactionlib.so;general;/opt/ros/melodic/lib/libmessage_filters.so;general;/opt/ros/melodic/lib/libroscpp.so;general;/usr/lib/aarch64-linux-gnu/libboost_filesystem.so;general;/opt/ros/melodic/lib/libxmlrpcpp.so;general;/opt/ros/melodic/lib/libtf2.so;general;/opt/ros/melodic/lib/libroscpp_serialization.so;general;/opt/ros/melodic/lib/librosconsole.so;general;/opt/ros/melodic/lib/librosconsole_log4cxx.so;general;/opt/ros/melodic/lib/librosconsole_backend_interface.so;general;/usr/lib/aarch64-linux-gnu/liblog4cxx.so;general;/usr/lib/aarch64-linux-gnu/libboost_regex.so;general;/opt/ros/melodic/lib/librostime.so;general;/opt/ros/melodic/lib/libcpp_common.so;general;/usr/lib/aarch64-linux-gnu/libboost_system.so;general;/usr/lib/aarch64-linux-gnu/libboost_thread.so;general;/usr/lib/aarch64-linux-gnu/libboost_chrono.so;general;/usr/lib/aarch64-linux-gnu/libboost_date_time.so;general;/usr/lib/aarch64-linux-gnu/libboost_atomic.so;general;/usr/lib/aarch64-linux-gnu/libpthread.so;general;/usr/lib/aarch64-linux-gnu/libconsole_bridge.so.0.4;
+bringup_head_LIB_DEPENDS:STATIC=general;/home/cquer/2023_qingzhou/devel/lib/libamcl_sensors.so;general;/home/cquer/2023_qingzhou/devel/lib/libamcl_map.so;general;/home/cquer/2023_qingzhou/devel/lib/libamcl_pf.so;general;/opt/ros/melodic/lib/libdiagnostic_updater.so;general;/opt/ros/melodic/lib/librosbag.so;general;/opt/ros/melodic/lib/librosbag_storage.so;general;/opt/ros/melodic/lib/libclass_loader.so;general;/usr/lib/libPocoFoundation.so;general;/usr/lib/aarch64-linux-gnu/libdl.so;general;/opt/ros/melodic/lib/libroslib.so;general;/opt/ros/melodic/lib/librospack.so;general;/usr/lib/aarch64-linux-gnu/libpython2.7.so;general;/usr/lib/aarch64-linux-gnu/libboost_program_options.so;general;/usr/lib/aarch64-linux-gnu/libtinyxml2.so;general;/opt/ros/melodic/lib/libroslz4.so;general;/usr/lib/aarch64-linux-gnu/liblz4.so;general;/opt/ros/melodic/lib/libtopic_tools.so;general;/home/cquer/2023_qingzhou/devel/lib/libmap_server_image_loader.so;general;/opt/ros/melodic/lib/libdynamic_reconfigure_config_init_mutex.so;general;/opt/ros/melodic/lib/libserial.so;general;/opt/ros/melodic/lib/libtf.so;general;/opt/ros/melodic/lib/libtf2_ros.so;general;/opt/ros/melodic/lib/libactionlib.so;general;/opt/ros/melodic/lib/libmessage_filters.so;general;/opt/ros/melodic/lib/libroscpp.so;general;/usr/lib/aarch64-linux-gnu/libboost_filesystem.so;general;/opt/ros/melodic/lib/libxmlrpcpp.so;general;/opt/ros/melodic/lib/libtf2.so;general;/opt/ros/melodic/lib/libroscpp_serialization.so;general;/opt/ros/melodic/lib/librosconsole.so;general;/opt/ros/melodic/lib/librosconsole_log4cxx.so;general;/opt/ros/melodic/lib/librosconsole_backend_interface.so;general;/usr/lib/aarch64-linux-gnu/liblog4cxx.so;general;/usr/lib/aarch64-linux-gnu/libboost_regex.so;general;/opt/ros/melodic/lib/librostime.so;general;/opt/ros/melodic/lib/libcpp_common.so;general;/usr/lib/aarch64-linux-gnu/libboost_system.so;general;/usr/lib/aarch64-linux-gnu/libboost_thread.so;general;/usr/lib/aarch64-linux-gnu/libboost_chrono.so;general;/usr/lib/aarch64-linux-gnu/libboost_date_time.so;general;/usr/lib/aarch64-linux-gnu/libboost_atomic.so;general;/usr/lib/aarch64-linux-gnu/libpthread.so;general;/usr/lib/aarch64-linux-gnu/libconsole_bridge.so.0.4;
 
 //Value Computed by CMake
 carrot_planner_BINARY_DIR:STATIC=/home/cquer/2023_qingzhou/build/authority_code/carrot_planner
@@ -760,7 +760,7 @@ laser_geometry_DIR:PATH=/opt/ros/melodic/share/laser_geometry/cmake
 layers_LIB_DEPENDS:STATIC=general;costmap_2d;
 
 //Path to a library.
-lib:FILEPATH=/opt/ros/melodic/lib/libtf2.so
+lib:FILEPATH=/opt/ros/melodic/lib/libtf.so
 
 //Value Computed by CMake
 map_msgs_BINARY_DIR:STATIC=/home/cquer/2023_qingzhou/build/authority_code/navigation_msgs/map_msgs
@@ -864,8 +864,7 @@ pluginlib_DIR:PATH=/opt/ros/melodic/share/pluginlib/cmake
 //Value Computed by CMake
 qingzhou_locate_BINARY_DIR:STATIC=/home/cquer/2023_qingzhou/build/qingzhou_locate
 
-//The directory containing a CMake configuration file for qingzhou_locate.
-qingzhou_locate_DIR:PATH=/home/cquer/2023_qingzhou/devel/share/qingzhou_locate/cmake
+qingzhou_locate_DIR:PATH=
 
 //Value Computed by CMake
 qingzhou_locate_SOURCE_DIR:STATIC=/home/cquer/2023_qingzhou/src/qingzhou_locate
@@ -1278,7 +1277,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_NM
 CMAKE_NM-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=5
+CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=6
 //ADVANCED property for variable: CMAKE_OBJCOPY
 CMAKE_OBJCOPY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJDUMP
@@ -1328,7 +1327,7 @@ EIGEN_INCLUDE_DIR-ADVANCED:INTERNAL=1
 //Details about finding Bullet
 FIND_PACKAGE_MESSAGE_DETAILS_Bullet:INTERNAL=[/usr/lib/aarch64-linux-gnu/libBulletDynamics.so][/usr/lib/aarch64-linux-gnu/libBulletCollision.so][/usr/lib/aarch64-linux-gnu/libLinearMath.so][/usr/lib/aarch64-linux-gnu/libBulletSoftBody.so][/usr/include/bullet][v()]
 //Details about finding Eigen
-FIND_PACKAGE_MESSAGE_DETAILS_Eigen:INTERNAL=[/usr/include/eigen3][v3.3.4()]
+FIND_PACKAGE_MESSAGE_DETAILS_Eigen:INTERNAL=[/usr/include/eigen3][v()]
 //Details about finding GeographicLib
 FIND_PACKAGE_MESSAGE_DETAILS_GeographicLib:INTERNAL=[/usr/lib/aarch64-linux-gnu][/usr/lib/aarch64-linux-gnu/libGeographic.so][/usr/include][v()]
 //Details about finding Glog

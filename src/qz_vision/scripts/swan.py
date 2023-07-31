@@ -14,8 +14,13 @@ Shighgreen = np.array([90, 255, 255])
 lowerwhite=np.array([0, 0, 100])
 upperwhite=np.array( [180, 20, 255])
 
+lowerblue=np.array([100,43,46])
+upperblue = np.array([124,255,255])
+
+#速度0.5 
 angle_gain = 0.01
-# angle_gain = 0.1
+# 速度1.2
+# angle_gain = 0.028
 
 # 区赛出圈判断
 OutThresh = 8000
@@ -83,6 +88,10 @@ def handleImg(img, low=10, kernel_size=4):
 
 # 计算便宜
 def CalculateShift(img):
+    # 出弯判断
+    outcheckflag = 0
+    if FindGreenBlockWhenYouWantKonwOutOfRoadLineOrNot(img)[0]:
+        outcheckflag = 1
     green_img = getGreenRoadLine(img)
     binary = handleImg(green_img)
     # 列求和
@@ -110,16 +119,47 @@ def CalculateShift(img):
         else:
             shift = angle_gain *np.degrees(np.arctan((img.shape[1]//2 - cx)/(img.shape[0]-cy)))
     else:
-        shift = 0
-        # x_blue,y_blue,w_blue,h_blue = getBlueRoadLine(img)
-        # if x_blue!=0:
-        #     cv2.rectangle(img, (x_blue, y_blue), (x_blue + w_blue, h_blue), (255, 0, 255), 3) #红框
-        #     shift = np.degrees(np.arctan(((x_blue+w_blue//2)-img.shape[1]//2)/(img.shape[0]//2)))
-        # else:
-    return shift,img
+        shift = 0.0
+    return shift,img,outcheckflag
+
+# 返回x要增加的步数，如果为0，x为边界点
+def isEdge(img, x, h,left_or_right):
+    if img[h,x] == 0:
+        return 1
+    else:
+        forward = 10
+        for i in range(forward):
+            if img[h,x+i*left_or_right] == 0:
+                return i
+        return 0
+
+def BorderCheck(img):
+    left, right = 0, img.shape[1]-1
+    lvalid, rvalid = True, True
+    h = int(img.shape[0] * 0.25)
+    
+    while(left < right ):
+        if lvalid:
+            step = isEdge(img, left, h,1)
+            if  step == 0:
+                # 到达边界
+                return left
+            else:
+                left += step
+
+        if rvalid:
+            step = isEdge(img, right, h,-1)
+            if  step == 0:
+                # 到达边界
+                return right
+            else:
+                right -= step
+        
+    return -1
 
 # 白色赛道里面的绿色中心线
 def GreenInWhite(img):
+    outcheckflag = 0
     whiteRoadLine = getWhiteRoadLine(img)
     binary = handleImg(whiteRoadLine,kernel_size=12)
     conters, hierarchy=cv2.findContours(binary,cv2.RETR_CCOMP,cv2.CHAIN_APPROX_SIMPLE)
@@ -163,16 +203,28 @@ def GreenInWhite(img):
             break
     if best_child != -1:
         best_conter = conters[best_child]
-        # if OutCheck(best_conter,img):
         M = cv2.moments(best_conter)
         cx = int(M['m10']/(M['m00']+float("1e-5")))   # 加上float防止除数可能为零的情况
         cy = int(M['m01']/(M['m00']+float("1e-5")))
         shift = angle_gain *np.degrees(np.arctan((img.shape[1]//2 - cx)/(img.shape[0]-cy)))
-        # else:
-        #     shift = 'shit'
+        cv2.line(img,(img.shape[1]//2,img.shape[0]),(cx,cy),(0,0,255),thickness=5)
     else:
-        shift = 'shit'
-    return shift,img
+        shift = -0.45
+        outcheckflag=-1
+        print("[VISION]----There is a shit")            
+        # center = BorderCheck(binary)
+        # if center == -1:
+        #     print("[VISION]----There is a shit")            
+        #     shift = 0
+        # else:
+        #     print("[VISION]----Using BorderCheck")
+        #     shift = 0.1*angle_gain * np.degrees(np.arctan((img.shape[1]//2 - center) / (img.shape[0]*0.75)))
+        #     cv2.line(img,(img.shape[1]//2,img.shape[0]),(center,img.shape[0]//2),(0,0,0),thickness=5)
+            # outcheckflag=-1
+    if FindBlueBlockWhenYouWantKonwOutOfRoadLineOrNot(img)[0]:
+        outcheckflag=1
+    
+    return shift,img,outcheckflag
 
 # 区赛判断出圈的函数
 def OutCheck(conters,img):
@@ -192,19 +244,35 @@ def OutCheck(conters,img):
     return (np.sum(masked_img)>=OutThresh)
 
 
-# 出弯判断函数，寻找车道线 
+# 出弯判断函数，寻找车道线 ,无绿色块
 def FindGreenBlockWhenYouWantKonwOutOfRoadLineOrNot(img):
     greenIimg = getGreenRoadLine(img)
     binary_img = handleImg(greenIimg)
     # x_blue,y_blue,w_blue,h_blue = getBlueRoadLine(img)
-    print("[VISION]--------------出圈判断颜色阈值是：",np.sum(binary_img))
+    # print("[VISION]--------------出圈判断颜色阈值是：",np.sum(binary_img))
     # 区赛地板是绿的，大量绿色会出弯
-    if np.sum(binary_img)>10000000:#50000
+    # if np.sum(binary_img)>10000000:#50000
+    if np.sum(binary_img)<100000:#50000
         return True,binary_img
     # elif x_blue and y_blue and w_blue and h_blue:
         # return True,binary_img
     else:
         return False,binary_img
+
+# 出弯判断函数，寻找车道线 ，大量蓝色
+def FindBlueBlockWhenYouWantKonwOutOfRoadLineOrNot(img):
+    blueimg = color_seperate_1(img)
+    binary_img = handleImg(blueimg)
+    # x_blue,y_blue,w_blue,h_blue = getBlueRoadLine(img)
+    # print("[VISION]--------------出圈判断颜色阈值是：",np.sum(binary_img))
+    # 区赛地板是绿的，大量绿色会出弯
+    if np.sum(binary_img)>18000000:#50000
+        return True,binary_img
+    # elif x_blue and y_blue and w_blue and h_blue:
+        # return True,binary_img
+    else:
+        return False,binary_img
+
 
 FOV_w=105
 flag = 0
@@ -247,24 +315,29 @@ def color_seperate_1(image):
     # # cv2.waitKey(3)
     return dst
 
+def pianyi_detect(img,pianyi_hist):
 
+    outcheckflag = 0
+    if FindGreenBlockWhenYouWantKonwOutOfRoadLineOrNot(img)[0]:
+        outcheckflag = 1
 
-
-def pianyi_detect(img):
     """
     参数调试区
     """
 
-
+    #清空上一次的日志
+    file = open("/home/cquer/2023_qingzhou/src/qz_vision/scripts/only_swan.txt", "w")
+    file.close()
+    file = open("/home/cquer/2023_qingzhou/src/qz_vision/scripts/only_swan.txt", "a")
     pianyi=0
     pianyi_text=''
+    about_to_reach = False # 最后一段绿白线
     global pianyi_before
     global cnt
     ##############读取图像#########################
-    (img_w, img_h) = img.shape[:2] #获取传入图片的长与宽   w是高 h是宽
+    (img_h, img_w) = img.shape[:2] #获取传入图片的长与宽   w是高 h是宽
 
-    lane_img=img.copy() #复制一份获取的图像给lane_img
-    cropped_img=region_of_interest(lane_img) #对图像进行ROI的分割
+    cropped_img=region_of_interest(img) #对图像进行ROI的分割
     # if cnt==0:
     #     cv2.imwrite('/home/cquer/2023_qingzhou/src/qz_vision/cropped_img.jpg',cropped_img)
     #     cnt+=1
@@ -302,7 +375,7 @@ def pianyi_detect(img):
         contour1 = np.array(contour1) #将组成的新列表转化为矩阵，方便下一步处理
         (x, y, w, h) = cv2.boundingRect(contour1) #用一个最小的矩形，把找到的所有的轮廓包起来，返回轮值x，y是矩阵左上点的坐标，w，h是矩阵的宽和高
         # ####################1.1 同时检测到两条绿线，删选出中间线，计算位置########################
-        if w>img_h/3  and con_num > 1 : #如果整体轮廓的宽度大于三分之图片的宽度，则说明同时检测到了两条绿线
+        if w>img_w/3  and con_num > 1 : #如果整体轮廓的宽度大于三分之图片的宽度，则说明同时检测到了两条绿线
 
             mask=np.zeros_like(gray_img) 
             #将mask的部分进行白色填充，
@@ -321,113 +394,87 @@ def pianyi_detect(img):
                         contour2.append(contours1[c1][c2])
                 contour2 = np.array(contour2) #将中间线的轮廓信息存于contour2矩阵中
                 (x1, y1, w1, h1) = cv2.boundingRect(contour2) #中间线的轮廓信息
-                if con_num > 2 : #左边绿线时会看不清，断成两节
-                    cv2.rectangle(img, (x1, y1), (x1 + w1, img_h), (255, 255, 255), 3)#白框-----同时检测到绿线和绿白线给蓝白线画白框——永远贴着底画矩形框
-                    pianyi=((x1+w1/2)-(img_h/2))*FOV_w/img_h #pianyi值为矩形方框的中线距离视野中央的实际距离
-                    if pianyi>0:
-                        pianyi_text='right'
-                    elif pianyi<0:
-                        pianyi_text='left'
-                        # pianyi+=80
-                    else:
-                        pianyi_text = 'stright'
-                    # 防止车进弯道时过于靠近绿线
-                    if  len(contours_blue)>0 and np.sum(img_thresh_blue)<10000 and  pianyi_text == 'right':
-                        pianyi = pianyi // 3
-                        print('防止车进弯道时过于靠近绿线')
-                        # print(np.sum(img_thresh_blue))
-                    print(1,pianyi_text)
-                else : #这个时候才是真正的绿线
-                    cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 3) #蓝框-----------------只检测到蓝线并用蓝框画出
-                    pianyi = -83+((x + w / 2) - (img_h / 2)) * FOV_w / img_h #80凑数,为了让车不开出赛道去
+                cv2.rectangle(img, (x1, y1), (x1 + w1, img_w), (255, 255, 255), 3)#白框-----同时检测到绿线和绿白线给蓝白线画白框——永远贴着底画矩形框
+                pianyi=((x1+w1/2)-(img_w/2))*FOV_w/img_w #pianyi值为矩形方框的中线距离视野中央的实际距离
+                if pianyi>0:
                     pianyi_text='right'
-                    print(2,pianyi_text)
+                    if len(pianyi_hist) < 12: # 40
+                        if pianyi<15:
+                            pianyi_text = 'left'
+                        else:
+                            pianyi /= 15 # 4
+                    if len(pianyi_hist)>12 and len(pianyi_hist) <40:
+                        pianyi_text = 'left'
+                elif pianyi<0:
+                    pianyi_text='left'
+                else:
+                    pianyi_text = 'stright'
+                print("[VISION]同时检测到边线和中线, 偏向：{}, 偏移：{}".format(pianyi_text,pianyi))
+                file.write("[VISION]同时检测到边线和中线, 偏向：{}, 偏移：{}\n".format(pianyi_text,pianyi))
+                # 防止车进弯道时过于靠近绿线
+                # if  len(contours_blue)>0 and np.sum(img_thresh_blue)<10000 and  pianyi_text == 'right':
+                #     pianyi = pianyi // 3
+                #     print('防止车进弯道时过于靠近绿线')
+                #     # print(np.sum(img_thresh_blue))
+                # print(1,pianyi_text)
         #########################1.2 只检测到一条线，需要判断是绿白线还是绿线##############
-        elif w<img_h/3  :
+        elif w<img_w/3:
             cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 255), 3) #黄框----------只检测到绿白线并用黄框画出
             # 如果是绿白线
             if con_num>1: #轮廓数量大于1，就是有好几段绿色,但是会出现边线误识别成中线，因为线可能会断掉？
-                pianyi = ((x + w / 2) - (img_h / 2)) * FOV_w / img_h #pianyi值为矩形方框的中线距离视野中央的实际距离
+                pianyi = ((x + w / 2) - (img_w / 2)) * FOV_w / img_w #pianyi值为矩形方框的中线距离视野中央的实际距离
                 if pianyi > 0:
                     #print('右偏')
                     pianyi_text='right'
                 elif pianyi<0:
                     #print('左偏')
                     pianyi_text='left'
-                    pianyi -= 80
+                    # pianyi -= 80
                 else:
                     # print('左偏')
                     pianyi_text = 'stright'
-                print(3,pianyi_text)
-            # 再分类
-            else: 
-                #  小绿白线
-                if h < 50 and len(contours_blue)>0 and x>50:
-                    pianyi = ((x + w / 2) - (img_h / 2)) * FOV_w / img_h #pianyi值为矩形方框的中线距离视野中央的实际距离
-                    print(4,pianyi_text)
-                    if pianyi > 0:
-                        pianyi_text='right'
-                    elif pianyi<0:
-                        pianyi_text='left'
-                    else:
-                        pianyi_text = 'stright'            
-                # 真边绿线,之看见左边的绿色线
-                else:
-                    pianyi = -83+((x + w / 2) - (img_h / 2)) * FOV_w / img_h
-                    pianyi_text='right'
-                    print(5,pianyi_text)
+                print("[VISION]只检测到绿白线, 偏向：{}, 偏移：{}".format(pianyi_text,pianyi))
+                file.write("[VISION]只检测到绿白线, 偏向：{}, 偏移：{}\n".format(pianyi_text,pianyi))
+                if abs(pianyi) >= 45:
+                    pianyi = 45 
         elif con_num == 1: #横向绿线和最后一小段绿白线的绿线
-                if h < 50 and len(contours_blue)>0 and x>50:
-                    cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 255), 3) #黄框----------------检测到了最后一小段的蓝白线的蓝色
-                    pianyi = ((x + w / 2) - (img_h / 2)) * FOV_w / img_h
-                    print(7,pianyi_text)
-                    if pianyi > 0:
-                        #print('右偏')
-                        pianyi_text='right'
-                    elif pianyi<0:  
-                        #print('左偏')
-                        pianyi_text='left'
-                    else:
-                        # print('左偏')
-                        pianyi_text = 'stright'
-                else: #看见一块绿色并且真的是绿线
-                    cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 3) #蓝框-----------------只检测到绿线并用蓝框画出
-                    pianyi = -100+((x + w / 2) - (img_h / 2)) * FOV_w / img_h #平滑过渡
-                    pianyi_text='right'
-                    print(8,pianyi_text)
+            cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 3) #蓝框-----------------只检测到绿线并用蓝框画出
+            pianyi =((x + w / 2 + 100) - (img_w / 2)) * FOV_w / img_w #平滑过渡
+            pianyi_text='right'
+            print("[VISION]横向绿线, 偏向：{}, 偏移：{}".format(pianyi_text,pianyi))
+            file.write("[VISION]横向绿线, 偏向：{}, 偏移：{}\n".format(pianyi_text,pianyi))
         else : #检测到了左下角的点了
             nothing_point = 1
-
 
     # 2.未检测到绿线或者绿白线，就检测蓝线
     else:
         if len(contours_blue)>0:
-            if (x2+w2/2)>(2*img_h)/3:
-                cv2.rectangle(img, (x2, y2), (x2 + w2, img_h), (255, 0, 255), 3) #红框
-                if h2 < 70:
-                    pianyi = pianyi_before
-                    print(9)
-                else :
-                    pianyi = 200 - ((x2 + w2 / 2) - (img_h / 2)) * FOV_w / img_h
-                    pianyi_text='left'
-                    print(10,pianyi_text)
+            cv2.rectangle(img, (x2, y2), (x2 + w2, img_w), (255, 0, 255), 3) #红框
+            pianyi =  ((x2 + w2 / 2 - 200) - (img_w / 2)) * FOV_w / img_w
+            pianyi_text='left'
+            print("[VISION]蓝线, 偏向：{}, 偏移：{}".format(pianyi_text,pianyi))
+            file.write("[VISION]蓝线, 偏向：{}, 偏移：{}\n".format(pianyi_text,pianyi))
+            # if h2 < 70:
+            #     pianyi = pianyi_before
+            #     print("[VISION]")
 
     show_img = img
 
     pianyi_now = abs(pianyi)
 
-    angle_gain_left = 80 # 这个值随速度变化，速度0.3差不多对应40的angle_gain
-    angle_gain_right = 80
+    angle_gain_left =  10    # 10
+    angle_gain_right = 5 # 5
     if pianyi_text == 'right' :
-        pianyi_now = 0 - pianyi_now -  angle_gain_right
+        pianyi_now = ( - pianyi_now *angle_gain_right)/200
 
     elif  pianyi_text == 'left' :
-        pianyi_now =  pianyi_now + angle_gain_left
-
-    #  
+        pianyi_now =  (pianyi_now * angle_gain_left)/200
+ 
     if pianyi_before == -pianyi_now or nothing_point ==1 : #这一句如果加上防止突变有点危险
         pianyi_now = pianyi_before       
         print("*****检测到干扰*******")   
+        file.write("*****检测到干扰*******\n")
     pianyi_before = pianyi_now
     # print('-------------------',pianyi_now )
-    return (pianyi_now/70), show_img
+    file.close()
+    return pianyi_now, show_img, outcheckflag

@@ -30,9 +30,9 @@ pose:
     w: 1.0"
 """
 #该flag调试用
-p_flag_ = False
+p_flag_ =       True
 
-flag_debug = 2
+flag_debug = 1
 
 park_flag = 0
 amcl_x = 0.0
@@ -88,7 +88,7 @@ class Config(object):
             # self.min_speed = -0.5 # [m/s] # min v Set to reverse
             self.min_speed =-0.5 # [m/s] # min v Set to can not reverse  原来的是-0.5
             self.max_yawrate = 120 * 3.1415926 / 180.0 # [rad/s] # 最大角速度 #60
-            self.max_accel = 0.18 # [m/ss] # 最大加速度0.15
+            self.max_accel = 0.25 # [m/ss] # 最大加速度0.15
             self.max_dyawrate = 2 * 3.1415926 / 180.0 # [rad/ss] # 最大角加速度45  原来是5 速度为4的时候 速度为8的时候为4 
             self.v_reso = 0.01 # [m/s] 速度分辨率0.01
             self.yawrate_reso = 0.2 * 3.1415926 / 180.0 # [rad/s] 角度分辨率 原来的是0.2
@@ -98,7 +98,7 @@ class Config(object):
             self.ob_cost_gain = 1.0 #障碍物权重（没用到）
             self.to_goal_cost_gain = 1.0 # Target cost gain  1.0
             self.angle_cost_gain =1.6 #朝向的权重3.0 原来 1.6
-            self.dx_cost_gain = 10   #水平线的权重 原来10
+            self.dx_cost_gain = 1   #水平线的权重 原来10
             self.speed_cost_gain = 1.2 # Target cost reduction 0.8
             # self.to_goal_angle_cost = 5.0
             self.robot_radius = 0.35 # [m] # robor radius 0.3
@@ -119,7 +119,7 @@ class Config(object):
             self.ob_cost_gain = 1.0 #障碍物权重（没用到）
             self.to_goal_cost_gain = 3.0 # Target cost gain  1.0
             self.angle_cost_gain = 2.5#朝向的权重 原来3.1
-            self.dx_cost_gain = 20.0 #水平线的权重 原来20
+            self.dx_cost_gain = 2.0 #水平线的权重 原来20
             self.speed_cost_gain = 25 # Target cost reduction 25
             # self.to_goal_angle_cost = 5.0
             self.robot_radius = 0.3 # [m] # robor radius  0.3
@@ -205,17 +205,19 @@ def calc_dynamic_window(x, config):
 def motion(x, u, dt , path):
     # The velocity updating formula is simple, and the vehicle displacement changes greatly in a very short time
     #
-    # x[0] += u[0] * math.cos(x[2]) * dt # x
-    if path == 1:
-        x[0] += u[0] * math.cos(amcl_yaw + math.atan(0.13 * u[1] / u[0])) * dt # x
-        x[1] += u[0] * math.sin(amcl_yaw  + math.atan(0.13 * u[1] / u[0])) * dt # y
-        x[2] += u[0] * math.sin(math.atan(0.13 * u[1] / u[0])) / 0.13 * dt # heading
+    # x[0] += u[0] * math.cos(x[2]) * dt # (w * CARL / v) * 57.3   v * 42 / 0.43
+    if path == 1 or path ==3:
+        beta = math.atan(0.13 * 0.31 * u[1] / u[0] / 100 / 0.3)
+        x[0] +=  u[0] * math.cos(amcl_yaw + beta) * dt # x
+        x[1] +=  u[0] * math.sin(amcl_yaw + beta) * dt # y
+        x[2] +=  u[0] * math.sin(beta) / 0.13 * dt # heading
         x[3] = u[0] # v
         x[4] = u[1] # w
     elif path ==2:
-        x[0] -= u[0] * math.cos(amcl_yaw + math.atan(0.13 * u[1] / u[0])) * dt # x
-        x[1] -= u[0] * math.sin(amcl_yaw  + math.atan(0.13 * u[1] / u[0])) * dt # y
-        x[2] += u[0] * math.sin(math.atan(0.13 * u[1] / u[0])) / 0.13 * dt # heading
+        beta = math.atan(-0.13 * 0.31 * u[1] / u[0] / 100 / 0.3)
+        x[0] +=  u[0] * math.cos(amcl_yaw + beta) * dt # x
+        x[1] +=  u[0] * math.sin(amcl_yaw  + beta) * dt # y
+        x[2] +=  u[0] * math.sin(beta) / -0.13 * dt # heading
         x[3] = u[0] # v
         x[4] = u[1] # w
     # print(x)
@@ -243,8 +245,6 @@ def calc_final_input(x, u, vr, config, goal,path):
 
     min_toGoalCost,min_AngleCost,min_DxCost,min_SpeedCost = 0,0,0,0
 
-    # evaluate all trajectory with sampled input in dynamic window
-    # v,w
     for v in np.arange(vr[0], vr[1], config.v_reso):
         for w in np.arange(vr[2], vr[3], config.yawrate_reso):
 
@@ -264,7 +264,7 @@ def calc_final_input(x, u, vr, config, goal,path):
 
             #
             #
-            final_cost = to_goal_cost + speed_cost + angle_cost + dx_cost
+            final_cost = to_goal_cost + speed_cost + angle_cost
             #########调试用#########
             # global p_flag_
             # if not p_flag_:
@@ -363,6 +363,8 @@ def main():
         dwa_control_twist.steering_angle = u[1]
         dwa_control_pub.publish(dwa_control_twist)
         
+        # ros::Duration(0.1).sleep()
+
         if abs(u[0]) <0.05:
             t2 = time.time()
             delta_t = (delta_t + abs(t2-t1)) if t1!=0 else 0

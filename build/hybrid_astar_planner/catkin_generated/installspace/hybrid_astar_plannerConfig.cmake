@@ -116,7 +116,7 @@ if(NOT "include " STREQUAL " ")
   endforeach()
 endif()
 
-set(libraries "hybrid_astar_planner;geometry_msgs;pluginlib;roscpp;nav_core;tf2_ros;ompl")
+set(libraries "hybrid_astar_planner;geometry_msgs;pluginlib;roscpp;nav_core;tf2_ros;ompl;dynamic_reconfigure")
 foreach(library ${libraries})
   # keep build configuration keywords, target names and absolute libraries as-is
   if("${library}" MATCHES "^(debug|optimized|general)$")
@@ -177,7 +177,7 @@ foreach(library ${libraries})
   endif()
 endforeach()
 
-set(hybrid_astar_planner_EXPORTED_TARGETS "")
+set(hybrid_astar_planner_EXPORTED_TARGETS "hybrid_astar_planner_gencfg")
 # create dummy targets for exported code generation targets to make life of users easier
 foreach(t ${hybrid_astar_planner_EXPORTED_TARGETS})
   if(NOT TARGET ${t})

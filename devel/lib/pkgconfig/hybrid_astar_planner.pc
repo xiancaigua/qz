@@ -3,6 +3,6 @@ prefix=/home/cquer/2023_qingzhou/devel
 Name: hybrid_astar_planner
 Description: Description of hybrid_astar_planner
 Version: 1.1.2
-Cflags: -I/home/cquer/2023_qingzhou/src/hybrid_astar_planner/include
-Libs: -L${prefix}/lib -lhybrid_astar_planner -lgeometry_msgs -lpluginlib -lroscpp -lnav_core -ltf2_ros -lompl
+Cflags: -I/home/cquer/2023_qingzhou/devel/include -I/home/cquer/2023_qingzhou/src/hybrid_astar_planner/include
+Libs: -L${prefix}/lib -lhybrid_astar_planner -lgeometry_msgs -lpluginlib -lroscpp -lnav_core -ltf2_ros -lompl -ldynamic_reconfigure
 Requires: 

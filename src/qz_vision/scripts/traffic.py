@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 
 thread=1000#3000
-thread_notGreen = 9000
+thread_notGreen = 140000
 # thread_notGreen = 3500
 color_dict = {
     'Green':[[60, 43, 150], [80, 255, 255]],

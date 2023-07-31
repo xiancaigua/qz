@@ -12,6 +12,7 @@ test_pkg/CMakeFiles/qingzhou_bringup_node.dir/src/qingzhou_bringup_node.cpp.o: /
 test_pkg/CMakeFiles/qingzhou_bringup_node.dir/src/qingzhou_bringup_node.cpp.o: /opt/ros/melodic/include/geometry_msgs/Pose.h
 test_pkg/CMakeFiles/qingzhou_bringup_node.dir/src/qingzhou_bringup_node.cpp.o: /opt/ros/melodic/include/geometry_msgs/PoseStamped.h
 test_pkg/CMakeFiles/qingzhou_bringup_node.dir/src/qingzhou_bringup_node.cpp.o: /opt/ros/melodic/include/geometry_msgs/PoseWithCovariance.h
+test_pkg/CMakeFiles/qingzhou_bringup_node.dir/src/qingzhou_bringup_node.cpp.o: /opt/ros/melodic/include/geometry_msgs/PoseWithCovarianceStamped.h
 test_pkg/CMakeFiles/qingzhou_bringup_node.dir/src/qingzhou_bringup_node.cpp.o: /opt/ros/melodic/include/geometry_msgs/Quaternion.h
 test_pkg/CMakeFiles/qingzhou_bringup_node.dir/src/qingzhou_bringup_node.cpp.o: /opt/ros/melodic/include/geometry_msgs/QuaternionStamped.h
 test_pkg/CMakeFiles/qingzhou_bringup_node.dir/src/qingzhou_bringup_node.cpp.o: /opt/ros/melodic/include/geometry_msgs/Transform.h

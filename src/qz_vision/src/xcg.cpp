@@ -4,6 +4,7 @@
 #include <cv_bridge/cv_bridge.h>
 #include <opencv2/opencv.hpp>
 #include <sensor_msgs/image_encodings.h>
+#include <sensor_msgs/Image.h>
 
 image_transport::Publisher pub_image;
 cv_bridge::CvImagePtr cv_ptr;
@@ -37,13 +38,13 @@ int main(int argc, char **argv)
 
     // 创建一个发布者(publisher)发布名为camera的话题(topic),消息队列长度为１
     image_transport::ImageTransport it1(n);
-    pub_image = it1.advertise("/XCG", 10);
-
+    pub_image = it1.advertise("/ImageTransportImg", 10);
     // 创建窗口用于显示图像
     ROS_INFO("camera info ------------------ ");
     // 创建一个订阅者，订阅名为camera的话题(topic),　注册回调函数
-    image_transport::ImageTransport it(n);
-    image_transport::Subscriber sub = it.subscribe("/Img", 10, imageCallback);
+    ros::Subscriber ImgSub = n.subscribe<sensor_msgs::Image>("/RoadLinePub", 1, imageCallback);
+    // image_transport::ImageTransport it(n);
+    // image_transport::Subscriber sub = it.subscribe("/Img", 10, imageCallback);
     // 循环等待回调函数
     ROS_INFO("camera info ------------------ ");
     ros::spin();

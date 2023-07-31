@@ -55,16 +55,15 @@ Func : amcl_pose订阅者的回调函数，可以获取小车位置
 void Locate::odomCB(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& odomMsg)
 {
 	odom = *odomMsg;
-	// ROS_INFO("Odom Received!---[Qingzhou Locate]");
-	// ROS_INFO_STREAM("Robot x: " << odom.pose.pose.position.x << "Robot y: " << odom.pose.pose.position.y);
 	//以下代码可以用定时器另外写一个函数实现，不知道哪种更好
-	if (goalLocation == Unknown)
-	{
-		robotLocation == Unknown;
-		locationPub();
-		// ROS_INFO("Goal is UNKNOW---[Qingzhou Locate]");
-		return;
-	}
+	
+	// if (goalLocation == Unknown)
+	// {
+	// 	robotLocation == Unknown;
+	// 	locationPub();
+	// 	// ROS_INFO("Goal is UNKNOW---[Qingzhou Locate]");
+	// 	return;
+	// }
 
 	switch (goalLocation)
 	{
@@ -157,31 +156,7 @@ void Locate::odomCB(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& od
 
 	// 是否在起始区
 	case Start:
-		// if (lastLocation == Unload)
-		// {
-		// 	robotLocation = UnloadToRoadLine;
-		// 	// ROS_INFO("----IN Start case %d", robotLocation);
-		// }
-		// else if (lastLocation == UnloadToRoadLine 
-		// && odom.pose.pose.position.x > goalPoint.x1[RoadLine] 
-		// && odom.pose.pose.position.x < goalPoint.x2[RoadLine] 
-		// && odom.pose.pose.position.y > goalPoint.y1[RoadLine] 
-		// && odom.pose.pose.position.y < goalPoint.y2[RoadLine])
-		// {
-		// 	robotLocation = RoadLine;
-		// 	// ROS_INFO("----IN Start case %d", robotLocation);
-		// }
-		// else if (lastLocation == RoadLineToStart 
-		// && odom.pose.pose.position.x > goalPoint.x1[Start] 
-		// && odom.pose.pose.position.x < goalPoint.x2[Start] 
-		// && odom.pose.pose.position.y > goalPoint.y1[Start] 
-		// && odom.pose.pose.position.y < goalPoint.y2[Start])
-		// {
-		// 	robotLocation = Start;
-		// 	// ROS_INFO("----IN Start case %d", robotLocation);
-		// }
-		// reverse倒车
-		if (lastLocation == RoadLineToStart
+		if (lastLocation == ReverseToStart
 		&& odom.pose.pose.position.x > goalPoint.x1[Start] 
 		&& odom.pose.pose.position.x < goalPoint.x2[Start] 
 		&& odom.pose.pose.position.y > goalPoint.y1[Start] 
@@ -212,8 +187,8 @@ void Locate::goalCB(const geometry_msgs::PoseStamped::ConstPtr& goalMsg)
 	for (int i = 0; i < 5; ++i)
 	{
 		//通过判断机器人目标点坐标是否在目标点范围内，若不在目标点范围内，就是未知
-		if (goal.pose.position.x > goalPoint.x1[i] && goal.pose.position.x < goalPoint.x2[i] && 
-			goal.pose.position.y > goalPoint.y1[i] && goal.pose.position.y < goalPoint.y2[i])
+		if (goal.pose.position.x >= goalPoint.x1[i] && goal.pose.position.x <= goalPoint.x2[i] && 
+			goal.pose.position.y >= goalPoint.y1[i] && goal.pose.position.y <= goalPoint.y2[i])
 		{
 			goalLocation = RobotLocation(i);
 			ROS_INFO("%d------in the callback",goalLocation);

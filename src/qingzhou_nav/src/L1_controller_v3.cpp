@@ -178,8 +178,9 @@
 #include <nav_msgs/Odometry.h>
 #include <ackermann_msgs/AckermannDrive.h>
 #include <visualization_msgs/Marker.h>
+#include <std_msgs/Int32.h>
 
-#define PI 3.14159265358979
+#define PI 3.14159265358978
 
 /********************/
 /* CLASS DEFINITION */
@@ -187,17 +188,33 @@
 
 struct GoalPoint
 {
-	float x1[5];
-	float y1[5];
-	float x2[5];
-	float y2[5]; 
-	GoalPoint(){
-	    x1[0]= -0.5; y1[0] = -0.5; x2[0] = 0.5; y2[0] = 0.5;
-		x1[1] = 1.7; y1[1] = -3.9; x2[1] = 2.7; y2[1] = -2.9;
-		x1[2] = 1.7; y1[2] = -6.3; x2[2] = 2.7; y2[2] = -5.3;
-		x1[3] = -2.7; y1[3] = -6.5; x2[3] = -1.7; y2[3] = -5.5;
-		x1[4] = 0.5; y1[4] = -4.0; x2[4] = 1.5; y2[4] = -2.7;//-3.0 
-	}
+    float x1[5];
+    float y1[5];
+    float x2[5];
+    float y2[5];
+    GoalPoint()
+    {
+        x1[0] = -0.5;
+        y1[0] = -0.5;
+        x2[0] = 0.5;
+        y2[0] = 0.5;
+        x1[1] = 1.7;
+        y1[1] = -3.9;
+        x2[1] = 2.7;
+        y2[1] = -2.9;
+        x1[2] = 1.7;
+        y1[2] = -6.3;
+        x2[2] = 2.7;
+        y2[2] = -5.3;
+        x1[3] = -2.7;
+        y1[3] = -6.5;
+        x2[3] = -1.7;
+        y2[3] = -5.5;
+        x1[4] = 0.5;
+        y1[4] = -4.1;
+        x2[4] = 1.5;
+        y2[4] = -2.7; //-3.0
+    }
 };
 
 enum RobotLocation : int
@@ -212,9 +229,11 @@ enum RobotLocation : int
     LoadToTrafficLight,
     TrafficLightToUnload,
     UnloadToRoadLine,
-    Unknown
+    Unknown,
+    RoadLineToReverse,
+    Reverse,
+    ReverseToStart
 };
-
 class L1Controller
 {
 public:
@@ -237,8 +256,8 @@ private:
     RobotLocation goalLocation;
     GoalPoint goalPoint;
 
-    ros::Subscriber odom_sub, path_sub, goal_sub;
-    ros::Publisher pub_, marker_pub, planner_pub;
+    ros::Subscriber odom_sub, path_sub, goal_sub, hypath_sub, locate_sub;
+    ros::Publisher pub_, marker_pub, planner_pub, locate_pub;
     ros::Timer timer1, timer2;
     tf::TransformListener tf_listener;
     // dynamic_server
@@ -251,13 +270,16 @@ private:
     nav_msgs::Odometry odom;
     nav_msgs::Path map_path, odom_path;
 
-    double L, Lfw, Lrv, Vcmd, lfw, lrv, steering, u, v;
+    double L,
+        Lfw, Lrv, Vcmd, lfw, lrv, steering, u, v;
     double gas_gain, base_angle, base_speed_forward, base_speed_back, angle_gain_forward, angle_gain_back, goal_radius;
-    int controller_freq;
+    int controller_freq, sub_locate_data, index;
     bool foundForwardPt, foundBackPt, goal_received, goal_reached, AllowReverse;
 
     void odomCB(const nav_msgs::Odometry::ConstPtr &odomMsg);
+    void locateCB(const std_msgs::Int32 &data);
     void pathCB(const nav_msgs::Path::ConstPtr &pathMsg);
+    void hypathCB(const nav_msgs::Path::ConstPtr &pathMsg);
     void goalCB(const geometry_msgs::PoseStamped::ConstPtr &goalMsg);
     void goalReachingCB(const ros::TimerEvent &);
     void controlLoopCB(const ros::TimerEvent &);
@@ -272,14 +294,16 @@ L1Controller::L1Controller()
 
     // Publishers and Subscribers
     //  /move_base/NavfnROS/plan
-    //  /move_base/HybridAStarPlanner/plan
+    //  /move_base_hy/HybridAStarPlanner/plan
+    locate_sub = n_.subscribe("/qingzhou_locate", 1, &L1Controller::locateCB, this);
     odom_sub = n_.subscribe("/odom_ekf", 1, &L1Controller::odomCB, this);
     path_sub = n_.subscribe("/move_base/NavfnROS/plan", 1, &L1Controller::pathCB, this);
-    // path_sub = n_.subscribe("/move_base/HybridAStarPlanner/plan", 1, &L1Controller::pathCB, this);
+    hypath_sub = n_.subscribe("/move_base_hy/HybridAStarPlanner/plan", 1, &L1Controller::hypathCB, this);
     goal_sub = n_.subscribe("/move_base_simple/goal", 1, &L1Controller::goalCB, this);
     marker_pub = n_.advertise<visualization_msgs::Marker>("car_path", 10);
     pub_ = n_.advertise<ackermann_msgs::AckermannDrive>("qz_cmd_vel_l1", 1);
     planner_pub = n_.advertise<nav_msgs::Path>("/planner_global_l1", 1);
+    locate_pub = n_.advertise<std_msgs::Int32>("/qingzhou_locate", 1);
 
     // Timer
     timer1 = n_.createTimer(ros::Duration((1.0) / controller_freq), &L1Controller::controlLoopCB, this);  // Duration(0.05) -> 20Hz
@@ -316,6 +340,11 @@ L1Controller::L1Controller()
 L1Controller::~L1Controller()
 {
     delete dsrv_;
+}
+
+void L1Controller::locateCB(const std_msgs::Int32 &data)
+{
+    sub_locate_data = data.data;
 }
 
 void L1Controller::initMarker()
@@ -371,8 +400,20 @@ void L1Controller::odomCB(const nav_msgs::Odometry::ConstPtr &odomMsg)
 
 void L1Controller::pathCB(const nav_msgs::Path::ConstPtr &pathMsg)
 {
-    map_path = *pathMsg;
-    // ROS_INFO("----------------------in L1 pathCB--------------------");
+    if (sub_locate_data != 11 && sub_locate_data != 12 && sub_locate_data != 13)
+    {
+        map_path = *pathMsg;
+    }
+}
+
+void L1Controller::hypathCB(const nav_msgs::Path::ConstPtr &pathMsg)
+{
+    // ROS_INFO("--------------------------hy map path callback:%d---------------------------", sub_locate_data);
+    if (sub_locate_data == 11 || sub_locate_data == 12 || sub_locate_data == 13)
+    {
+        map_path = *pathMsg;
+        // ROS_INFO("--------------------------hy map path---------------------------");
+    }
 }
 
 void L1Controller::goalCB(const geometry_msgs::PoseStamped::ConstPtr &goalMsg)
@@ -396,24 +437,40 @@ void L1Controller::goalCB(const geometry_msgs::PoseStamped::ConstPtr &goalMsg)
         geometry_msgs::PoseStamped odom_goal;
         switch (goalLocation)
         {
-            case Start:
-                goal.pose.position.x += (1 * Lfw);//之前是2
-                break;
-            case Load:
-                goal.pose.position.y -= Lfw;
-                break;
-            case TrafficLight:
-                goal.pose.position.y -= Lfw;
-                break;
-            case Unload:
-                goal.pose.position.y += Lfw;
-                break;
-            case RoadLine:
-                goal.pose.position.y += Lfw;
-                break;
-            default:
-                break;
+        case Start:
+            goal.pose.position.x += (2 * Lfw);
+            // ROS_INFO("---------------------------goal of start---------------------------[L1]");
+            break;
+        case Load:
+            goal.pose.position.y -= (2 * Lfw);
+            // ROS_INFO("---------------------------goal of Load---------------------------[L1]");
+            break;
+        case TrafficLight:
+            goal.pose.position.y -= (2 * Lfw);
+            // ROS_INFO("---------------------------goal of Traffic---------------------------[L1]");
+            break;
+        case Unload:
+            goal.pose.position.y += (2 * Lfw);
+            // ROS_INFO("---------------------------goal of Unload---------------------------[L1]");
+            break;
+        case RoadLine:
+            goal.pose.position.y += (2 * Lfw);
+            ROS_INFO("---------------------------goal of RoadLine---------------------------[L1]");
+            break;
+        default:
+            if (AllowReverse && sub_locate_data == int(Reverse))
+            {
+                goal.pose.position.x -= (2 * Lfw);
+                ROS_INFO("---------------------------goal of AllowReverse---------------------------[L1]");
+            }
+            else
+            {
+                goal.pose.position.x += (2 * Lfw);
+                ROS_INFO("---------------------------goal of default---------------------------[L1]");
+            }
+            break;
         }
+
         tf_listener.transformPose("odom", ros::Time(0), goal, "map", odom_goal);
         odom_goal_pos = odom_goal.pose.position;
 
@@ -504,7 +561,7 @@ geometry_msgs::Point L1Controller::get_odom_car2WayPtVec(const geometry_msgs::Po
 
     if (!goal_reached)
     {
-        double y_limit = -7.72;
+        double y_limit = -7.56; // 7.58
 
         for (int j = 0; j < map_path.poses.size(); j++)
         {
@@ -512,9 +569,9 @@ geometry_msgs::Point L1Controller::get_odom_car2WayPtVec(const geometry_msgs::Po
             {
                 map_path.poses[j].pose.position.y = y_limit;
             }
-        }  // planner_pub
-        planner_pub.publish(map_path);//可视化操作
-        
+        }                              // planner_pub
+        planner_pub.publish(map_path); // 可视化操作
+
         for (int i = 0; i < map_path.poses.size(); i++)
         {
             geometry_msgs::PoseStamped map_path_pose = map_path.poses[i];
@@ -687,14 +744,37 @@ double L1Controller::getGasInput(const float &current_v)
 void L1Controller::goalReachingCB(const ros::TimerEvent &)
 {
 
+    double temp_dist;
     if (goal_received)
     {
         double car2goal_dist = getCar2GoalDist();
         // ROS_INFO("[L1]---------------------距离：%f----------------------", car2goal_dist);
-        if (car2goal_dist < 0.35)
+        if (AllowReverse)
+        {
+            temp_dist = 0.15; // 0.15
+        }
+        else
+        {
+            temp_dist = 0.55;
+        }
+        if (car2goal_dist < temp_dist)
         {
             goal_reached = true;
             goal_received = false;
+            if (sub_locate_data == int(RoadLineToReverse))
+            {
+                std_msgs::Int32 temp_data;
+                temp_data.data = int(Reverse);
+                locate_pub.publish(temp_data);
+                ROS_INFO("--------------------------更新Reverse位置---------------------------");
+            }
+            else if (sub_locate_data == int(Reverse))
+            {
+                std_msgs::Int32 temp_data;
+                temp_data.data = int(ReverseToStart);
+                locate_pub.publish(temp_data);
+                ROS_INFO("--------------------------更新ReverseToStart位置---------------------------");
+            }
             ROS_INFO("[L1]-----------------------Goal Reached !-----------------------");
         }
     }
