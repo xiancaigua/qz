@@ -18,7 +18,6 @@ set(CMAKE_TARGET_DEFINITIONS_CXX
 # The include file search paths:
 set(CMAKE_CXX_TARGET_INCLUDE_PATH
   "/home/cquer/2023_qingzhou/src/dynamic_parameters/include/dynamic_parameters"
-  "/home/cquer/2023_qingzhou/src/dynamic_parameters/include/dynamic_parameters_beifen"
   "/home/cquer/2023_qingzhou/devel/include"
   "/opt/ros/melodic/include"
   "/opt/ros/melodic/share/xmlrpcpp/cmake/../../../include/xmlrpcpp"

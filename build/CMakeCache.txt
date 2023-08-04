@@ -127,7 +127,7 @@ CATKIN_SYMLINK_INSTALL:BOOL=OFF
 CATKIN_WHITELIST_PACKAGE:UNINITIALIZED=qingzhou_locate
 
 //List of ';' separated packages to build
-CATKIN_WHITELIST_PACKAGES:STRING=test_pkg;qingzhou_locate
+CATKIN_WHITELIST_PACKAGES:STRING=dynamic_parameters;qingzhou_nav
 
 //Path to a program.
 CMAKE_AR:FILEPATH=/usr/bin/ar
@@ -760,7 +760,7 @@ laser_geometry_DIR:PATH=/opt/ros/melodic/share/laser_geometry/cmake
 layers_LIB_DEPENDS:STATIC=general;costmap_2d;
 
 //Path to a library.
-lib:FILEPATH=/opt/ros/melodic/lib/libtf.so
+lib:FILEPATH=/opt/ros/melodic/lib/libtf2.so
 
 //Value Computed by CMake
 map_msgs_BINARY_DIR:STATIC=/home/cquer/2023_qingzhou/build/authority_code/navigation_msgs/map_msgs
@@ -864,7 +864,8 @@ pluginlib_DIR:PATH=/opt/ros/melodic/share/pluginlib/cmake
 //Value Computed by CMake
 qingzhou_locate_BINARY_DIR:STATIC=/home/cquer/2023_qingzhou/build/qingzhou_locate
 
-qingzhou_locate_DIR:PATH=
+//The directory containing a CMake configuration file for qingzhou_locate.
+qingzhou_locate_DIR:PATH=/home/cquer/2023_qingzhou/devel/share/qingzhou_locate/cmake
 
 //Value Computed by CMake
 qingzhou_locate_SOURCE_DIR:STATIC=/home/cquer/2023_qingzhou/src/qingzhou_locate

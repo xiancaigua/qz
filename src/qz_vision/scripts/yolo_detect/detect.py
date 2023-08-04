@@ -28,7 +28,7 @@ class Detect():
         assert object in ['traffic', 'text'], 'object should be traffic or text'
         self.object = object
         if (self.object == 'traffic'):
-            onnx_path='/home/cquer/2023_qingzhou/src/qz_vision/scripts/yolo_detect/traffic2.onnx'
+            onnx_path='/home/cquer/2023_qingzhou/src/qz_vision/scripts/yolo_detect/traffic_mix.onnx'
         self.onnx_session = onnxruntime.InferenceSession(onnx_path)
         
     def detect(self, img, show=False):

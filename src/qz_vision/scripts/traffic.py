@@ -3,8 +3,8 @@
 import cv2
 import numpy as np
 
-thread=1000#3000
-thread_notGreen = 140000
+thread_green=1000#3000
+thread_notGreen = 35000
 # thread_notGreen = 3500
 color_dict = {
     'Green':[[60, 43, 150], [80, 255, 255]],
@@ -14,27 +14,34 @@ color_dict = {
 
 def cb(config,level):
     global color_dict,thread
-    color_dict["RandY"][0][0]=config.H1
-    color_dict["RandY"][0][1]=config.S1
-    color_dict["RandY"][0][2]=config.V1
-    color_dict["RandY"][1][0]=config.H2
-    color_dict["RandY"][1][1]=config.S2
-    color_dict["RandY"][1][2]=config.V2
+    color_dict["Green"][0][0]=config.H1
+    color_dict["Green"][0][1]=config.S1
+    color_dict["Green"][0][2]=config.V1
+    color_dict["Green"][1][0]=config.H2
+    color_dict["Green"][1][1]=config.S2
+    color_dict["Green"][1][2]=config.V2
     thread = config.thread
-    print("[VISION]-----RandY: h1:%d,s1:%d,v1:%d h2:%d,s2:%d,v2:%d"%(
-        color_dict["RandY"][0][0],
-        color_dict["RandY"][0][1],
-        color_dict["RandY"][0][2],
-        color_dict["RandY"][1][0],
-        color_dict["RandY"][1][1],
-        color_dict["RandY"][1][2]
+    print("[VISION]-----Green: h1:%d,s1:%d,v1:%d h2:%d,s2:%d,v2:%d"%(
+        color_dict["Green"][0][0],
+        color_dict["Green"][0][1],
+        color_dict["Green"][0][2],
+        color_dict["Green"][1][0],
+        color_dict["Green"][1][1],
+        color_dict["Green"][1][2]
     ))
     return config
 
 def shiftArea(img):
     row, column, _ = img.shape
     temp_img = img[int(row*0.2):int(row), int(column*0.2):int(column*0.8)]
-    return temp_img
+    greenimg = getColorArea(temp_img,'Green')
+    binary_greenimg = cv2.cvtColor(greenimg, cv2.COLOR_BGR2GRAY)
+    ret,img_thresh = cv2.threshold(binary_greenimg,10,255,cv2.THRESH_BINARY)
+    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
+    img_thresh_green = cv2.morphologyEx(img_thresh, cv2.MORPH_OPEN, kernel)
+    img_thresh_green = cv2.morphologyEx(img_thresh, cv2.MORPH_CLOSE, kernel)
+
+    return temp_img,img_thresh_green,greenimg
 
 
 # 根据传入的color，从color_dict中获取对应上下限提取对应的颜色

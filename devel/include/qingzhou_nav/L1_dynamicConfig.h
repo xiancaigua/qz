@@ -459,9 +459,9 @@ L1_dynamicConfig::GroupDescription<L1_dynamicConfig::DEFAULT, L1_dynamicConfig> 
 //#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
       __default__.Lfw = 0.55;
 //#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
-      Default.abstract_parameters.push_back(L1_dynamicConfig::AbstractParamDescriptionConstPtr(new L1_dynamicConfig::ParamDescription<double>("Lfw", "double", 0, "*min d when car is turning*", "", &L1_dynamicConfig::Lfw)));
+      Default.abstract_parameters.push_back(L1_dynamicConfig::AbstractParamDescriptionConstPtr(new L1_dynamicConfig::ParamDescription<double>("Lfw", "double", 0, "forward look ahead distance (m)", "", &L1_dynamicConfig::Lfw)));
 //#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
-      __param_descriptions__.push_back(L1_dynamicConfig::AbstractParamDescriptionConstPtr(new L1_dynamicConfig::ParamDescription<double>("Lfw", "double", 0, "*min d when car is turning*", "", &L1_dynamicConfig::Lfw)));
+      __param_descriptions__.push_back(L1_dynamicConfig::AbstractParamDescriptionConstPtr(new L1_dynamicConfig::ParamDescription<double>("Lfw", "double", 0, "forward look ahead distance (m)", "", &L1_dynamicConfig::Lfw)));
 //#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
       __min__.lfw = 0.0;
 //#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
@@ -469,9 +469,9 @@ L1_dynamicConfig::GroupDescription<L1_dynamicConfig::DEFAULT, L1_dynamicConfig> 
 //#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
       __default__.lfw = 0.13;
 //#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
-      Default.abstract_parameters.push_back(L1_dynamicConfig::AbstractParamDescriptionConstPtr(new L1_dynamicConfig::ParamDescription<double>("lfw", "double", 0, "forward look ahead distance (m)", "", &L1_dynamicConfig::lfw)));
+      Default.abstract_parameters.push_back(L1_dynamicConfig::AbstractParamDescriptionConstPtr(new L1_dynamicConfig::ParamDescription<double>("lfw", "double", 0, "vehicle forward virtual wheelbase", "", &L1_dynamicConfig::lfw)));
 //#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
-      __param_descriptions__.push_back(L1_dynamicConfig::AbstractParamDescriptionConstPtr(new L1_dynamicConfig::ParamDescription<double>("lfw", "double", 0, "forward look ahead distance (m)", "", &L1_dynamicConfig::lfw)));
+      __param_descriptions__.push_back(L1_dynamicConfig::AbstractParamDescriptionConstPtr(new L1_dynamicConfig::ParamDescription<double>("lfw", "double", 0, "vehicle forward virtual wheelbase", "", &L1_dynamicConfig::lfw)));
 //#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
       __min__.angle_gain_forward = 0.0;
 //#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
@@ -479,9 +479,9 @@ L1_dynamicConfig::GroupDescription<L1_dynamicConfig::DEFAULT, L1_dynamicConfig> 
 //#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
       __default__.angle_gain_forward = 1.35;
 //#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
-      Default.abstract_parameters.push_back(L1_dynamicConfig::AbstractParamDescriptionConstPtr(new L1_dynamicConfig::ParamDescription<double>("angle_gain_forward", "double", 0, "*gain of the turnning angle(to be tested)*", "", &L1_dynamicConfig::angle_gain_forward)));
+      Default.abstract_parameters.push_back(L1_dynamicConfig::AbstractParamDescriptionConstPtr(new L1_dynamicConfig::ParamDescription<double>("angle_gain_forward", "double", 0, "forward angle gain", "", &L1_dynamicConfig::angle_gain_forward)));
 //#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
-      __param_descriptions__.push_back(L1_dynamicConfig::AbstractParamDescriptionConstPtr(new L1_dynamicConfig::ParamDescription<double>("angle_gain_forward", "double", 0, "*gain of the turnning angle(to be tested)*", "", &L1_dynamicConfig::angle_gain_forward)));
+      __param_descriptions__.push_back(L1_dynamicConfig::AbstractParamDescriptionConstPtr(new L1_dynamicConfig::ParamDescription<double>("angle_gain_forward", "double", 0, "forward angle gain", "", &L1_dynamicConfig::angle_gain_forward)));
 //#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
       __min__.base_speed_forward = 0.2;
 //#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
@@ -489,9 +489,9 @@ L1_dynamicConfig::GroupDescription<L1_dynamicConfig::DEFAULT, L1_dynamicConfig> 
 //#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
       __default__.base_speed_forward = 0.5;
 //#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
-      Default.abstract_parameters.push_back(L1_dynamicConfig::AbstractParamDescriptionConstPtr(new L1_dynamicConfig::ParamDescription<double>("base_speed_forward", "double", 0, "*base speed of car*", "", &L1_dynamicConfig::base_speed_forward)));
+      Default.abstract_parameters.push_back(L1_dynamicConfig::AbstractParamDescriptionConstPtr(new L1_dynamicConfig::ParamDescription<double>("base_speed_forward", "double", 0, "forward base speed", "", &L1_dynamicConfig::base_speed_forward)));
 //#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
-      __param_descriptions__.push_back(L1_dynamicConfig::AbstractParamDescriptionConstPtr(new L1_dynamicConfig::ParamDescription<double>("base_speed_forward", "double", 0, "*base speed of car*", "", &L1_dynamicConfig::base_speed_forward)));
+      __param_descriptions__.push_back(L1_dynamicConfig::AbstractParamDescriptionConstPtr(new L1_dynamicConfig::ParamDescription<double>("base_speed_forward", "double", 0, "forward base speed", "", &L1_dynamicConfig::base_speed_forward)));
 //#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
       __min__.AllowReverse = 0;
 //#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
@@ -499,9 +499,9 @@ L1_dynamicConfig::GroupDescription<L1_dynamicConfig::DEFAULT, L1_dynamicConfig> 
 //#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
       __default__.AllowReverse = 0;
 //#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
-      Default.abstract_parameters.push_back(L1_dynamicConfig::AbstractParamDescriptionConstPtr(new L1_dynamicConfig::ParamDescription<bool>("AllowReverse", "bool", 0, "reverse or not", "", &L1_dynamicConfig::AllowReverse)));
+      Default.abstract_parameters.push_back(L1_dynamicConfig::AbstractParamDescriptionConstPtr(new L1_dynamicConfig::ParamDescription<bool>("AllowReverse", "bool", 0, "reverse flag", "", &L1_dynamicConfig::AllowReverse)));
 //#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
-      __param_descriptions__.push_back(L1_dynamicConfig::AbstractParamDescriptionConstPtr(new L1_dynamicConfig::ParamDescription<bool>("AllowReverse", "bool", 0, "reverse or not", "", &L1_dynamicConfig::AllowReverse)));
+      __param_descriptions__.push_back(L1_dynamicConfig::AbstractParamDescriptionConstPtr(new L1_dynamicConfig::ParamDescription<bool>("AllowReverse", "bool", 0, "reverse flag", "", &L1_dynamicConfig::AllowReverse)));
 //#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
       __min__.Lrv = 0.0;
 //#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
@@ -509,9 +509,9 @@ L1_dynamicConfig::GroupDescription<L1_dynamicConfig::DEFAULT, L1_dynamicConfig> 
 //#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
       __default__.Lrv = 0.4;
 //#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
-      Default.abstract_parameters.push_back(L1_dynamicConfig::AbstractParamDescriptionConstPtr(new L1_dynamicConfig::ParamDescription<double>("Lrv", "double", 0, "unknown parapm, don't changed it", "", &L1_dynamicConfig::Lrv)));
+      Default.abstract_parameters.push_back(L1_dynamicConfig::AbstractParamDescriptionConstPtr(new L1_dynamicConfig::ParamDescription<double>("Lrv", "double", 0, "forward look ahead distance (m)", "", &L1_dynamicConfig::Lrv)));
 //#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
-      __param_descriptions__.push_back(L1_dynamicConfig::AbstractParamDescriptionConstPtr(new L1_dynamicConfig::ParamDescription<double>("Lrv", "double", 0, "unknown parapm, don't changed it", "", &L1_dynamicConfig::Lrv)));
+      __param_descriptions__.push_back(L1_dynamicConfig::AbstractParamDescriptionConstPtr(new L1_dynamicConfig::ParamDescription<double>("Lrv", "double", 0, "forward look ahead distance (m)", "", &L1_dynamicConfig::Lrv)));
 //#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
       __min__.lrv = -5.0;
 //#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
@@ -519,9 +519,9 @@ L1_dynamicConfig::GroupDescription<L1_dynamicConfig::DEFAULT, L1_dynamicConfig> 
 //#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
       __default__.lrv = 0.0;
 //#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
-      Default.abstract_parameters.push_back(L1_dynamicConfig::AbstractParamDescriptionConstPtr(new L1_dynamicConfig::ParamDescription<double>("lrv", "double", 0, "distance between front the center of car", "", &L1_dynamicConfig::lrv)));
+      Default.abstract_parameters.push_back(L1_dynamicConfig::AbstractParamDescriptionConstPtr(new L1_dynamicConfig::ParamDescription<double>("lrv", "double", 0, "vehicle backward virtual wheelbase", "", &L1_dynamicConfig::lrv)));
 //#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
-      __param_descriptions__.push_back(L1_dynamicConfig::AbstractParamDescriptionConstPtr(new L1_dynamicConfig::ParamDescription<double>("lrv", "double", 0, "distance between front the center of car", "", &L1_dynamicConfig::lrv)));
+      __param_descriptions__.push_back(L1_dynamicConfig::AbstractParamDescriptionConstPtr(new L1_dynamicConfig::ParamDescription<double>("lrv", "double", 0, "vehicle backward virtual wheelbase", "", &L1_dynamicConfig::lrv)));
 //#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
       __min__.angle_gain_back = 0.0;
 //#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
@@ -529,9 +529,9 @@ L1_dynamicConfig::GroupDescription<L1_dynamicConfig::DEFAULT, L1_dynamicConfig> 
 //#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
       __default__.angle_gain_back = 1.0;
 //#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
-      Default.abstract_parameters.push_back(L1_dynamicConfig::AbstractParamDescriptionConstPtr(new L1_dynamicConfig::ParamDescription<double>("angle_gain_back", "double", 0, "*gain of the turnning angle(to be tested)*", "", &L1_dynamicConfig::angle_gain_back)));
+      Default.abstract_parameters.push_back(L1_dynamicConfig::AbstractParamDescriptionConstPtr(new L1_dynamicConfig::ParamDescription<double>("angle_gain_back", "double", 0, "backward angle gain", "", &L1_dynamicConfig::angle_gain_back)));
 //#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
-      __param_descriptions__.push_back(L1_dynamicConfig::AbstractParamDescriptionConstPtr(new L1_dynamicConfig::ParamDescription<double>("angle_gain_back", "double", 0, "*gain of the turnning angle(to be tested)*", "", &L1_dynamicConfig::angle_gain_back)));
+      __param_descriptions__.push_back(L1_dynamicConfig::AbstractParamDescriptionConstPtr(new L1_dynamicConfig::ParamDescription<double>("angle_gain_back", "double", 0, "backward angle gain", "", &L1_dynamicConfig::angle_gain_back)));
 //#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
       __min__.base_speed_back = 0.2;
 //#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
@@ -539,9 +539,9 @@ L1_dynamicConfig::GroupDescription<L1_dynamicConfig::DEFAULT, L1_dynamicConfig> 
 //#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
       __default__.base_speed_back = 0.35;
 //#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
-      Default.abstract_parameters.push_back(L1_dynamicConfig::AbstractParamDescriptionConstPtr(new L1_dynamicConfig::ParamDescription<double>("base_speed_back", "double", 0, "*base speed of car*", "", &L1_dynamicConfig::base_speed_back)));
+      Default.abstract_parameters.push_back(L1_dynamicConfig::AbstractParamDescriptionConstPtr(new L1_dynamicConfig::ParamDescription<double>("base_speed_back", "double", 0, "backward base gain", "", &L1_dynamicConfig::base_speed_back)));
 //#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
-      __param_descriptions__.push_back(L1_dynamicConfig::AbstractParamDescriptionConstPtr(new L1_dynamicConfig::ParamDescription<double>("base_speed_back", "double", 0, "*base speed of car*", "", &L1_dynamicConfig::base_speed_back)));
+      __param_descriptions__.push_back(L1_dynamicConfig::AbstractParamDescriptionConstPtr(new L1_dynamicConfig::ParamDescription<double>("base_speed_back", "double", 0, "backward base gain", "", &L1_dynamicConfig::base_speed_back)));
 //#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
       __min__.controller_freq = 5.0;
 //#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
@@ -559,9 +559,9 @@ L1_dynamicConfig::GroupDescription<L1_dynamicConfig::DEFAULT, L1_dynamicConfig> 
 //#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
       __default__.Vcmd = 0.7;
 //#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
-      Default.abstract_parameters.push_back(L1_dynamicConfig::AbstractParamDescriptionConstPtr(new L1_dynamicConfig::ParamDescription<double>("Vcmd", "double", 0, "*reference speed (m/s)*", "", &L1_dynamicConfig::Vcmd)));
+      Default.abstract_parameters.push_back(L1_dynamicConfig::AbstractParamDescriptionConstPtr(new L1_dynamicConfig::ParamDescription<double>("Vcmd", "double", 0, "unknown parameter", "", &L1_dynamicConfig::Vcmd)));
 //#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
-      __param_descriptions__.push_back(L1_dynamicConfig::AbstractParamDescriptionConstPtr(new L1_dynamicConfig::ParamDescription<double>("Vcmd", "double", 0, "*reference speed (m/s)*", "", &L1_dynamicConfig::Vcmd)));
+      __param_descriptions__.push_back(L1_dynamicConfig::AbstractParamDescriptionConstPtr(new L1_dynamicConfig::ParamDescription<double>("Vcmd", "double", 0, "unknown parameter", "", &L1_dynamicConfig::Vcmd)));
 //#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
       __min__.gas_gain = 0.5;
 //#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
@@ -569,9 +569,9 @@ L1_dynamicConfig::GroupDescription<L1_dynamicConfig::DEFAULT, L1_dynamicConfig> 
 //#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
       __default__.gas_gain = 1.0;
 //#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
-      Default.abstract_parameters.push_back(L1_dynamicConfig::AbstractParamDescriptionConstPtr(new L1_dynamicConfig::ParamDescription<double>("gas_gain", "double", 0, "gas gain of car(to be tested)", "", &L1_dynamicConfig::gas_gain)));
+      Default.abstract_parameters.push_back(L1_dynamicConfig::AbstractParamDescriptionConstPtr(new L1_dynamicConfig::ParamDescription<double>("gas_gain", "double", 0, "unknown parameter", "", &L1_dynamicConfig::gas_gain)));
 //#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
-      __param_descriptions__.push_back(L1_dynamicConfig::AbstractParamDescriptionConstPtr(new L1_dynamicConfig::ParamDescription<double>("gas_gain", "double", 0, "gas gain of car(to be tested)", "", &L1_dynamicConfig::gas_gain)));
+      __param_descriptions__.push_back(L1_dynamicConfig::AbstractParamDescriptionConstPtr(new L1_dynamicConfig::ParamDescription<double>("gas_gain", "double", 0, "unknown parameter", "", &L1_dynamicConfig::gas_gain)));
 //#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
       __min__.base_angle = -0.5;
 //#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
@@ -579,9 +579,9 @@ L1_dynamicConfig::GroupDescription<L1_dynamicConfig::DEFAULT, L1_dynamicConfig> 
 //#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
       __default__.base_angle = 0.0;
 //#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
-      Default.abstract_parameters.push_back(L1_dynamicConfig::AbstractParamDescriptionConstPtr(new L1_dynamicConfig::ParamDescription<double>("base_angle", "double", 0, "*base angle of car(to be tested)*", "", &L1_dynamicConfig::base_angle)));
+      Default.abstract_parameters.push_back(L1_dynamicConfig::AbstractParamDescriptionConstPtr(new L1_dynamicConfig::ParamDescription<double>("base_angle", "double", 0, "unknown parameter", "", &L1_dynamicConfig::base_angle)));
 //#line 291 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
-      __param_descriptions__.push_back(L1_dynamicConfig::AbstractParamDescriptionConstPtr(new L1_dynamicConfig::ParamDescription<double>("base_angle", "double", 0, "*base angle of car(to be tested)*", "", &L1_dynamicConfig::base_angle)));
+      __param_descriptions__.push_back(L1_dynamicConfig::AbstractParamDescriptionConstPtr(new L1_dynamicConfig::ParamDescription<double>("base_angle", "double", 0, "unknown parameter", "", &L1_dynamicConfig::base_angle)));
 //#line 246 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"
       Default.convertParams();
 //#line 246 "/opt/ros/melodic/lib/python2.7/dist-packages/dynamic_reconfigure/parameter_generator_catkin.py"

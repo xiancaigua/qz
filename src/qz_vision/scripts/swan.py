@@ -399,10 +399,7 @@ def pianyi_detect(img,pianyi_hist):
                 if pianyi>0:
                     pianyi_text='right'
                     if len(pianyi_hist) < 12: # 40
-                        if pianyi<15:
-                            pianyi_text = 'left'
-                        else:
-                            pianyi /= 15 # 4
+                        pianyi /= 15 # 4
                     if len(pianyi_hist)>12 and len(pianyi_hist) <40:
                         pianyi_text = 'left'
                 elif pianyi<0:
@@ -462,8 +459,8 @@ def pianyi_detect(img,pianyi_hist):
 
     pianyi_now = abs(pianyi)
 
-    angle_gain_left =  10    # 10
-    angle_gain_right = 5 # 5
+    angle_gain_left =  11    # 10
+    angle_gain_right = 7 # 5
     if pianyi_text == 'right' :
         pianyi_now = ( - pianyi_now *angle_gain_right)/200
 

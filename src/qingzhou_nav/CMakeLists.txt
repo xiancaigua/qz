@@ -221,12 +221,3 @@ include_directories(
 add_executable(L1_controller_v3 src/L1_controller_v3.cpp)
 target_link_libraries(L1_controller_v3 ${catkin_LIBRARIES})
 add_dependencies(L1_controller_v3 ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-
-
-add_executable(L1_controller_v3_beifen src/L1_controller_v3_beifen.cpp)
-target_link_libraries(L1_controller_v3_beifen ${catkin_LIBRARIES})
-add_dependencies(L1_controller_v3_beifen ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-
-add_executable(L1_controller_v31 src/L1_controller_v31.cpp)
-target_link_libraries(L1_controller_v31 ${catkin_LIBRARIES})
-add_dependencies(L1_controller_v31 ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})

@@ -162,12 +162,6 @@ target_link_libraries(qingzhou_bringup_node
   ${catkin_LIBRARIES}
 )
 
-add_executable(goal_pub  src/goal_pub.cpp)
-add_dependencies(goal_pub ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(goal_pub
-  ${catkin_LIBRARIES}
-)
-
 add_executable(cmd_filter src/cmd_filter.cpp)
 
 add_dependencies(cmd_filter ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})

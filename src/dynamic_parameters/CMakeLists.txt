@@ -120,7 +120,6 @@ catkin_package(
 ## Your package locations should be listed before other locations
 include_directories(
   include/dynamic_parameters
-  include/dynamic_parameters_beifen
   ${catkin_INCLUDE_DIRS}
 )
 
@@ -210,12 +209,4 @@ include_directories(
 # catkin_add_nosetests(test)
 add_executable(dynamic_parameters src/dynamic_parameters.cpp)
 target_link_libraries(dynamic_parameters ${catkin_LIBRARIES})
-add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS} qingzhou_locate_generate_messages_cpp)
-
-add_executable(dynamic_parameters_beifen src/dynamic_parameters_beifen.cpp)
-target_link_libraries(dynamic_parameters_beifen ${catkin_LIBRARIES})
-add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS} qingzhou_locate_generate_messages_cpp)
-
-add_executable(dynamic_parameterscopy src/dynamic_parameterscopy.cpp)
-target_link_libraries(dynamic_parameterscopy ${catkin_LIBRARIES})
 add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS} qingzhou_locate_generate_messages_cpp)

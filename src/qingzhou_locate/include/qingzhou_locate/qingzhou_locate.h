@@ -27,9 +27,6 @@ enum RobotLocation : int
 	Unknown,RoadLineToReverse,Reverse,ReverseToStart
 };
 
-// start 0.20 0.026(0 0)
-// 		traffic 1.076 -	4.335 unload - 2.775 - 4.825 load 1.105 - 3.282
-
 	// 用于划定目标点范围，可以写一个设置目标点的函数
 struct GoalPoint
 {
@@ -42,7 +39,7 @@ struct GoalPoint
 		x1[1] = 1.7; y1[1] = -3.9; x2[1] = 2.7; y2[1] = -2.9;
 		x1[2] = 1.7; y1[2] = -6.3; x2[2] = 2.7; y2[2] = -5.3;
 		x1[3] = -2.7; y1[3] = -6.5; x2[3] = -1.7; y2[3] = -5.5;
-		x1[4] = 0.5; y1[4] = -4.3; x2[4] = 1.5; y2[4] = -3.0;//-3.0 
+		x1[4] = 0.5; y1[4] = -4.3; x2[4] = 1.5; y2[4] = -3.0;
 	}
 };
 

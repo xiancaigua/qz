@@ -25,13 +25,14 @@ from yolo_detect.detect import Detect
 from swan import *
 from traffic import *
 from openvideo import gstreamer_pipeline
-
+from YOLO5.yolov5 import *
 
 
 # 调试用
+box = []
 tiaoshi = False
 tiaoshi_swan = False
-traffic_fangan_choose = 1
+traffic_fangan_choose = 3
 swan_suanfa_choose = 2
 
 cam = None
@@ -56,8 +57,7 @@ def LoacateCB(msg):
     elif msg.data == 1:
         Queue.put("traffic")
     elif msg.data == 2:
-        global thread_notGreen
-        thread_notGreen = 80000
+        pass
     return 0
 
 # def OdomCallBack(msg):
@@ -110,13 +110,27 @@ if __name__ == "__main__":
         max_speed = 1.2
 
     # 红绿灯
-    greencount, notgreencount = 0, 0
+    greencount, notgreencount,nothingcount,framecount = 0, 0, 0, 0
+    time1,time2 = 0,0
     # 导入模型
     det_txt = Detect('text')
-    det_traffic = Detect('traffic')
+    # det_traffic = Detect('traffic')
     start_time, end_time, delta_time = 0,0,0
 
+    ctypes.CDLL(PLUGIN_LIBRARY)
     cam=cv2.VideoCapture(gstreamer_pipeline(flip_method=0),cv2.CAP_GSTREAMER)
+
+    if tiaoshi_swan:
+        yolov5_wrapper = None
+    else:
+        yolov5_wrapper = YoLov5TRT(engine_file_path)
+        for i in range(10):
+            thread1 = warmUpThread(yolov5_wrapper)
+            thread1.start()
+            thread1.join()
+
+ 
+
     try:
         print("[VISION]------------------摄像头开启----------------") 
         while not rospy.is_shutdown():
@@ -178,8 +192,7 @@ if __name__ == "__main__":
                                 # locate_pub.publish(5)
                                 print("[VISION]----------弯道结束------------")
                                 pianyi_hist = []
-                                if not tiaoshi_swan:
-                                    break                                                                                    
+                                break                                                                                    
                             if swan_suanfa_choose != 2:
                                 last_err = now_err
                                 now_err = expect_angle
@@ -196,10 +209,10 @@ if __name__ == "__main__":
                                 pianyi_hist.append(pianyi)
                                 print(len(pianyi_hist))
                                 twist = pianyi
-                                if len(pianyi_hist)>=90:
+                                if len(pianyi_hist)>=80:
                                     speed -= 8*acceleration if speed >= 0.5 else 0.0
                                 else:
-                                    speed = 0.8
+                                    speed = 1.2
                                 cmd.speed = speed
                                 cmd.steering_angle =   twist
                                 print("[VISION]--角度：%f "%(twist))
@@ -223,77 +236,64 @@ if __name__ == "__main__":
                                 Img.data=np.array(show_img).tostring()
                                 Img_Pub.publish(Img)
             # 红绿灯
-            # 清除缓存
-            # for i in range(25):
-            #     ret = cam.grab()
             elif queue_out == "traffic":
                 print("[VISION]------------红绿灯------------------")
-                # 调试结束后删去
-                # time.sleep(1)
-                # traffic_flag.publish(1)
-                # continue
-                framecount = 0
                 while cam.isOpened():
-
+                    if framecount < 10:
+                        framecount += 1
+                        continue
+                    else:
+                        framecount = 0
                     ret, img = cam.read()
-                    if greencount == 5 :
+                    if greencount == 3  or nothingcount == 200:
                         traffic_flag.publish(1)
                         greencount = 0
                         notgreencount = 0
+                        nothingcount = 0
                         print("[VISION]---------------绿灯行-----------------")
                         # 调试时记得注释调
-                        # if not tiaoshi:
-                        #     break
-                    elif notgreencount == 5:
+                        if not tiaoshi:
+                            break
+                    elif notgreencount == 3 or nothingcount >=3 :
                         traffic_flag.publish(0)
-                        greencount = 0
                         notgreencount = 0
                         print("[VISION]---------------红灯停-----------------")
                     if ret:
-                        if traffic_fangan_choose == 2:
-                            if framecount <= 10:
-                                framecount += 1
-                                continue
+                        thread = inferThread(yolov5_wrapper,img)
+                        thread.start()
+                        thread.join()
+                        box = yolov5_wrapper.box
+                        if len(box) == 0:
+                            nothingcount += 1
+                            continue
+                        a,b,c,d = int(box[0]),int(box[1]),int(box[2]),int(box[3])
+                        roi_img = img[b:d, a:c]
+                        # img = cv2.resize(img, None, fx = 0.5, fy = 0.5, interpolation = cv2.INTER_CUBIC)
+                        # roi_img = shiftArea(img)
+                        greenLight = getColorArea(color='Green',img=roi_img)
+                        notgreenLight  = getColorArea(color='RandY',img = roi_img)
+                        print("[VISION]------绿色",np.sum(greenLight))
+                        print("[VISION]------红色",np.sum(notgreenLight))
+                        if np.sum(notgreenLight) > thread_notGreen:
+                            notgreencount += 1
+                            print("[VISION]----detect red")
+                        else:
+                            if np.sum(greenLight)>thread_green:
+                                greencount+=1
+                                print("[VISION]----detect green")
                             else:
-                                framecount = 0
-                            result = det_traffic.detect(img)
-                            if result == "":
-                                continue
-                            a,b,c,d = result["crop"]
-                            if a==0 or b == 0 or c == 0 or d == 0:
-                                print("[VISION]----0")
-                            traffic_status = result["classes"]
-                            if traffic_status == "red":
-                                notgreencount += 1
-                                print("red")
-                            elif traffic_status == "green":
-                                greencount += 1 
-                                print("green")
-                        if traffic_fangan_choose == 1:
-                            img = cv2.resize(img, None, fx = 0.5, fy = 0.5, interpolation = cv2.INTER_CUBIC)
-                            roi_img = shiftArea(img)
-                            greenLight = getColorArea(color='Green',img=roi_img)
-                            notgreenLight  = getColorArea(color='RandY',img = roi_img)
-                            print("[VISION]------绿色",np.sum(greenLight))
-                            print("[VISION]------红色",np.sum(notgreenLight))
-                            if np.sum(notgreenLight) > thread_notGreen:
-                                notgreencount += 1
-                                show_img = notgreenLight
-                            else:
-                                if np.sum(greenLight)>thread:
-                                    greencount+=1
-                                    show_img = greenLight
-                                else:
-                                    print("[VISION]---No green")
-                                    show_img = notgreenLight
-                            Img = Image()
-                            Img.header=std_msgs.Header()
-                            Img.width=show_img.shape[1]
-                            Img.height=show_img.shape[0]
-                            Img.encoding="bgr8"
-                            Img.step=1920
-                            Img.data=np.array(show_img).tostring()
-                            Img_Pub.publish(Img)
+                                nothingcount+=1
+                                print("[VISION]---detect nothing")
+                        show_img = roi_img
+                        show_img = cv2.resize(show_img, None,fx = 0.25,fy = 0.25)
+                        Img = Image()
+                        Img.header=std_msgs.Header()
+                        Img.width=show_img.shape[1]
+                        Img.height=show_img.shape[0]
+                        Img.encoding="bgr8"
+                        Img.step=1920
+                        Img.data=np.array(show_img).tostring()
+                        Img_Pub.publish(Img)
             # 文字识别
             if queue_out == "line":
                 # 2是下面 1是上面  
@@ -312,7 +312,7 @@ if __name__ == "__main__":
                         start_time = time.time()
                         result = det_txt.detect(Img)
                         if result == "":
-                            cnt += 1
+                            pass
                         else:
                             park_id = result["classes"]
                             if park_id == 'hangtian':
@@ -323,23 +323,38 @@ if __name__ == "__main__":
                                 jidian+=1
                             elif park_id == 'xinghang':
                                 xinghang+=1
+                            show_img = Img
+                            cv2.rectangle(show_img, (result["crop"][0], result["crop"][1]),  (result["crop"][2], result["crop"][3]),(255,0,0))
+                            show_img = cv2.resize(show_img, None,fx = 0.25,fy = 0.25)
+                            Img = Image()
+                            Img.header=std_msgs.Header()
+                            Img.width=show_img.shape[1]
+                            Img.height=show_img.shape[0]
+                            Img.encoding="bgr8"
+                            Img.step=1920
+                            Img.data=np.array(show_img).tostring()
+                            Img_Pub.publish(Img)
                             if hangtian==1 or sanyuan ==1:
+                                cnt = 0
                                 park_id_.publish(2)
                                 print(park_id)
                                 locate_pub.publish(11)
                                 break
                             elif jidian == 1 or xinghang == 1:
+                                cnt = 0
                                 print(park_id)
                                 park_id_.publish(1)
                                 locate_pub.publish(11)
                                 break
-
-                        if cnt == 10 :
+                        if cnt >= 5 :
                             park_id_.publish(2)
                             locate_pub.publish(11)
+                            cnt = 0
                             print('[VISON]-----------识别失败--------------')
                             break
 
     finally:
         rospy.loginfo("----------------------vedio released successfully-----------------------------[1]")
         cam.release()
+        yolov5_wrapper.destroy()
+    

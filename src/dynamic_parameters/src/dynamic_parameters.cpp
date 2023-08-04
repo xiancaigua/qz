@@ -34,7 +34,8 @@ int main(int argc, char** argv)
 	return 0;
 }
 
-/******************************************
+/******************
+	************************
 Name ：DynamicParameters
 Param: Null
 Func : 构造函数
@@ -66,7 +67,6 @@ Func : 析构函数
 DynamicParameters::~DynamicParameters()
 {
 	delete client;
-	
 }
 
 /******************************************
@@ -121,9 +121,9 @@ void DynamicParameters::locateCB(const std_msgs::Int32& data)
 	{
 		ROS_INFO("-----------------Load config--------------------");
 		setParameters(paramConfig.config2);
+		setCostmapConf(costmapConfLoad);
 	}
-	//  && odom_msg.pose.pose.position.y < -3.3
-	else if (data.data == TrafficLightToUnload)
+	else if (data.data == TrafficLight)
 	{
 		ROS_INFO("-----------------Traffic config--------------------");
 		setParameters(paramConfig.config3);
@@ -137,36 +137,16 @@ void DynamicParameters::locateCB(const std_msgs::Int32& data)
 	else if (data.data == RoadLine)
 	{
 		setParameters(paramConfig.config5);
-		setCostmapConf(costmapConfStart);
+		setCostmapConf(costmapConfRoadLine);
 	}
-
-		// switch (data.data)
-		// {
-		// case Start:
-		// 	setParameters(paramConfig.config1);
-		// 	setCostmapConf(costmapConfOther);
-		// 	map_client.call(empty);
-		// 	break;
-		// case Load:
-		// 	setParameters(paramConfig.config2);
-		// 	// setCostmapConf(costmapConfOther);
-		// 	break;
-		// case TrafficLightToUnload:
-		// 	setParameters(paramConfig.config3);
-		// 	// setCostmapConf(costmapConfOther);
-		// 	break;
-		// case Unload:
-		// 	setParameters(paramConfig.config4);
-		// 	setCostmapConf(costmapConfUnload);
-		// 	break;
-		// case RoadLine :
-		// 	setParameters(paramConfig.config5);
-		// 	setCostmapConf(costmapConfOther);
-		// 	break;
-		// default:
-		// 	ROS_INFO("Keep!");
-		// 	break;
-	// }
+	else if (data.data == Reverse)
+	{
+		setParameters(paramConfig.config6);
+	}
+	else if (data.data == ReverseToStart)
+	{
+		setParameters(paramConfig.config7);
+	}
 }
 
 /******************************************
@@ -178,7 +158,6 @@ Func : 屎山代码的ODOM
 void DynamicParameters::odomCB(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr &odomMsg)
 {
 	odom_msg = *odomMsg;
-	// ROS_INFO("---------------------odomCB in dynamicParameters------------------------%f",odom_msg.pose.pose.position.y);
 }
 
 void DynamicParameters::initCostmapConf()
@@ -187,13 +166,19 @@ void DynamicParameters::initCostmapConf()
 	dynamic_reconfigure::DoubleParameter doubleParam;
 
 	doubleParam.name = "inflation_radius";
-	doubleParam.value = 0.45;//0.45
+	doubleParam.value = 0.5;
 	costmapConfUnload.doubles.push_back(doubleParam);
 
-	doubleParam.value = 0.25;
+	doubleParam.value = 0.28;
+	costmapConfLoad.doubles.push_back(doubleParam);
+
+	doubleParam.value = 0.3;
 	costmapConfTraffic.doubles.push_back(doubleParam);
 
-	doubleParam.value = 0.34;
+	doubleParam.value = 0.05;
+	costmapConfRoadLine.doubles.push_back(doubleParam);
+
+	doubleParam.value = 0.35;//0.38
 	costmapConfStart.doubles.push_back(doubleParam);
 	ROS_INFO("Initialize Costmap Config");
 
@@ -203,6 +188,12 @@ void DynamicParameters::initCostmapConf()
 
 	doubleParam.value = 5.0;
 	costmapConfTraffic.doubles.push_back(doubleParam);
+
+	doubleParam.value = 5.0;
+	costmapConfLoad.doubles.push_back(doubleParam);
+
+	doubleParam.value = 5.0;
+	costmapConfRoadLine.doubles.push_back(doubleParam);
 
 	doubleParam.value = 5.0;
 	costmapConfUnload.doubles.push_back(doubleParam);

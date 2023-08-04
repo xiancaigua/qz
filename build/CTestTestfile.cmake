@@ -5,5 +5,5 @@
 # This file includes the relevant testing commands required for 
 # testing this directory and lists subdirectories to be tested as well.
 subdirs("gtest")
-subdirs("qingzhou_locate")
-subdirs("test_pkg")
+subdirs("dynamic_parameters")
+subdirs("qingzhou_nav")

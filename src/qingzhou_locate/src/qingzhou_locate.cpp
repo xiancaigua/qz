@@ -55,7 +55,6 @@ Func : amcl_pose订阅者的回调函数，可以获取小车位置
 void Locate::odomCB(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& odomMsg)
 {
 	odom = *odomMsg;
-	//以下代码可以用定时器另外写一个函数实现，不知道哪种更好
 	
 	// if (goalLocation == Unknown)
 	// {
@@ -69,7 +68,6 @@ void Locate::odomCB(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& od
 	{
 	// 是否在装货区
 	case Load:
-		ROS_INFO("----IN load case %d", robotLocation);
 		if (robotLocation == StartToLoad 
 		&& odom.pose.pose.position.x > goalPoint.x1[Load] 
 		&& odom.pose.pose.position.x < goalPoint.x2[Load] 
@@ -77,12 +75,10 @@ void Locate::odomCB(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& od
 		&& odom.pose.pose.position.y < goalPoint.y2[Load])
 		{
 			robotLocation = goalLocation;
-			ROS_INFO("----IN load case %d", robotLocation);
 		}
 		else if (robotLocation == Start)
 		{
 			robotLocation = RobotLocation(goalLocation + 5);
-			ROS_INFO("----IN load case %d", robotLocation);
 		}
 		break;
 
@@ -94,23 +90,19 @@ void Locate::odomCB(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& od
 		&& odom.pose.pose.position.y < goalPoint.y2[TrafficLight])
 		{
 			robotLocation = goalLocation;
-			ROS_INFO("----IN TrafficLight case %d", robotLocation);
 		}
 		else if (lastLocation == Load)
 		{
 
 			robotLocation = RobotLocation(goalLocation + 5);
-			ROS_INFO("----IN TrafficLight case %d", robotLocation);
 		}
 		break;
 
 	// 是否在卸货区或路上的其他区域
 	case Unload:
-		//第一个和第二个和第三个判断意义不明
 		if (lastLocation == Load)
 		{
 			robotLocation = LoadToTrafficLight;
-			ROS_INFO("----IN Unload case %d", robotLocation);
 		}
 		else if (lastLocation == LoadToTrafficLight
 		 && odom.pose.pose.position.x > goalPoint.x1[TrafficLight] 
@@ -119,11 +111,10 @@ void Locate::odomCB(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& od
 		 && odom.pose.pose.position.y < goalPoint.y2[TrafficLight])
 		{
 			robotLocation = TrafficLight;
-			ROS_INFO("----IN Unload case %d", robotLocation);
 		}
 		else if(lastLocation == TrafficLight)
 		{
-			robotLocation = TrafficLightToUnload;  //TrafficLightToUnload由视觉给
+			robotLocation = TrafficLightToUnload;
 		}
 		else if (lastLocation == TrafficLightToUnload 
 		&& odom.pose.pose.position.x > goalPoint.x1[Unload] 
@@ -132,16 +123,14 @@ void Locate::odomCB(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& od
 		&& odom.pose.pose.position.y < goalPoint.y2[Unload])
 		{
 			robotLocation = Unload;
-			// ROS_INFO("----IN Unload case %d", robotLocation);
 		}
 		break;
 
-	// 是否在che
+	// 是否在车道线
 	case RoadLine:
 		if (lastLocation == Unload)
 		{
 			robotLocation = UnloadToRoadLine;
-			// ROS_INFO("----IN RoadLine case %d", robotLocation);
 		}
 		else if (lastLocation == UnloadToRoadLine 
 		&& odom.pose.pose.position.x > goalPoint.x1[RoadLine] 
@@ -150,7 +139,6 @@ void Locate::odomCB(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& od
 		&& odom.pose.pose.position.y < goalPoint.y2[RoadLine])
 		{
 			robotLocation = RoadLine;
-			// ROS_INFO("----IN RoadLine case %d", robotLocation);
 		}
 		break;
 
@@ -191,7 +179,6 @@ void Locate::goalCB(const geometry_msgs::PoseStamped::ConstPtr& goalMsg)
 			goal.pose.position.y >= goalPoint.y1[i] && goal.pose.position.y <= goalPoint.y2[i])
 		{
 			goalLocation = RobotLocation(i);
-			ROS_INFO("%d------in the callback",goalLocation);
 			return;
 		}
 	}
