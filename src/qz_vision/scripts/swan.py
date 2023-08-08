@@ -465,7 +465,7 @@ def pianyi_detect(img,pianyi_hist):
         pianyi_now = ( - pianyi_now *angle_gain_right)/200
 
     elif  pianyi_text == 'left' :
-        pianyi_now =  (pianyi_now * angle_gain_left)/200
+        pianyi_now =  (pianyi_now * angle_gain_left)/180
  
     if pianyi_before == -pianyi_now or nothing_point ==1 : #这一句如果加上防止突变有点危险
         pianyi_now = pianyi_before       

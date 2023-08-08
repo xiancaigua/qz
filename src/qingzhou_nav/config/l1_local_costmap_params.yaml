@@ -7,7 +7,7 @@ local_costmap:
 
     global_frame: map
     robot_base_frame: base_link
-    # static_map: true
+    #static_map: false #true
     rolling_window: true
     width: 2.0
     height: 2.0
@@ -15,8 +15,7 @@ local_costmap:
 
     plugins:            
         - {name: sensor,    type: "costmap_2d::ObstacleLayer"}
-        - {name: Static_local,        type: "costmap_2d::StaticLayer"}
-        - {name: inflation_local, type: "costmap_2d::InflationLayer"}
+        - {name: inflation, type: "costmap_2d::InflationLayer"}
 
         #"inflation_layer"一般放在最后面。因为它最终将前面几个层的障碍物信息一起膨胀。如果不想膨胀某个插件层，则可以将其放在"inflation_layer"之后
 

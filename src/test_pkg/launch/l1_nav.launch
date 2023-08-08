@@ -1,12 +1,17 @@
 <?xml version="1.0"?>
 
 <launch>
+    <node name="map_server" pkg="map_server" type="map_server" args="$(find test_pkg)/map/nav_final.yaml" output="screen"/>
     <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
-        <rosparam file="$(find qingzhou_nav)/config/l1_common_params.yaml" command="load" ns="global_costmap" />
-        <rosparam file="$(find qingzhou_nav)/config/l1_common_params.yaml" command="load" ns="local_costmap" />
+        <!-- <rosparam file="$(find qingzhou_nav)/config/l1_common_params.yaml" command="load" ns="global_costmap" /> -->
+        <!-- <rosparam file="$(find qingzhou_nav)/config/l1_common_params.yaml" command="load" ns="local_costmap" /> -->
         <rosparam file="$(find qingzhou_nav)/config/l1_local_costmap_params.yaml" command="load" />
         <rosparam file="$(find qingzhou_nav)/config/l1_global_costmap_params.yaml" command="load" />
-        <rosparam file="$(find qingzhou_nav)/launch/includes/move_base_params.yaml" command="load"/>
+        <rosparam file="$(find qingzhou_nav)/config/move_base_params.yaml" command="load"/>
+    </node>
+
+    <node pkg="qingzhou_nav" type="L1_controller_v3" respawn="false" name="L1_controller_v3" output="screen">       
+        <rosparam file=	"$(find qingzhou_nav)/config/l1_controller_v3_param.yaml" command="load" />
     </node>
 </launch>
 

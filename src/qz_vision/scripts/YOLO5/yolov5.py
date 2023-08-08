@@ -117,6 +117,7 @@ class YoLov5TRT(object):
             batch_image_raw.append(image_raw)
             batch_origin_h.append(origin_h)
             batch_origin_w.append(origin_w)
+            print(batch_input_image.shape,i)
             np.copyto(batch_input_image[i], input_image)
         batch_input_image = np.ascontiguousarray(batch_input_image)
 
@@ -145,7 +146,6 @@ class YoLov5TRT(object):
             # Draw rectangles and labels on the original image
             for j in range(len(result_boxes)):
                 box = result_boxes[j]
-                self.box = box
         return  end - start,box
 
     def destroy(self):
@@ -163,8 +163,16 @@ class YoLov5TRT(object):
         """
         description: Ready data for warmup
         """
+        path = "/home/cquer/2023_qingzhou/src/2020.01.19NanoCSITest/red/red"
+        name_list = [path+str(i)+".jpg" for i in range(1100, 1130)]
+        i = 0
         for _ in range(self.batch_size):
-            yield np.zeros([self.input_h, self.input_w, 3], dtype=np.uint8)
+            img = cv2.imread(name_list[i])
+            print(img.shape)
+            i += 1
+            yield img
+        # for _ in range(self.batch_size):
+        #     yield np.zeros([self.input_h, self.input_w, 3], dtype=np.uint8)
 
     def preprocess_image(self, raw_bgr_image):
         """
@@ -352,7 +360,7 @@ class inferThread(threading.Thread):
         print('[VISION]----Predict Using Time->{:.2f}ms'.format( use_time * 1000))
 
 class warmUpThread(threading.Thread):
-    def __init__(self, yolov5_wrapper,):
+    def __init__(self, yolov5_wrapper):
         threading.Thread.__init__(self)
         self.yolov5_wrapper = yolov5_wrapper
 

@@ -127,7 +127,7 @@ CATKIN_SYMLINK_INSTALL:BOOL=OFF
 CATKIN_WHITELIST_PACKAGE:UNINITIALIZED=qingzhou_locate
 
 //List of ';' separated packages to build
-CATKIN_WHITELIST_PACKAGES:STRING=dynamic_parameters;qingzhou_nav
+CATKIN_WHITELIST_PACKAGES:STRING=qingzhou_nav;dynamic_parameters
 
 //Path to a program.
 CMAKE_AR:FILEPATH=/usr/bin/ar

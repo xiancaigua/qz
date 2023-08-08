@@ -1,3 +1,0 @@
-<launch>
-<node pkg="qz_vision" name="detector" type="VisionForFinalComp.py" output="screen"/>    
-</launch>

@@ -55,7 +55,8 @@ Func : amcl_pose订阅者的回调函数，可以获取小车位置
 void Locate::odomCB(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& odomMsg)
 {
 	odom = *odomMsg;
-	
+	amcl_x = odom.pose.pose.position.x;
+	amcl_y = odom.pose.pose.position.y;
 	// if (goalLocation == Unknown)
 	// {
 	// 	robotLocation == Unknown;
@@ -69,10 +70,10 @@ void Locate::odomCB(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& od
 	// 是否在装货区
 	case Load:
 		if (robotLocation == StartToLoad 
-		&& odom.pose.pose.position.x > goalPoint.x1[Load] 
-		&& odom.pose.pose.position.x < goalPoint.x2[Load] 
-		&& odom.pose.pose.position.y > goalPoint.y1[Load] 
-		&& odom.pose.pose.position.y < goalPoint.y2[Load])
+		&& amcl_x > goalPoint.x1[Load] 
+		&& amcl_x < goalPoint.x2[Load] 
+		&& amcl_y > goalPoint.y1[Load] 
+		&& amcl_y < goalPoint.y2[Load])
 		{
 			robotLocation = goalLocation;
 		}
@@ -84,10 +85,10 @@ void Locate::odomCB(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& od
 
 	case TrafficLight:
 		if (lastLocation == LoadToTrafficLight 
-		&& odom.pose.pose.position.x > goalPoint.x1[TrafficLight] 
-		&& odom.pose.pose.position.x < goalPoint.x2[TrafficLight] 
-		&& odom.pose.pose.position.y > goalPoint.y1[TrafficLight] 
-		&& odom.pose.pose.position.y < goalPoint.y2[TrafficLight])
+		&& amcl_x > goalPoint.x1[TrafficLight] 
+		&& amcl_x < goalPoint.x2[TrafficLight] 
+		&& amcl_y > goalPoint.y1[TrafficLight] 
+		&& amcl_y < goalPoint.y2[TrafficLight])
 		{
 			robotLocation = goalLocation;
 		}
@@ -104,11 +105,11 @@ void Locate::odomCB(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& od
 		{
 			robotLocation = LoadToTrafficLight;
 		}
-		else if (lastLocation == LoadToTrafficLight
-		 && odom.pose.pose.position.x > goalPoint.x1[TrafficLight] 
-		 && odom.pose.pose.position.x < goalPoint.x2[TrafficLight] 
-		 && odom.pose.pose.position.y > goalPoint.y1[TrafficLight] 
-		 && odom.pose.pose.position.y < goalPoint.y2[TrafficLight])
+		else if (lastLocation == LoadToTrafficLight 
+		&& amcl_x > goalPoint.x1[TrafficLight] 
+		&& amcl_x < goalPoint.x2[TrafficLight] 
+		&& amcl_y > goalPoint.y1[TrafficLight] 
+		&& amcl_y < goalPoint.y2[TrafficLight])
 		{
 			robotLocation = TrafficLight;
 		}
@@ -117,10 +118,10 @@ void Locate::odomCB(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& od
 			robotLocation = TrafficLightToUnload;
 		}
 		else if (lastLocation == TrafficLightToUnload 
-		&& odom.pose.pose.position.x > goalPoint.x1[Unload] 
-		&& odom.pose.pose.position.x < goalPoint.x2[Unload] 
-		&& odom.pose.pose.position.y > goalPoint.y1[Unload] 
-		&& odom.pose.pose.position.y < goalPoint.y2[Unload])
+		&& amcl_x > goalPoint.x1[Unload] 
+		&& amcl_x < goalPoint.x2[Unload] 
+		&& amcl_y > goalPoint.y1[Unload] 
+		&& amcl_y < goalPoint.y2[Unload])
 		{
 			robotLocation = Unload;
 		}
@@ -133,10 +134,10 @@ void Locate::odomCB(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& od
 			robotLocation = UnloadToRoadLine;
 		}
 		else if (lastLocation == UnloadToRoadLine 
-		&& odom.pose.pose.position.x > goalPoint.x1[RoadLine] 
-		&& odom.pose.pose.position.x < goalPoint.x2[RoadLine] 
-		&& odom.pose.pose.position.y > goalPoint.y1[RoadLine] 
-		&& odom.pose.pose.position.y < goalPoint.y2[RoadLine])
+		&& amcl_x > goalPoint.x1[RoadLine] 
+		&& amcl_x < goalPoint.x2[RoadLine] 
+		&& amcl_y > goalPoint.y1[RoadLine] 
+		&& amcl_y < goalPoint.y2[RoadLine])
 		{
 			robotLocation = RoadLine;
 		}
@@ -145,10 +146,10 @@ void Locate::odomCB(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& od
 	// 是否在起始区
 	case Start:
 		if (lastLocation == ReverseToStart
-		&& odom.pose.pose.position.x > goalPoint.x1[Start] 
-		&& odom.pose.pose.position.x < goalPoint.x2[Start] 
-		&& odom.pose.pose.position.y > goalPoint.y1[Start] 
-		&& odom.pose.pose.position.y < goalPoint.y2[Start])
+		&& amcl_x > goalPoint.x1[Start] 
+		&& amcl_x < goalPoint.x2[Start] 
+		&& amcl_y > goalPoint.y1[Start] 
+		&& amcl_y < goalPoint.y2[Start])
 		{
 			robotLocation = Start;
 		}

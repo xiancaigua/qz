@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<launch>
+    <node pkg="dynamic_parameters" type="dynamic_parameters" name="dynamic_parameters" output = "screen"/>
+</launch>

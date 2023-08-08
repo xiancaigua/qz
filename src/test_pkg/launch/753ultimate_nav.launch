@@ -1,8 +1,9 @@
 <?xml version="1.0" ?>
 <launch>
+    <include file="$(find test_pkg)/launch/qingzhou_bringup.launch" />
+    <include file="$(find qingzhou_nav)/launch/amcl.launch" />
     <include file="$(find hybrid_astar_planner)/test_the_plugin/launch/hybrid_astar_planner.launch"/>
     <include file="$(find test_pkg)/launch/l1_nav.launch" /> 
     <include file="$(find qingzhou_locate)/launch/locate.launch"/> 
-    <!-- <include file="$(find qz_vision)/launch/vision.launch"/> -->
-  <node pkg="dynamic_parameters" type="dynamic_parameters" name="dynamic_parameters" output = "screen"/>
+    <include file="$(find dynamic_parameters)/launch/dynamic_parameters.launch"/>
 </launch>

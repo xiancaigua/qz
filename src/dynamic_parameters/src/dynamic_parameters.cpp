@@ -166,19 +166,19 @@ void DynamicParameters::initCostmapConf()
 	dynamic_reconfigure::DoubleParameter doubleParam;
 
 	doubleParam.name = "inflation_radius";
-	doubleParam.value = 0.5;
+	doubleParam.value = 0.75;//0.5
 	costmapConfUnload.doubles.push_back(doubleParam);
 
 	doubleParam.value = 0.28;
 	costmapConfLoad.doubles.push_back(doubleParam);
 
-	doubleParam.value = 0.3;
+	doubleParam.value = 0.3;//0.3
 	costmapConfTraffic.doubles.push_back(doubleParam);
 
 	doubleParam.value = 0.05;
 	costmapConfRoadLine.doubles.push_back(doubleParam);
 
-	doubleParam.value = 0.35;//0.38
+	doubleParam.value = 0.35;
 	costmapConfStart.doubles.push_back(doubleParam);
 	ROS_INFO("Initialize Costmap Config");
 
@@ -195,7 +195,7 @@ void DynamicParameters::initCostmapConf()
 	doubleParam.value = 5.0;
 	costmapConfRoadLine.doubles.push_back(doubleParam);
 
-	doubleParam.value = 5.0;
+	doubleParam.value = 10.0;//5.0
 	costmapConfUnload.doubles.push_back(doubleParam);
 
 	srv_req.config = costmapConfStart;

@@ -34,7 +34,7 @@ struct GoalPoint
         x1[1] = 1.7;y1[1] = -3.9;x2[1] = 2.7;y2[1] = -2.9;
         x1[2] = 1.7;y1[2] = -6.3;x2[2] = 2.7;y2[2] = -5.3;
         x1[3] = -2.7;y1[3] = -6.5;x2[3] = -1.7;y2[3] = -5.5;
-        x1[4] = 0.5;y1[4] = -4.3;x2[4] = 1.5;y2[4] = -2.7;
+        x1[4] = 0.5;y1[4] = -4.3;x2[4] = 1.5;y2[4] = -3.0;
         x1[5] = -2.9;y1[5] = -1.6;x2[5] = -1.9;y2[5] = -0.1;
     }
 };
@@ -93,7 +93,7 @@ private:
     ackermann_msgs::AckermannDrive ackermann_cmd;
     geometry_msgs::Point odom_goal_pos, nav_goal_pos_forward, nav_goal_pos_back;
     nav_msgs::Odometry odom;
-    nav_msgs::Path map_path, odom_path;
+    nav_msgs::Path map_path, odom_path,last_map_path;
 
     double L,Lfw, Lrv, Vcmd, lfw, lrv, steering, u, v;
     double gas_gain, base_angle, base_speed_forward, base_speed_back, angle_gain_forward, angle_gain_back, goal_radius;
@@ -215,8 +215,13 @@ void L1Controller::pathCB(const nav_msgs::Path::ConstPtr &pathMsg)
 {
     if (sub_locate_data != 11 && sub_locate_data != 12 && sub_locate_data != 13)
     {
-        map_path = *pathMsg;
-        path_received = true;
+        last_map_path = *pathMsg;
+        // ROS_WARN("--------------------------size:%d------------------", last_map_path.poses.size());
+        if (last_map_path.poses.size() > 30)
+        {
+            path_received = true;
+            map_path = last_map_path;
+        }
     }
 }
 
@@ -224,8 +229,12 @@ void L1Controller::hypathCB(const nav_msgs::Path::ConstPtr &pathMsg)
 {
     if (sub_locate_data == 11 || sub_locate_data == 12 || sub_locate_data == 13)
     {
-        map_path = *pathMsg;
-        path_received = true;
+        last_map_path = *pathMsg;
+        if (last_map_path.poses.size() > 10)
+        {
+            path_received = true;
+            map_path = last_map_path;
+        }
     }
 }
 
@@ -268,8 +277,8 @@ void L1Controller::goalCB(const geometry_msgs::PoseStamped::ConstPtr &goalMsg)
             goal.pose.position.y += (1 * Lfw);
             break;
         case Reverse:
-            goal.pose.position.x -= (1.5 * Lrv);
-            ROS_INFO("---------------------------goal of AllowReverse---------------------------[L1]");
+            goal.pose.position.x -= (1 * Lrv);
+            // ROS_INFO("---------------------------goal of AllowReverse---------------------------[L1]");
             break;
         default:
             ROS_INFO("---------------------------goal of Default---------------------------[L1]");
@@ -354,7 +363,7 @@ geometry_msgs::Point L1Controller::get_odom_car2WayPtVec(const geometry_msgs::Po
 
     if (!goal_reached)
     {
-        double y_limit = -7.56; // 7.58
+        double y_limit = -7.57; // 7.58对应0.4的膨胀半径
 
         for (int j = 0; j < map_path.poses.size(); j++)
         {
@@ -568,17 +577,13 @@ void L1Controller::goalReachingCB(const ros::TimerEvent &)
         {
             temp_dist = 0.4;//0.3
         }
+        else if (sub_locate_data == TrafficLightToUnload || sub_locate_data == Unload)
+        {
+            temp_dist = 0.5;
+        }
         else
         {
-            if(sub_locate_data == ReverseToStart || sub_locate_data == Start)
-            {
-                temp_dist = 0.7;
-                // ROS_INFO("-------------------go bacak------------------------[L1]");
-            }
-            else
-            {
-                temp_dist = 0.59;
-            }
+            temp_dist = 0.59;
         }
         if (car2goal_dist < temp_dist)
         {
@@ -587,7 +592,7 @@ void L1Controller::goalReachingCB(const ros::TimerEvent &)
             path_received = false;
             if (sub_locate_data == RoadLineToReverse)
             {
-                usleep(250000); // 延时0.25秒
+                // usleep(250000); // 延时0.25秒
                 std_msgs::Int32 temp_data;
                 temp_data.data = int(Reverse);
                 locate_pub.publish(temp_data);
@@ -595,7 +600,7 @@ void L1Controller::goalReachingCB(const ros::TimerEvent &)
             }
             else if (sub_locate_data == Reverse)
             {
-                usleep(100000);//延时0.1秒
+                // usleep(100000);//延时0.1秒
                 std_msgs::Int32 temp_data;
                 temp_data.data = int(ReverseToStart);
                 locate_pub.publish(temp_data);
@@ -634,20 +639,17 @@ void L1Controller::controlLoopCB(const ros::TimerEvent &)
                 ackermann_cmd.speed = -base_speed_back;
             }
         }
-    }
-    if ((goal_received && path_received) || (goal_reached && path_received))
-    {
-        if (sub_locate_data == 7)
+
+        if (sub_locate_data == 9)
         {
-            ackermann_cmd.steering_angle += PI/45;//第二段手动加5度的偏移
+            ackermann_cmd.steering_angle += PI / 60; // 第四段手动加3度的偏移
         }
-        else if (sub_locate_data == 9)
+        else if (sub_locate_data == 7)
         {
-            // ROS_INFO("----------------------角度：%f",ackermann_cmd.steering_angle);
-            ackermann_cmd.steering_angle += PI / 36;
+            ackermann_cmd.steering_angle += PI / 30;
         }
-        pub_.publish(ackermann_cmd);
     }
+    pub_.publish(ackermann_cmd);
 }
 
 void L1Controller::dynamicCB(qingzhou_nav::L1_dynamicConfig &config, uint32_t level)

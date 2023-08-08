@@ -153,9 +153,9 @@ void actuator::run()
         ros::spinOnce();
         memset(&moveBaseControl, 0, sizeof(sMartcarControl)); // 清零movebase数据存储区
 
-        ROS_INFO("[BRING_UP]---------------%f,%d", amcl_y, traffic_flag);
+        // ROS_INFO("[BRING_UP]---------------%f,%d", amcl_y, traffic_flag);
         // ROS_INFO("[BRING_UP]---------------Bring Up is Ready");
-        if (robotlocation.data == int(RoadLine) )
+        if (robotlocation.data == int(RoadLine))
         {
             moveBaseControl = vision_cmd;
             // ROS_INFO("[BRING_UP]---------------FROM VISION");
@@ -164,7 +164,7 @@ void actuator::run()
         {
             moveBaseControl = zero_cmd;
             // ROS_INFO("----%d",int(moveBaseControl.speed));
-            ROS_INFO("[BRING_UP]---------------FROM ZERO");
+            // ROS_INFO("[BRING_UP]---------------FROM ZERO");
         }
         else
         {

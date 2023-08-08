@@ -1,0 +1,3 @@
+<launch>
+    <node pkg="qz_vision" name="detector" type="traffic_sleep.py" output="screen"/>    
+</launch>

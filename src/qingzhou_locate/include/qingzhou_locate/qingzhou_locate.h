@@ -57,6 +57,7 @@ private:
 	GoalPoint goalPoint;
 	geometry_msgs::PoseWithCovarianceStamped odom;
 	geometry_msgs::PoseStamped goal;
+	double amcl_x, amcl_y;
 
 	//话题发布订阅
 	ros::Subscriber odom_sub;
